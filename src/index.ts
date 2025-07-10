@@ -6,9 +6,12 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
-import { middleware } from './middlewares/middleware.js';
 import { CustomNotFoundError } from './errors/CustomNotFoundError.js';
 import { globalErrorHandler } from './errors/globalErrorHandler.js';
+import { router as indexRouter } from './routes/indexRouter.js';
+import { router as genreRouter } from './routes/genreRouter.js';
+import { router as authorRouter } from './routes/authorRouter.js';
+import { router as languageRouter } from './routes/languageRouter.js';
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,7 +28,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
-app.get('/', middleware);
+app.use('/', indexRouter);
+app.use('/genres', genreRouter);
+app.use('/authors', authorRouter);
+app.use('/languages', languageRouter);
 
 // Error handlers
 app.use((req, res) => {
