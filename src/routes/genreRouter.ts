@@ -1,7 +1,16 @@
 import { Router } from 'express';
+import {
+	getBooksByGenreId,
+	getGenres,
+} from '../controllers/genreController.js';
 
 export const router = Router();
 
-router.get('/', (req, res) => {
-	res.json({ message: 'Hello Genre!' });
-});
+router.get('/', getGenres);
+router.get('/:genre', getBooksByGenreId);
+
+// TODO: create a genre
+
+// TODO: edit a genre
+
+// TODO: delete a genre

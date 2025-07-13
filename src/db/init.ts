@@ -5,10 +5,26 @@ async function initializeDatabase() {
 	const client = new Client(dbConfig);
 
 	try {
+		// Connect to database
 		console.log('Connecting to database...');
 		await client.connect();
 		console.log('Connected successfully.');
 
+		// Drop existing table if existing
+		console.log('Dropping existing tables...');
+		await client.query(
+			`DROP TABLE IF EXISTS
+				book_genres, 
+				book_languages,
+				book_authors,
+				books,
+				authors,
+				genres,
+				languages
+			CASCADE;`
+		);
+
+		// Create new tables
 		console.log('Creating tables...');
 		await client.query(`
 			CREATE TABLE IF NOT EXISTS authors (
@@ -20,7 +36,7 @@ async function initializeDatabase() {
 			
 			CREATE TABLE IF NOT EXISTS books (
 				id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-				title VARCHAR (255) NOT NULL,
+				title VARCHAR (255) NOT NULL UNIQUE,
 				subtitle VARCHAR (255),
 				description TEXT,
 				stock INTEGER NOT NULL,
@@ -29,20 +45,21 @@ async function initializeDatabase() {
 				cover_url TEXT
 			);
 
-			CREATE TABLE IF NOT EXISTS languages (
-				id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-				name VARCHAR(25) NOT NULL
-			);
-
 			CREATE TABLE IF NOT EXISTS genres (
 				id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 				name VARCHAR(255) NOT NULL
 			);
 
+			CREATE TABLE IF NOT EXISTS languages (
+				id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+				name VARCHAR(25) NOT NULL
+			);
+
 			CREATE TABLE IF NOT EXISTS book_authors (
 				id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 				book_id INTEGER REFERENCES books (id),
-				author_id INTEGER REFERENCES authors (id)
+				author_id INTEGER REFERENCES authors (id),
+				UNIQUE(book_id, author_id)
 			);
 
 			CREATE TABLE IF NOT EXISTS book_languages (
@@ -73,6 +90,7 @@ async function initializeDatabase() {
 		throw err;
 	} finally {
 		await client.end();
+		console.log('Database connection closed.');
 	}
 }
 

@@ -205,6 +205,7 @@ export async function seed() {
 		console.log('Seeding failed: ', error);
 	} finally {
 		await client.end();
+		console.log('Database connection closed.');
 	}
 }
 
