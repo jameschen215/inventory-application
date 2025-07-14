@@ -6,7 +6,7 @@ export type BookDisplayType = {
 	price: number;
 	published_at: string | null;
 	cover_url: string | null;
-	author: string[];
-	genre: string[];
-	language: string[];
+	authors: string[];
+	genres: string[];
+	languages: string[];
 };

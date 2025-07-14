@@ -57,22 +57,22 @@ async function initializeDatabase() {
 
 			CREATE TABLE IF NOT EXISTS book_authors (
 				id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-				book_id INTEGER REFERENCES books (id),
-				author_id INTEGER REFERENCES authors (id),
+				book_id INTEGER REFERENCES books (id) ON DELETE CASCADE,
+				author_id INTEGER REFERENCES authors (id) ON DELETE CASCADE,
 				UNIQUE(book_id, author_id)
 			);
 
 			CREATE TABLE IF NOT EXISTS book_languages (
 				id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-				book_id INTEGER REFERENCES books (id),
-				language_id INTEGER REFERENCES languages (id),
+				book_id INTEGER REFERENCES books (id) ON DELETE CASCADE,
+				language_id INTEGER REFERENCES languages (id) ON DELETE CASCADE,
 				UNIQUE (book_id, language_id)
 			);
 
 			CREATE TABLE IF NOT EXISTS book_genres (
 				id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-				book_id INTEGER REFERENCES books (id),
-				genre_id INTEGER REFERENCES genres (id),
+				book_id INTEGER REFERENCES books (id) ON DELETE CASCADE,
+				genre_id INTEGER REFERENCES genres (id) ON DELETE CASCADE,
 				UNIQUE (book_id, genre_id)
 			);
 		`);

@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 
-export const normalizeBookInput: RequestHandler = (req, res, next) => {
-	const fieldsToSplit = ['author', 'genre', 'language'];
+export const normalizeBookInput: RequestHandler = (req, _res, next) => {
+	const fieldsToSplit = ['authors', 'genres', 'languages'];
 
 	for (const field of fieldsToSplit) {
 		const raw = req.body[field];

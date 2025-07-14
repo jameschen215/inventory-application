@@ -3,15 +3,65 @@ import { query } from '../db/pool.js';
 import { BookType } from '../types/db-types.js';
 import { matchedData, validationResult } from 'express-validator';
 import { BookDisplayType } from '../types/BookDisplayType.js';
+import { insertJoins, processEntity } from '../services/bookHelpers.js';
 
-// Get all books
-export const getBooks: RequestHandler = async (req, res) => {
-	const { rows }: { rows: BookType[] } = await query('SELECT * FROM books;');
+// 1. Get all books
+export const getBooks: RequestHandler = async (_req, res, next) => {
+	try {
+		const { rows } = await query(
+			`SELECT 
+				books.*,
+				json_agg(DISTINCT authors.name) AS authors,
+				json_agg(DISTINCT genres.name) AS genres,
+				json_agg(DISTINCT languages.name) AS languages
+			FROM books
+			LEFT JOIN book_authors ON books.id = book_authors.book_id
+			LEFT JOIN authors ON book_authors.author_id = authors.id
+			LEFT JOIN book_genres ON books.id = book_genres.book_id
+			LEFT JOIN genres ON book_genres.genre_id = genres.id
+			LEFT JOIN book_languages ON books.id = book_languages.book_id
+			LEFT JOIN languages ON book_languages.language_id = languages.id
+			GROUP BY books.id;`
+		);
+		const books: BookDisplayType[] = rows;
 
-	res.json({ books: rows });
+		res.status(200).json({ books });
+	} catch (error) {
+		next(error);
+	}
 };
 
-// Post a new book
+// 2. Get book by id
+export const getBookById: RequestHandler = async (req, res, next) => {
+	const bookId = Number(req.params['bookId']);
+
+	try {
+		const { rows } = await query(
+			`SELECT 
+				books.*,
+				json_agg(DISTINCT authors.name) AS authors,
+				json_agg(DISTINCT genres.name) AS genres,
+				json_agg(DISTINCT languages.name) AS languages
+			FROM books
+			LEFT JOIN book_authors ON books.id = book_authors.book_id
+			LEFT JOIN authors ON book_authors.author_id = authors.id
+			LEFT JOIN book_genres ON books.id = book_genres.book_id
+			LEFT JOIN genres ON book_genres.genre_id = genres.id
+			LEFT JOIN book_languages ON books.id = book_languages.book_id
+			LEFT JOIN languages ON book_languages.language_id = languages.id
+			WHERE books.id = $1
+			GROUP BY books.id;`,
+			[bookId]
+		);
+		const book: BookDisplayType[] = rows[0];
+
+		res.status(200).json({ book });
+	} catch (error) {
+		next(error);
+	}
+};
+
+// 3. Post a new book
 export const createNewBook: RequestHandler = async (req, res, next) => {
 	const errors = validationResult(req);
 
@@ -28,81 +78,38 @@ export const createNewBook: RequestHandler = async (req, res, next) => {
 		price,
 		published_at,
 		cover_url,
-		author,
-		genre,
-		language,
+		authors,
+		genres,
+		languages,
 	} = formData;
 
 	try {
-		// 1. Helpers
-		const processEntity = async (
-			table: 'authors' | 'genres' | 'languages',
-			values: string[],
-			columns = ['name']
-		) => {
-			const lowerVals = values.map((v) => v.toLowerCase());
-			const { rows } = await query(
-				`SELECT * FROM ${table} WHERE LOWER(name) = ANY($1::text[])`,
-				[lowerVals]
-			);
-			const existing = rows.map((r: any) => r.name.toLowerCase());
-			const toInsert = values.filter(
-				(v) => !existing.includes(v.toLowerCase())
-			);
+		// 1. Process related entities
+		const authorIds = (await processEntity('authors', authors)) as number[];
+		const genreIds = (await processEntity('genres', genres)) as number[];
+		const languageIds = (await processEntity(
+			'languages',
+			languages
+		)) as number[];
 
-			for (const name of toInsert) {
-				await query(`INSERT INTO ${table} (name) VALUES ($1)`, [name]);
-			}
-
-			const { rows: rowsAfterInserting } = await query(
-				`SELECT * FROM ${table} WHERE LOWER(name) = ANY($1::text[])`,
-				[lowerVals]
-			);
-
-			return rowsAfterInserting.map((r: any) => r.id);
-		};
-
-		const insertJoin = async (
-			table: 'book_authors' | 'book_genres' | 'book_languages',
-			column: 'author_id' | 'genre_id' | 'language_id',
-			ids: number[]
-		) => {
-			for (const id of ids) {
-				await query(
-					`INSERT INTO ${table} (book_id, ${column}) VALUES ($1, $2) 
-					 ON CONFLICT DO NOTHING`,
-					[book.id, id]
-				);
-			}
-		};
-
-		// 2. Process related entities
-		const authorIds = await processEntity('authors', author);
-		const genreIds = await processEntity('genres', genre);
-		const languageIds = await processEntity('languages', language);
-
-		// 3. Insert new book if not existing
-		await query(
+		// 2. Insert new book if not existing
+		const insertBookRes = await query(
 			`INSERT INTO books (title, subtitle, description, stock, price, published_at, cover_url)
 			 VALUES ($1, $2, $3, $4, $5, $6, $7)
-			 ON CONFLICT DO NOTHING`,
+			 ON CONFLICT DO NOTHING
+			 RETURNING *`,
 			[title, subtitle, description, stock, price, published_at, cover_url]
 		);
-
-		const { rows } = await query(
-			'SELECT * FROM books WHERE LOWER(title) = ($1)',
-			[title.toLowerCase()]
-		);
-		const book: BookType = rows[0];
+		const book: BookType | undefined = insertBookRes.rows[0];
 
 		if (!book) {
 			return res.status(500).json({ error: 'Book insertion failed.' });
 		}
 
-		// 4. Insert relationships
-		await insertJoin('book_authors', 'author_id', authorIds);
-		await insertJoin('book_genres', 'genre_id', genreIds);
-		await insertJoin('book_languages', 'language_id', languageIds);
+		// 3. Insert relationships
+		await insertJoins('book_authors', 'author_id', book.id, authorIds);
+		await insertJoins('book_genres', 'genre_id', book.id, genreIds);
+		await insertJoins('book_languages', 'language_id', book.id, languageIds);
 
 		res
 			.status(201)
@@ -112,6 +119,168 @@ export const createNewBook: RequestHandler = async (req, res, next) => {
 	}
 };
 
-// Update a book
+// 4. Partial updating
+export const editABookPartially: RequestHandler = async (req, res, next) => {
+	const errors = validationResult(req);
+
+	if (!errors.isEmpty()) {
+		return res.status(400).json({ errors: errors.array(), data: req.body });
+	}
+
+	const bookId = Number(req.params['bookId']);
+	const formData = matchedData(req);
+
+	try {
+		// 1. Handle entity fields if they exist
+		let authorIds: number[] = [];
+		let genreIds: number[] = [];
+		let languageIds: number[] = [];
+
+		if (formData.author) {
+			authorIds = (await processEntity('authors', formData.author)) as number[];
+			delete formData.author;
+		}
+
+		if (formData.genre) {
+			genreIds = (await processEntity('genres', formData.genre)) as number[];
+			delete formData.genre;
+		}
+
+		if (formData.language) {
+			languageIds = (await processEntity(
+				'languages',
+				formData.language
+			)) as number[];
+			delete formData.language;
+		}
+
+		// 2. Dynamically build UPDATE query only with present fields
+		const keys = Object.keys(formData);
+		console.log(keys);
+
+		if (keys.length > 0) {
+			const setClause = keys
+				.map((key, index) => `${key} = $${index + 1}`)
+				.join(', ');
+			const values = Object.values(formData);
+
+			// Awesome!
+			const updateRes = await query(
+				`UPDATE books SET ${setClause} WHERE id = $${keys.length + 1}`, // 8 if full updating
+				[...values, bookId]
+			);
+
+			if (updateRes.rowCount === 0) {
+				return res
+					.status(404)
+					.json({ error: 'Book not found or no changes made' });
+			}
+		}
+
+		// 3. Update relationships if needed
+		if (authorIds.length) {
+			await insertJoins('book_authors', 'author_id', bookId, authorIds);
+		}
+		if (genreIds.length) {
+			await insertJoins('book_genres', 'genre_id', bookId, genreIds);
+		}
+		if (languageIds.length) {
+			await insertJoins('book_languages', 'language_id', bookId, languageIds);
+		}
+
+		res.status(200).json({ message: `Book ${bookId} updated successfully` });
+	} catch (error) {
+		next(error);
+	}
+};
 
 // Delete a book
+export const deleteBookById: RequestHandler = async (req, res, next) => {
+	const bookId = Number(req.params['bookId']);
+
+	try {
+		const delRes = await query('DELETE FROM books WHERE id = $1', [bookId]);
+
+		if (delRes.rowCount === 0) {
+			return res.status(404).json({ error: 'Book not found' });
+		}
+
+		res.status(200).json({ message: 'Book deleted successfully' });
+	} catch (error) {
+		next(error);
+	}
+};
+
+// Update a book
+export const editABook: RequestHandler = async (req, res, next) => {
+	const errors = validationResult(req);
+
+	if (!errors.isEmpty()) {
+		return res.status(400).json({ errors: errors.array(), data: req.body });
+	}
+
+	const bookId = Number(req.params['bookId']);
+	const formData = matchedData(req, {
+		includeOptionals: true,
+	}) as BookDisplayType;
+	const {
+		title,
+		subtitle,
+		description,
+		stock,
+		price,
+		published_at,
+		cover_url,
+		authors,
+		genres,
+		languages,
+	} = formData;
+
+	try {
+		// 1. Process related entities
+		const authorIds = (await processEntity('authors', authors)) as number[];
+		const genreIds = (await processEntity('genres', genres)) as number[];
+		const languageIds = (await processEntity(
+			'languages',
+			languages
+		)) as number[];
+
+		// 2. Update the book info
+		const updateRes = await query(
+			`UPDATE books 
+		 	SET title = $1,
+		 		subtitle = $2,
+				description = $3,
+				stock = $4,
+				price = $5,
+				published_at = $6,
+				cover_url = $7
+			WHERE id = $8`,
+			[
+				title,
+				subtitle,
+				description,
+				stock,
+				price,
+				published_at,
+				cover_url,
+				bookId,
+			]
+		);
+
+		if (updateRes.rowCount === 0) {
+			return res
+				.status(404)
+				.json({ error: 'Book not found or no changes made.' });
+		}
+
+		// 3. Insert relationships
+		await insertJoins('book_authors', 'author_id', bookId, authorIds);
+		await insertJoins('book_genres', 'genre_id', bookId, genreIds);
+		await insertJoins('book_languages', 'language_id', bookId, languageIds);
+
+		res.status(200).json({ message: `Book ${bookId} updated successfully` });
+	} catch (error) {
+		next(error);
+	}
+};
