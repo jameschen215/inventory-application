@@ -271,7 +271,7 @@ export const editABook: RequestHandler = async (req, res, next) => {
 		if (updateRes.rowCount === 0) {
 			return res
 				.status(404)
-				.json({ error: 'Book not found or no changes made.' });
+				.json({ error: 'Book not found or no changes made' });
 		}
 
 		// 3. Insert relationships

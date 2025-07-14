@@ -18,10 +18,10 @@ router.get('/', getBooks);
 // 2. Get a book by id
 router.get('/books/:bookId', getBookById);
 
-// TODO: post a book
+// 3. Post a book
 router.post('/books', normalizeBookInput, bookCreateSchema, createNewBook);
 
-// TODO: update a book
+// 4. Update a book
 router.put(
 	'/books/:bookId',
 	normalizeBookInput,
@@ -29,5 +29,5 @@ router.put(
 	editABookPartially
 );
 
-// TODO: delete a book
+// 5. Delete a book
 router.delete('/books/:bookId', deleteBookById);

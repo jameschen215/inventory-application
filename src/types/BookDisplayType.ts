@@ -1,4 +1,5 @@
 export type BookDisplayType = {
+	id: number;
 	title: string;
 	subtitle: string | null;
 	description: string | null;

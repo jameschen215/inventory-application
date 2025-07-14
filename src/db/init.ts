@@ -29,7 +29,7 @@ async function initializeDatabase() {
 		await client.query(`
 			CREATE TABLE IF NOT EXISTS authors (
 				id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-				name VARCHAR(255) NOT NULL,
+				name VARCHAR(100) NOT NULL,
 				bio TEXT,
 				dob DATE
 			);
@@ -47,7 +47,7 @@ async function initializeDatabase() {
 
 			CREATE TABLE IF NOT EXISTS genres (
 				id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-				name VARCHAR(255) NOT NULL
+				name VARCHAR(25) NOT NULL
 			);
 
 			CREATE TABLE IF NOT EXISTS languages (

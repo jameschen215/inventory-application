@@ -2,7 +2,7 @@ import { checkSchema } from 'express-validator';
 
 export const bookCreateSchema = checkSchema({
 	title: {
-		// in: ['body'],
+		in: ['body'],
 		isString: true,
 		trim: true,
 		notEmpty: {
@@ -62,7 +62,7 @@ export const bookCreateSchema = checkSchema({
 		},
 		custom: {
 			options: (author: string[]) =>
-				author.length > 0 && author.every((a) => /^[a-zA-Z\s]{2,25}$/.test(a)),
+				author.length > 0 && author.every((a) => /^[a-zA-Z\s]{2,100}$/.test(a)),
 			errorMessage:
 				'Each author must be a valid word (2-25 letters), and at least one author is required',
 		},
@@ -166,7 +166,7 @@ export const bookEditSchema = checkSchema({
 		},
 		custom: {
 			options: (author: string[]) =>
-				author.every((a) => /^[a-zA-Z\s]{2,25}$/.test(a)),
+				author.every((a) => /^[a-zA-Z\s]{2,100}$/.test(a)),
 			errorMessage: 'Each author must be a valid word (2-25 letters)',
 		},
 	},
