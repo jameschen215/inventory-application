@@ -1,16 +1,22 @@
 import { Router } from 'express';
 import {
 	getAuthors,
-	getBooksByAuthor,
+	getBooksByAuthorId,
+	editAuthorById,
+	deleteAuthorById,
 } from '../controllers/authorController.js';
+import { authorSchema } from '../validators/authorSchema.js';
 
 export const router = Router();
 
+// 1. Get all authors
 router.get('/', getAuthors);
-router.get('/:authorId', getBooksByAuthor);
 
-// TODO: create a author
+// 2. Get author by id
+router.get('/:authorId', getBooksByAuthorId);
 
-// TODO: edit a author
+// 3. Update a author
+router.put('/:authorId', authorSchema, editAuthorById);
 
-// TODO: delete a author
+// 4. Delete a author
+router.delete('/:authorId', deleteAuthorById);

@@ -29,8 +29,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.use('/', indexRouter);
-app.use('/genres', genreRouter);
 app.use('/authors', authorRouter);
+app.use('/genres', genreRouter);
 app.use('/languages', languageRouter);
 
 // Error handlers

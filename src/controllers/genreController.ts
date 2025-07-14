@@ -21,6 +21,15 @@ export const getGenres: RequestHandler = async (req, res, next) => {
 export const getBooksByGenreId: RequestHandler = async (req, res, next) => {
 	const genreId = Number(req.params['genreId']);
 
+	const { rowCount } = await query(
+		'SELECT 1 FROM genres WHERE id = $1 LIMIT 1',
+		[genreId]
+	);
+
+	if (rowCount === 0) {
+		return res.status(404).json({ error: 'Genre not found' });
+	}
+
 	try {
 		const { rows: books }: { rows: BookDisplayType[] } = await query(
 			`SELECT 
@@ -35,8 +44,8 @@ export const getBooksByGenreId: RequestHandler = async (req, res, next) => {
 				LEFT JOIN genres ON book_genres.genre_id = genres.id
 				LEFT JOIN book_languages ON books.id = book_languages.book_id
 				LEFT JOIN languages ON book_languages.language_id = languages.id
-				WHERE genres.id = $1
-				GROUP BY books.id;`,
+				GROUP BY books.id
+				HAVING $1 = ANY(array_agg(genres.id));`,
 			[genreId]
 		);
 
@@ -56,7 +65,7 @@ export const editGenreById: RequestHandler = async (req, res, next) => {
 	}
 
 	const genreId = Number(req.params['genreId']);
-	const { name } = matchedData(req);
+	const { name }: { name: string } = matchedData(req);
 
 	try {
 		const { rowCount } = await query(
@@ -87,7 +96,7 @@ export const deleteGenreById: RequestHandler = async (req, res, next) => {
 			return res.status(404).json({ error: 'Genre not found' });
 		}
 
-		res.status(200).json({ message: 'Genre deleted successfully' });
+		res.status(200).json({ message: `Genre ${genreId} deleted successfully` });
 	} catch (error) {
 		next(error);
 	}
