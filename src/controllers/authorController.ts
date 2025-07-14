@@ -22,10 +22,9 @@ export const getBooksByAuthorId: RequestHandler = async (req, res, next) => {
 	const authorId = Number(req.params['authorId']);
 
 	try {
-		const authorRes = await query(
-			'SELECT 1 FROM authors WHERE id = ($1) LIMIT 1',
-			[authorId]
-		);
+		const authorRes = await query('SELECT * FROM authors WHERE id = ($1)', [
+			authorId,
+		]);
 
 		if (authorRes.rowCount === 0) {
 			return res.status(404).json({ error: 'Author not found' });

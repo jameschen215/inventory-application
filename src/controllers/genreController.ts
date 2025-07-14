@@ -20,15 +20,13 @@ export const getGenres: RequestHandler = async (req, res, next) => {
 // 2. Get all books of a specific genre
 export const getBooksByGenreId: RequestHandler = async (req, res, next) => {
 	const genreId = Number(req.params['genreId']);
+	const genreRes = await query('SELECT * FROM genres WHERE id = $1', [genreId]);
 
-	const { rowCount } = await query(
-		'SELECT 1 FROM genres WHERE id = $1 LIMIT 1',
-		[genreId]
-	);
-
-	if (rowCount === 0) {
+	if (genreRes.rowCount === 0) {
 		return res.status(404).json({ error: 'Genre not found' });
 	}
+
+	const genre = genreRes.rows[0] as GenreType;
 
 	try {
 		const { rows: books }: { rows: BookDisplayType[] } = await query(
@@ -49,7 +47,7 @@ export const getBooksByGenreId: RequestHandler = async (req, res, next) => {
 			[genreId]
 		);
 
-		res.status(200).json({ books });
+		res.status(200).json({ genre, books });
 	} catch (error) {
 		next(error);
 	}

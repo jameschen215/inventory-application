@@ -21,14 +21,15 @@ export const getLanguages: RequestHandler = async (_req, res, next) => {
 export const getBooksByLanguage: RequestHandler = async (req, res, next) => {
 	const languageId = Number(req.params['languageId']);
 
-	const { rowCount } = await query(
-		'SELECT 1 FROM languages WHERE id = $1 LIMIT 1',
-		[languageId]
-	);
+	const langRes = await query('SELECT * FROM languages WHERE id = $1', [
+		languageId,
+	]);
 
-	if (rowCount === 0) {
+	if (langRes.rowCount === 0) {
 		return res.status(404).json({ error: 'Language not found' });
 	}
+
+	const language = langRes.rows[0] as LanguageType;
 
 	try {
 		const { rows: books }: { rows: BookDisplayType[] } = await query(
@@ -49,7 +50,7 @@ export const getBooksByLanguage: RequestHandler = async (req, res, next) => {
 			[languageId]
 		);
 
-		res.status(200).json({ books });
+		res.status(200).json({ language, books });
 	} catch (error) {
 		next(error);
 	}
