@@ -27,9 +27,18 @@ async function initializeDatabase() {
 		// Create new tables
 		console.log('Creating tables...');
 		await client.query(`
+			DO $$
+			BEGIN
+  			IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'gender') THEN
+    			CREATE TYPE gender AS ENUM ('male', 'female');
+  			END IF;
+			END$$;
+
 			CREATE TABLE IF NOT EXISTS authors (
 				id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 				name VARCHAR(100) NOT NULL,
+				gender gender,
+				nationality VARCHAR(50),
 				bio TEXT,
 				dob DATE
 			);

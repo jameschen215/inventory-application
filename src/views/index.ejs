@@ -1,0 +1,30 @@
+<%- include('partials/header', {title}) %>
+
+<div class="px-6 mt-4">
+	<% if (locals.books) { %>
+	<table class="table-auto w-full">
+		<thead class="w-full">
+			<tr class="border-b border-zinc-200 h-14">
+				<th class="text-start">Title</th>
+				<th class="text-end">Price</th>
+				<th class="text-end">Stock</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% books.map(book => { %>
+			<tr
+				class="border-b border-zinc-200 h-14 last-of-type:border-none"
+				data-href="book/<%= book.id %>">
+				<td class="text-start"><%= book.title %></td>
+				<td class="text-end"><%= book.price %></td>
+				<td class="text-end"><%= book.stock %></td>
+			</tr>
+
+			<%})%>
+		</tbody>
+	</table>
+
+	<% } else { %>
+	<p>No book.</p>
+	<% } %>
+</div>

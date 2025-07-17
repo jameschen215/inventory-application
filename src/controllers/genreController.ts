@@ -3,15 +3,19 @@ import { query } from '../db/pool.js';
 import { GenreType } from '../types/db-types.js';
 import { BookDisplayType } from '../types/BookDisplayType.js';
 import { matchedData, validationResult } from 'express-validator';
+import { capitalize } from '../lib/utils.js';
+import { title } from 'process';
 
 // 1. Get all genres
 export const getGenres: RequestHandler = async (req, res, next) => {
 	try {
-		const { rows: genres }: { rows: GenreType[] } = await query(
-			'SELECT * FROM genres'
-		);
+		const { rows }: { rows: GenreType[] } = await query('SELECT * FROM genres');
+		const genres = rows.map((row) => ({
+			...row,
+			name: capitalize(row.name),
+		}));
 
-		res.status(200).json({ genres });
+		res.render('genres', { title: 'Genres', genres });
 	} catch (error) {
 		next(error);
 	}

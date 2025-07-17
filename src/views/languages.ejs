@@ -1,0 +1,15 @@
+<%- include('partials/header', {title}) %>
+
+<ul class="px-6 mt-10 flex flex-wrap gap-6 justify-between">
+	<% if (locals.languages) { %> <% languages.map(language => { %>
+	<li
+		class="w-[calc(50%-12px)] h-30 bg-zinc-50 flex items-center justify-center rounded-md text-xl shadow-sm border border-zinc-200">
+		<a href="/languages/<%= language.id %>">
+			<span><%= language.name %></span>
+		</a>
+	</li>
+
+	<%})%> <% } else { %>
+	<p>No language.</p>
+	<% } %>
+</ul>

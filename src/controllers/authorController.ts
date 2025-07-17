@@ -1,17 +1,24 @@
 import { RequestHandler } from 'express';
 import { query } from '../db/pool.js';
-import { AuthorType, BookType } from '../types/db-types.js';
+import { AuthorType } from '../types/db-types.js';
 import { BookDisplayType } from '../types/BookDisplayType.js';
 import { matchedData, validationResult } from 'express-validator';
+import { capitalize, capitalizeAll } from '../lib/utils.js';
 
 // 1. Get all authors
 export const getAuthors: RequestHandler = async (_req, res, next) => {
 	try {
-		const { rows: authors }: { rows: AuthorType[] } = await query(
+		const { rows }: { rows: AuthorType[] } = await query(
 			`SELECT * FROM authors`
 		);
 
-		res.status(200).json({ authors });
+		const authors = rows.map((row) => ({
+			...row,
+			name: capitalizeAll(row.name),
+			gender: capitalize(row.gender),
+		}));
+
+		res.render('authors', { title: 'Authors', authors });
 	} catch (error) {
 		next(error);
 	}

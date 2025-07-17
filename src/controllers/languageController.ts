@@ -3,15 +3,21 @@ import { query } from '../db/pool.js';
 import { BookType, LanguageType } from '../types/db-types.js';
 import { BookDisplayType } from '../types/BookDisplayType.js';
 import { matchedData, validationResult } from 'express-validator';
+import { capitalize } from '../lib/utils.js';
 
 // 1. Get all languages
 export const getLanguages: RequestHandler = async (_req, res, next) => {
 	try {
-		const { rows: languages }: { rows: LanguageType[] } = await query(
+		const { rows }: { rows: LanguageType[] } = await query(
 			'SELECT * FROM languages;'
 		);
 
-		res.status(200).json({ languages });
+		const languages = rows.map((row) => ({
+			...row,
+			name: capitalize(row.name),
+		}));
+
+		res.render('languages', { title: 'Languages', languages });
 	} catch (error) {
 		next(error);
 	}

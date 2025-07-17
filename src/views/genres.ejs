@@ -1,0 +1,15 @@
+<%- include('partials/header', {title}) %>
+
+<ul class="px-6 mt-10 flex flex-wrap gap-6 justify-between">
+	<% if (locals.genres) { %> <% genres.map(genre => { %>
+	<li
+		class="w-[calc(50%-12px)] h-30 bg-zinc-50 flex items-center justify-center rounded-md text-xl shadow-sm border border-zinc-200">
+		<a href="/genres/<%= genre.id %>">
+			<span><%= genre.name %></span>
+		</a>
+	</li>
+
+	<%})%> <% } else { %>
+	<p>No genre.</p>
+	<% } %>
+</ul>

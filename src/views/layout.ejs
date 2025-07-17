@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Book Inventory</title>
+
+		<link rel="stylesheet" href="/styles/build.css" />
+		<script src="/scripts/sidebar.js" defer></script>
+		<script src="/scripts/tr-links.js" defer></script>
+	</head>
+	<body>
+		<div id="layout" class="relative transition-transform duration-300">
+			<aside
+				id="sidebar"
+				class="absolute top-0 left-0 min-h-screen w-72 -translate-x-72 bg-white text-zinc-950 z-20">
+				<!-- Brand -->
+				<div class="flex items-center h-14 px-8">
+					<a href="/">
+						<span class="text-xl uppercase">Inventory</span>
+						<span class="text-xl uppercase text-amber-600">App</span>
+					</a>
+				</div>
+
+				<p>currentPath: <%= locals.currentPath %></p>
+
+				<!-- Nav links -->
+				<ul class="mt-6 flex flex-col gap-5 px-1">
+					<li
+						class="<%= currentPath === '/' ? 'bg-zinc-50' : '' %> px-7 py-3 rounded-md">
+						<a href="/" class="flex gap-3">
+							<span class="inline-block size-6">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="24"
+									height="24"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									class="lucide lucide-library-icon lucide-library w-full h-full">
+									<path d="m16 6 4 14" />
+									<path d="M12 6v14" />
+									<path d="M8 8v12" />
+									<path d="M4 4v16" />
+								</svg>
+							</span>
+							<span class="text-lg font-light">Books</span>
+						</a>
+					</li>
+
+					<li
+						class="<%= currentPath === '/authors' ? 'bg-zinc-50' : ''%> px-7 py-3 rounded-md">
+						<a href="/authors" class="flex gap-3">
+							<span class="inline-block size-6">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="24"
+									height="24"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									class="lucide lucide-users-icon lucide-users w-full h-full">
+									<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+									<path d="M16 3.128a4 4 0 0 1 0 7.744" />
+									<path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+									<circle cx="9" cy="7" r="4" />
+								</svg>
+							</span>
+							<span class="text-lg font-light">Authors</span>
+						</a>
+					</li>
+					<li
+						class="<%= currentPath === '/genres' ? 'bg-zinc-50' : ''%> px-7 py-3 rounded-md">
+						<a href="/genres" class="flex gap-3">
+							<span class="inline-block size-6">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="24"
+									height="24"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									class="lucide lucide-shapes-icon lucide-shapes w-full h-full">
+									<path
+										d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z" />
+									<rect x="3" y="14" width="7" height="7" rx="1" />
+									<circle cx="17.5" cy="17.5" r="3.5" />
+								</svg>
+							</span>
+							<span class="text-lg font-light">Genres</span>
+						</a>
+					</li>
+					<li
+						class="<%= currentPath === '/languages' ? 'bg-zinc-50' : ''%> px-7 py-3 rounded-md">
+						<a href="/languages" class="flex gap-3">
+							<span class="inline-block size-6">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="24"
+									height="24"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									class="lucide lucide-languages-icon lucide-languages w-full h-full">
+									<path d="m5 8 6 6" />
+									<path d="m4 14 6-6 2-3" />
+									<path d="M2 5h12" />
+									<path d="M7 2h1" />
+									<path d="m22 22-5-10-5 10" />
+									<path d="M14 18h6" />
+								</svg>
+							</span>
+							<span class="text-lg font-light">Languages</span>
+						</a>
+					</li>
+				</ul>
+			</aside>
+
+			<main id="main" class="min-h-screen flex-1 flex flex-col text-zinc-950">
+				<%- body %>
+			</main>
+		</div>
+	</body>
+</html>

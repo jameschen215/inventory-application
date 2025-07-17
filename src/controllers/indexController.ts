@@ -4,11 +4,12 @@ import { BookType } from '../types/db-types.js';
 import { matchedData, validationResult } from 'express-validator';
 import { BookDisplayType } from '../types/BookDisplayType.js';
 import { insertJoins, processEntity } from '../services/bookHelpers.js';
+import { capitalize } from '../lib/utils.js';
 
 // 1. Get all books
 export const getBooks: RequestHandler = async (_req, res, next) => {
 	try {
-		const { rows } = await query(
+		const { rows }: { rows: BookDisplayType[] } = await query(
 			`SELECT 
 				books.*,
 				json_agg(DISTINCT authors.name) AS authors,
@@ -23,9 +24,14 @@ export const getBooks: RequestHandler = async (_req, res, next) => {
 			LEFT JOIN languages ON book_languages.language_id = languages.id
 			GROUP BY books.id;`
 		);
-		const books: BookDisplayType[] = rows;
+		const books = rows.map((row) => ({
+			...row,
+			title: capitalize(row.title),
+		}));
 
-		res.status(200).json({ books });
+		console.log(res.locals.currentPath);
+
+		res.render('index', { title: 'Books', currentPath: '/', books });
 	} catch (error) {
 		next(error);
 	}

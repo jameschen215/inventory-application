@@ -5,6 +5,7 @@ import path from 'path';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import expressLayouts from 'express-ejs-layouts';
 
 import { CustomNotFoundError } from './errors/CustomNotFoundError.js';
 import { globalErrorHandler } from './errors/globalErrorHandler.js';
@@ -19,6 +20,12 @@ const PORT = process.env.PORT || 9000;
 
 const app = express();
 
+// config ejs
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(expressLayouts);
+app.set('layout', 'layout'); // will use views/layout.ejs
+
 // Middlewares
 app.use(cors());
 app.use(helmet());
@@ -26,6 +33,10 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use((req, res, next) => {
+	res.locals.currentPath = req.path;
+	next();
+});
 
 // Routes
 app.use('/', indexRouter);
