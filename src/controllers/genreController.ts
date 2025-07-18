@@ -3,11 +3,14 @@ import { query } from '../db/pool.js';
 import { GenreType } from '../types/db-types.js';
 import { BookDisplayType } from '../types/BookDisplayType.js';
 import { matchedData, validationResult } from 'express-validator';
-import { capitalize } from '../lib/utils.js';
-import { title } from 'process';
+import {
+	capitalize,
+	formatCurrency,
+	formatNumToCompactNotation,
+} from '../lib/utils.js';
 
 // 1. Get all genres
-export const getGenres: RequestHandler = async (req, res, next) => {
+export const getGenres: RequestHandler = async (_req, res, next) => {
 	try {
 		const { rows }: { rows: GenreType[] } = await query('SELECT * FROM genres');
 		const genres = rows.map((row) => ({
@@ -33,7 +36,7 @@ export const getBooksByGenreId: RequestHandler = async (req, res, next) => {
 	const genre = genreRes.rows[0] as GenreType;
 
 	try {
-		const { rows: books }: { rows: BookDisplayType[] } = await query(
+		const { rows }: { rows: BookDisplayType[] } = await query(
 			`SELECT 
 					books.*,
 					json_agg(DISTINCT authors.name) AS authors,
@@ -51,7 +54,16 @@ export const getBooksByGenreId: RequestHandler = async (req, res, next) => {
 			[genreId]
 		);
 
-		res.status(200).json({ genre, books });
+		const books = rows.map((row) => ({
+			...row,
+			title: capitalize(row.title),
+			price: formatCurrency(row.price),
+			stock: formatNumToCompactNotation(row.stock),
+		}));
+
+		res.render('books', { title: genre.name, books });
+
+		// res.status(200).json({ genre, books });
 	} catch (error) {
 		next(error);
 	}

@@ -1,9 +1,13 @@
 import { RequestHandler } from 'express';
 import { query } from '../db/pool.js';
-import { BookType, LanguageType } from '../types/db-types.js';
+import { LanguageType } from '../types/db-types.js';
 import { BookDisplayType } from '../types/BookDisplayType.js';
 import { matchedData, validationResult } from 'express-validator';
-import { capitalize } from '../lib/utils.js';
+import {
+	capitalize,
+	formatCurrency,
+	formatNumToCompactNotation,
+} from '../lib/utils.js';
 
 // 1. Get all languages
 export const getLanguages: RequestHandler = async (_req, res, next) => {
@@ -38,7 +42,7 @@ export const getBooksByLanguage: RequestHandler = async (req, res, next) => {
 	const language = langRes.rows[0] as LanguageType;
 
 	try {
-		const { rows: books }: { rows: BookDisplayType[] } = await query(
+		const { rows }: { rows: BookDisplayType[] } = await query(
 			`SELECT 
 						books.*,
 						json_agg(DISTINCT authors.name) AS authors,
@@ -55,8 +59,16 @@ export const getBooksByLanguage: RequestHandler = async (req, res, next) => {
 					HAVING $1 = ANY(array_agg(languages.id))`,
 			[languageId]
 		);
+		const books = rows.map((row) => ({
+			...row,
+			title: capitalize(row.title),
+			price: formatCurrency(row.price),
+			stock: formatNumToCompactNotation(row.stock),
+		}));
 
-		res.status(200).json({ language, books });
+		res.render('books', { title: language.name, books });
+
+		// res.status(200).json({ language, books });
 	} catch (error) {
 		next(error);
 	}

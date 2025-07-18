@@ -1,4 +1,8 @@
+<!-- Header -->
 <%- include('partials/header', {title}) %>
+
+<!-- Search -->
+<%- include('partials/search') %>
 
 <div class="px-6 mt-4">
 	<% if (locals.books) { %>
@@ -14,7 +18,7 @@
 			<% books.map(book => { %>
 			<tr
 				class="border-b border-zinc-200 h-14 last-of-type:border-none"
-				data-href="book/<%= book.id %>">
+				data-href="/books/<%= book.id %>">
 				<td class="text-start"><%= book.title %></td>
 				<td class="text-end"><%= book.price %></td>
 				<td class="text-end"><%= book.stock %></td>

@@ -3,7 +3,12 @@ import { query } from '../db/pool.js';
 import { AuthorType } from '../types/db-types.js';
 import { BookDisplayType } from '../types/BookDisplayType.js';
 import { matchedData, validationResult } from 'express-validator';
-import { capitalize, capitalizeAll } from '../lib/utils.js';
+import {
+	formatCurrency,
+	formatNumToCompactNotation,
+	capitalize,
+	capitalizeAll,
+} from '../lib/utils.js';
 
 // 1. Get all authors
 export const getAuthors: RequestHandler = async (_req, res, next) => {
@@ -15,7 +20,7 @@ export const getAuthors: RequestHandler = async (_req, res, next) => {
 		const authors = rows.map((row) => ({
 			...row,
 			name: capitalizeAll(row.name),
-			gender: capitalize(row.gender),
+			gender: row.gender ? capitalize(row.gender) : null,
 		}));
 
 		res.render('authors', { title: 'Authors', authors });
@@ -39,7 +44,7 @@ export const getBooksByAuthorId: RequestHandler = async (req, res, next) => {
 
 		const author = authorRes.rows[0] as AuthorType;
 
-		const { rows: books }: { rows: BookDisplayType[] } = await query(
+		const { rows }: { rows: BookDisplayType[] } = await query(
 			`SELECT 
 							books.*,
 							json_agg(DISTINCT authors.name) AS authors,
@@ -57,7 +62,15 @@ export const getBooksByAuthorId: RequestHandler = async (req, res, next) => {
 			[authorId]
 		);
 
-		res.status(200).json({ author, books });
+		const books = rows.map((row) => ({
+			...row,
+			title: capitalize(row.title),
+			price: formatCurrency(row.price),
+			stock: formatNumToCompactNotation(row.stock),
+		}));
+
+		// res.status(200).json({ author, books });
+		res.render('books', { title: author.name, books });
 	} catch (error) {
 		next(error);
 	}

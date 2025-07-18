@@ -1,0 +1,230 @@
+<%- include('partials/header', {title}) %>
+
+<form
+	action="/books/create"
+	method="post"
+	class="px-6 mt-22 mb-6 flex flex-col gap-5">
+	<h1 class="text-center text-2xl">Create New Book</h1>
+
+	<div class="flex flex-col">
+		<label for="title" class="uppercase text-sm text-zinc-600 font-light mb-1"
+			>Title *</label
+		>
+		<input
+			type="text"
+			id="title"
+			name="title"
+			value="<%= locals.data?.title ?? ''%>"
+			class="border border-zinc-300 outline-none px-3 py-1 rounded-md" />
+		<% if (locals.errors?.title) { %>
+		<p class="text-sm text-red-500 mt-1"><%= errors.title.msg %></p>
+		<% } %>
+	</div>
+
+	<div class="flex flex-col">
+		<label
+			for="subtitle"
+			class="uppercase text-sm text-zinc-600 font-light mb-1"
+			>subtitle</label
+		>
+		<input
+			type="text"
+			id="subtitle"
+			name="subtitle"
+			value="<%= locals.data?.subtitle ?? ''%>"
+			class="border border-zinc-300 outline-none px-3 py-1 rounded-md" />
+		<% if (locals.errors?.subtitle) { %>
+		<p class="text-sm text-red-500 mt-1"><%= errors.subtitle.msg %></p>
+		<% } %>
+	</div>
+
+	<div class="flex flex-col">
+		<label
+			for="authors"
+			class="uppercase text-sm text-zinc-600 font-light mb-1"
+			aria-describedby="author-desc"
+			>author(s) *</label
+		>
+		<input
+			type="text"
+			id="authors"
+			name="authors"
+			value="<%= locals.data?.authors ?? ''%>"
+			class="border border-zinc-300 outline-none px-3 py-1 rounded-md" />
+
+		<% if (locals.errors?.authors) { %>
+		<p class="text-sm text-red-500 mt-1"><%= errors.authors.msg %></p>
+		<% } else { %>
+		<p class="text-sm mt-1 text-blue-500 font-extralight">
+			List multiple authors separated by commas.
+		</p>
+		<% } %>
+	</div>
+
+	<div class="flex flex-col">
+		<label
+			for="languages"
+			class="uppercase text-sm text-zinc-600 font-light mb-1"
+			aria-describedby="author-desc">
+			languages(s) *
+		</label>
+		<input
+			type="text"
+			id="languages"
+			name="languages"
+			value="<%= locals.data?.languages ?? ''%>"
+			class="border border-zinc-300 outline-none px-3 py-1 rounded-md" />
+
+		<% if (locals.errors?.languages) { %>
+		<p class="text-sm text-red-500 mt-1"><%= errors.languages.msg %></p>
+		<% } else { %>
+		<p class="text-sm mt-1 text-blue-500 font-extralight">
+			List multiple languages separated by commas.
+		</p>
+		<% } %>
+	</div>
+
+	<!-- Genre -->
+	<div class="flex flex-col">
+		<fieldset>
+			<legend class="uppercase text-sm text-zinc-600 font-light mb-1">
+				Choose genres
+			</legend>
+
+			<div
+				class="grid grid-cols-3 gap-y-2 border border-zinc-300 px-3 py-3 rounded-md">
+				<% genres.map(genre => { %>
+				<div class="flex items-center gap-1">
+					<input type="checkbox" name="genres" id="<%= genre.name %>" value="<%=
+					genre.name %>" <%= locals.data?.genres?.includes(genre.name) ?
+					'checked' : '' %> />
+					<label
+						for="<%= genre.name %>"
+						class="capitalize text-base font-light">
+						<%= genre.name %>
+					</label>
+				</div>
+				<% })%>
+			</div>
+		</fieldset>
+	</div>
+
+	<div class="flex flex-col">
+		<label
+			for="new_genres"
+			class="uppercase text-sm text-zinc-600 font-light mb-1"
+			aria-describedby="author-desc"
+			>New genre(s)</label
+		>
+		<input
+			type="text"
+			id="new_genres"
+			name="new_genres"
+			value="<%= locals.data?.new_genres ?? ''%>"
+			class="border border-zinc-300 outline-none px-3 py-1 rounded-md" />
+
+		<% if (locals.errors?.genres) { %>
+		<p class="text-sm text-red-500 mt-1"><%= errors.genres.msg %></p>
+		<% } else { %>
+		<p class="text-sm mt-1 text-blue-500 font-extralight">
+			If none of the above fit, enter new genres (separated by commas).
+		</p>
+		<% } %>
+	</div>
+
+	<div class="flex flex-col">
+		<label for="stock" class="uppercase text-sm text-zinc-600 font-light mb-1"
+			>stock *</label
+		>
+		<input
+			type="number"
+			id="stock"
+			name="stock"
+			min="1"
+			value="<%= locals.data?.stock ?? ''%>"
+			class="border border-zinc-300 outline-none px-3 py-1 rounded-md" />
+
+		<% if (locals.errors?.stock) { %>
+		<p class="text-sm text-red-500 mt-1"><%= errors.stock.msg %></p>
+		<% } %>
+	</div>
+
+	<div class="flex flex-col">
+		<label for="price" class="uppercase text-sm text-zinc-600 font-light mb-1">
+			price *
+		</label>
+		<input
+			type="number"
+			id="price"
+			name="price"
+			step="0.01"
+			value="<%= locals.data?.price ?? ''%>"
+			class="border border-zinc-300 outline-none px-3 py-1 rounded-md" />
+
+		<% if (locals.errors?.price) { %>
+		<p class="text-sm text-red-500 mt-1"><%= errors.price.msg %></p>
+		<% } %>
+	</div>
+
+	<div class="flex flex-col">
+		<label
+			for="published_at"
+			class="uppercase text-sm text-zinc-600 font-light mb-1">
+			published
+		</label>
+		<input
+			type="date"
+			name="published_at"
+			id="published_at"
+			value="<%= locals.data?.published_at ?? ''%>"
+			class="border border-zinc-300 outline-none px-3 py-1 rounded-md" />
+
+		<% if (locals.errors?.published_at) { %>
+		<p class="text-sm text-red-500 mt-1"><%= errors.published_at.msg %></p>
+		<% } %>
+	</div>
+
+	<div class="flex flex-col">
+		<label
+			for="cover_url"
+			class="uppercase text-sm text-zinc-600 font-light mb-1">
+			cover url
+		</label>
+		<input
+			type="text"
+			name="cover_url"
+			id="cover_url"
+			value="<%= locals.data?.cover_url ?? ''%>"
+			class="border border-zinc-300 outline-none px-3 py-1 rounded-md" />
+
+		<% if (locals.errors?.cover_url) { %>
+		<p class="text-sm text-red-500 mt-1"><%= errors.cover_url.msg %></p>
+		<% } %>
+	</div>
+
+	<div class="flex flex-col">
+		<label
+			for="description"
+			class="uppercase text-sm text-zinc-600 font-light mb-1">
+			description
+		</label>
+		<textarea
+			name="description"
+			id="description"
+			rows="8"
+			value="<%= locals.data?.description ?? ''%>"
+			class="border border-zinc-300 outline-none px-3 py-1 rounded-md"></textarea>
+
+		<% if (locals.errors?.description) { %>
+		<p class="text-sm text-red-500 mt-1"><%= errors.description.msg %></p>
+		<% } %>
+	</div>
+
+	<div class="flex flex-col">
+		<button
+			type="submit"
+			class="w-full bg-blue-500 py-1 px-2 rounded-md border-none text-zinc-50 uppercase">
+			Submit
+		</button>
+	</div>
+</form>

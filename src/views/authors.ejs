@@ -1,5 +1,8 @@
 <%- include('partials/header', {title}) %>
 
+<!-- Search -->
+<%- include('partials/search') %>
+
 <div class="px-6 mt-4">
 	<% if (locals.authors) { %>
 	<table class="table-auto w-full">
@@ -16,8 +19,8 @@
 				class="border-b border-zinc-200 h-14 last-of-type:border-none"
 				data-href="authors/<%= author.id %>">
 				<td class="text-start"><%= author.name %></td>
-				<td class="text-end"><%= author.gender %></td>
-				<td class="text-end uppercase"><%= author.nationality %></td>
+				<td class="text-end"><%= author.gender ?? 'N/A' %></td>
+				<td class="text-end uppercase"><%= author.nationality ?? 'N/A' %></td>
 			</tr>
 
 			<%})%>

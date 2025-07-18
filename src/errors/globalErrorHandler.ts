@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { capitalizeFirstLetter } from '../utils/capitalizeFirstLetter.js';
+import { capitalize } from '../lib/utils.js';
 
 // global error
 interface CustomError extends Error {
@@ -20,8 +20,8 @@ export function globalErrorHandler(
 	const title = statusCode === 500 ? 'Server Error' : 'Error';
 
 	res.status(statusCode).json({
-		title: capitalizeFirstLetter(title),
-		message: capitalizeFirstLetter(message),
+		title: capitalize(title),
+		message: capitalize(message),
 		statusCode,
 	});
 }

@@ -12,8 +12,8 @@ export type BookType = {
 export type AuthorType = {
 	id: number;
 	name: string;
-	gender: string;
-	nationality: string;
+	gender: string | null;
+	nationality: string | null;
 	bio: string | null;
 	dob: Date | null;
 };

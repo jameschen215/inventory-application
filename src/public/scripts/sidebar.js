@@ -1,25 +1,29 @@
 document.addEventListener('DOMContentLoaded', () => {
 	const menuToggle = document.querySelector('#btn-menu');
-	const layout = document.querySelector('#layout');
+
 	const sidebar = document.querySelector('#sidebar');
 	const main = document.querySelector('#main');
 
 	function openSidebar(ev) {
 		ev.stopPropagation();
 
-		if (!layout.classList.contains('translate-x-72')) {
-			layout.classList.add('translate-x-72');
-			main.classList.add('pointer-events-none', 'grayscale', 'blur-[2px]');
-			sidebar.classList.add('shadow-xl');
-		}
+		sidebar.classList.add('shadow-xl', 'translate-x-72');
+		main.classList.add(
+			'translate-x-72',
+			'pointer-events-none',
+			'grayscale',
+			'blur-[2px]'
+		);
 	}
 
 	function closeSidebar() {
-		if (layout.classList.contains('translate-x-72')) {
-			layout.classList.remove('translate-x-72');
-			main.classList.remove('pointer-events-none', 'grayscale', 'blur-[2px]');
-			sidebar.classList.remove('shadow-xl');
-		}
+		sidebar.classList.remove('translate-x-72', 'shadow-xl');
+		main.classList.remove(
+			'translate-x-72',
+			'pointer-events-none',
+			'grayscale',
+			'blur-[2px]'
+		);
 	}
 
 	// Open

@@ -14,8 +14,15 @@ export const normalizeBookInput: RequestHandler = (req, _res, next) => {
 		}
 	}
 
-	if (req.body.new_genre) {
-		req.body.genre = [...(req.body.genre ?? []), req.body.new_genre.trim()];
+	console.log('Genres: ', req.body.genres);
+
+	if (req.body.new_genres) {
+		req.body.genre = [
+			...(req.body.genres ?? []),
+			...req.body.new_genres
+				.split(',')
+				.map((newGenre: string) => newGenre.trim()),
+		];
 	}
 
 	next();

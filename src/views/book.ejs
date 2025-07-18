@@ -1,0 +1,74 @@
+<%- include('partials/header', {title})%>
+
+<div class="my-8 px-6">
+	<div class="rounded-md bg-zinc-50 shadow-md p-4">
+		<div class="flex flex-col gap-6">
+			<div
+				class="w-full aspect-[1/1.5] bg-amber-500 flex flex-col items-center justify-center gap-6 rounded-sm text-zinc-950">
+				<h1 class="text-3xl"><%= book.title %></h1>
+
+				<% if (book.subtitle) { %>
+				<h2 class="text-xl text-zinc-700"><%= book.subtitle %></h2>
+				<% } %>
+
+				<p class="text-lg text-zinc-800"><%= book.authors %></p>
+			</div>
+
+			<div class="w-full flex flex-col">
+				<h1 class="text-3xl"><%= book.title %></h1>
+				<% if (book.subtitle) { %>
+				<h2 class="text-lg font-light text-zinc-600 mt-1">
+					- <%= book.subtitle %>
+				</h2>
+				<% } %>
+
+				<p class="text-lg font-extralight text-zinc-800 mt-2">
+					<%= book.authors %>
+				</p>
+
+				<% if (book.description) { %>
+				<p class="text-base text-zinc-950 mt-2 font-extralight">
+					<%= book.description %>
+				</p>
+				<% } %>
+
+				<hr class="my-6 text-zinc-300" />
+
+				<div class="flex flex-col gap-4">
+					<p>
+						<span class="text-base font-semibold">Genre: </span>
+						<span> <%= book.genres %> </span>
+					</p>
+					<p>
+						<span class="text-base font-semibold">Language: </span>
+						<span> <%= book.languages %> </span>
+					</p>
+					<p>
+						<span class="text-base font-semibold">Published: </span>
+						<span><%= book.published_at %></span>
+					</p>
+
+					<p>
+						<span class="text-base font-semibold">Stock: </span>
+						<span class="text-base"><%= book.stock %></span>
+					</p>
+					<p>
+						<span class="text-base font-semibold">Price: </span>
+						<span class="text-base"><%= book.price %></span>
+					</p>
+				</div>
+
+				<hr class="my-6 text-zinc-300" />
+
+				<div class="flex justify-between">
+					<form action="/books/<%= book.id %>?_method=DELETE" method="post">
+						<button type="submit" class="text-red-500">Delete</button>
+					</form>
+					<a href="/books/<%= book.id %>" class="text-blue-500 hover:underline"
+						>Edit</a
+					>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

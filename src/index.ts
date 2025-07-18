@@ -6,6 +6,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import expressLayouts from 'express-ejs-layouts';
+import methodOverride from 'method-override';
 
 import { CustomNotFoundError } from './errors/CustomNotFoundError.js';
 import { globalErrorHandler } from './errors/globalErrorHandler.js';
@@ -30,6 +31,7 @@ app.set('layout', 'layout'); // will use views/layout.ejs
 app.use(cors());
 app.use(helmet());
 app.use(morgan('dev'));
+app.use(methodOverride('_method')); // allows ?_method=DELETE
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));

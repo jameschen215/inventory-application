@@ -1,10 +1,16 @@
 import { RequestHandler } from 'express';
+import { format } from 'date-fns';
+
 import { query } from '../db/pool.js';
-import { BookType } from '../types/db-types.js';
+import { BookType, GenreType } from '../types/db-types.js';
 import { matchedData, validationResult } from 'express-validator';
 import { BookDisplayType } from '../types/BookDisplayType.js';
 import { insertJoins, processEntity } from '../services/bookHelpers.js';
-import { capitalize } from '../lib/utils.js';
+import {
+	capitalize,
+	formatCurrency,
+	formatNumToCompactNotation,
+} from '../lib/utils.js';
 
 // 1. Get all books
 export const getBooks: RequestHandler = async (_req, res, next) => {
@@ -27,11 +33,11 @@ export const getBooks: RequestHandler = async (_req, res, next) => {
 		const books = rows.map((row) => ({
 			...row,
 			title: capitalize(row.title),
+			price: formatCurrency(row.price),
+			stock: formatNumToCompactNotation(row.stock),
 		}));
 
-		console.log(res.locals.currentPath);
-
-		res.render('index', { title: 'Books', currentPath: '/', books });
+		res.render('books', { title: 'Books', books });
 	} catch (error) {
 		next(error);
 	}
@@ -42,7 +48,7 @@ export const getBookById: RequestHandler = async (req, res, next) => {
 	const bookId = Number(req.params['bookId']);
 
 	try {
-		const { rows } = await query(
+		const bookRes = await query(
 			`SELECT 
 				books.*,
 				json_agg(DISTINCT authors.name) AS authors,
@@ -59,9 +65,26 @@ export const getBookById: RequestHandler = async (req, res, next) => {
 			GROUP BY books.id;`,
 			[bookId]
 		);
-		const book: BookDisplayType[] = rows[0];
+		if (bookRes.rowCount === 0) {
+			return res.status(404).json({ error: 'Book not found' });
+		}
+		const book = bookRes.rows[0] as BookDisplayType;
+		const formattedBook = {
+			...book,
+			title: capitalize(book.title),
+			subtitle: book.subtitle ? capitalize(book.subtitle) : null,
+			stock: formatNumToCompactNotation(book.stock),
+			price: formatCurrency(book.price),
+			authors: book.authors.join(', '),
+			genres: book.genres.join(', '),
+			languages: book.languages.join(', '),
+			published_at: book.published_at
+				? format(book.published_at, 'yyyy')
+				: 'N/A',
+		};
 
-		res.status(200).json({ book });
+		// res.status(200).json({ book });
+		res.render('book', { title: 'Book Details', book: formattedBook });
 	} catch (error) {
 		next(error);
 	}
@@ -72,7 +95,19 @@ export const createNewBook: RequestHandler = async (req, res, next) => {
 	const errors = validationResult(req);
 
 	if (!errors.isEmpty()) {
-		return res.status(400).json(errors);
+		// return res.status(400).json(errors);
+		const { rows }: { rows: GenreType[] } = await query('SELECT * FROM genres');
+		const genres = rows.map((row) => ({
+			...row,
+			name: row.name.toLowerCase(),
+		}));
+
+		return res.status(400).render('book-form', {
+			title: 'Books',
+			genres,
+			errors: errors.mapped(),
+			data: req.body,
+		});
 	}
 
 	const formData = matchedData(req) as BookDisplayType;
@@ -117,9 +152,7 @@ export const createNewBook: RequestHandler = async (req, res, next) => {
 		await insertJoins('book_genres', 'genre_id', book.id, genreIds);
 		await insertJoins('book_languages', 'language_id', book.id, languageIds);
 
-		res
-			.status(201)
-			.json({ message: 'Book created successfully!', bookId: book.id });
+		res.status(201).redirect('/');
 	} catch (error) {
 		next(error);
 	}
@@ -200,7 +233,7 @@ export const editABookPartially: RequestHandler = async (req, res, next) => {
 	}
 };
 
-// Delete a book
+// 5. Delete a book
 export const deleteBookById: RequestHandler = async (req, res, next) => {
 	const bookId = Number(req.params['bookId']);
 
@@ -215,6 +248,22 @@ export const deleteBookById: RequestHandler = async (req, res, next) => {
 	} catch (error) {
 		next(error);
 	}
+};
+
+// 6. Get create form
+export const getCreateForm: RequestHandler = async (_req, res) => {
+	const { rows }: { rows: GenreType[] } = await query(`SELECT * FROM genres`);
+	const genres: GenreType[] = rows.map((row) => ({
+		...row,
+		name: row.name.toLowerCase(),
+	}));
+
+	res.render('book-form', {
+		title: 'Books',
+		genres,
+		errors: null,
+		data: null,
+	});
 };
 
 // Update a book
