@@ -61,7 +61,11 @@ export const getBooksByGenreId: RequestHandler = async (req, res, next) => {
 			stock: formatNumToCompactNotation(row.stock),
 		}));
 
-		res.render('books', { title: genre.name, books });
+		res.render('books', {
+			title: genre.name,
+			books,
+			currentPath: `/genres/${genreId}`,
+		});
 
 		// res.status(200).json({ genre, books });
 	} catch (error) {

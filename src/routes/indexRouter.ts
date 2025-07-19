@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import {
 	createNewBook,
-	editABook,
-	editABookPartially,
+	editBookPartially,
 	getBookById,
 	getBooks,
 	deleteBookById,
 	getCreateForm,
+	getEditForm,
+	confirmDelete,
 } from '../controllers/indexController.js';
 import { bookCreateSchema, bookEditSchema } from '../validators/bookSchema.js';
 import { normalizeBookInput } from '../middlewares/normalizeBookInput.js';
@@ -19,9 +20,6 @@ router.get('/', getBooks);
 // 2. Get create form
 router.get('/books/create', getCreateForm);
 
-// 3. Get a book by id
-router.get('/books/:bookId', getBookById);
-
 // 3. Post a book
 router.post(
 	'/books/create',
@@ -30,13 +28,21 @@ router.post(
 	createNewBook
 );
 
-// 4. Update a book
+router.get('/books/:bookId/confirm', confirmDelete);
+
+// 4. Get a book by id
+router.get('/books/:bookId', getBookById);
+
+// 5. Get a book edit form
+router.get('/books/:bookId/edit', getEditForm);
+
+// 6. Update a book
 router.put(
-	'/books/:bookId',
+	'/books/:bookId/edit',
 	normalizeBookInput,
 	bookEditSchema,
-	editABookPartially
+	editBookPartially
 );
 
-// 5. Delete a book
+// 7. Delete a book
 router.delete('/books/:bookId', deleteBookById);

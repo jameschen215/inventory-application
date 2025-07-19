@@ -70,35 +70,30 @@ export const bookCreateSchema = checkSchema({
 	},
 	genres: {
 		in: ['body'],
-		isArray: {
-			errorMessage: 'Please input one or more genres',
-		},
+		optional: true,
 		custom: {
 			options: (genre: string[]) =>
-				genre.length > 0 && genre.every((g) => /^[a-zA-Z\s]{2,25}$/.test(g)),
-			errorMessage:
-				'Each genre must be a valid word (2-25 letters), and at least one genre is required',
+				genre.every((g) => /^[a-zA-Z\s]{2,25}$/.test(g)),
+			errorMessage: 'Each genre must be a valid word (2-25 letters).',
 		},
 	},
 	languages: {
 		in: ['body'],
-		isArray: {
-			errorMessage: 'Please enter one or more languages, separated with commas',
-		},
+		optional: true,
 		custom: {
 			options: (language: string[]) =>
-				language.length > 0 &&
 				language.every((l) => /^[a-zA-Z\s]{2,25}$/.test(l)),
-			errorMessage: `
-        Each language must be a valid word (2-25 letters), 
-        and at least one language is required`,
+			errorMessage: `Each language must be a valid word (2-25 letters).`,
 		},
 	},
 	published_at: {
 		in: ['body'],
-		optional: true,
+		optional: { options: { nullable: true, checkFalsy: true } },
 		isISO8601: {
 			errorMessage: 'Published date must be a valid date',
+		},
+		customSanitizer: {
+			options: (value) => (value === '' ? null : value),
 		},
 		toDate: true,
 	},
@@ -167,16 +162,13 @@ export const bookEditSchema = checkSchema({
 		},
 		custom: {
 			options: (author: string[]) =>
-				author.every((a) => /^[a-zA-Z\s]{2,100}$/.test(a)),
+				author.every((a) => /^[a-zA-Z\s\.]{2,100}$/.test(a)),
 			errorMessage: 'Each author must be a valid word (2-25 letters)',
 		},
 	},
 	genres: {
 		in: ['body'],
 		optional: true,
-		isArray: {
-			errorMessage: 'Please input one or more genres',
-		},
 		custom: {
 			options: (genre: string[]) =>
 				genre.every((g) => /^[a-zA-Z\s]{2,25}$/.test(g)),
@@ -186,9 +178,6 @@ export const bookEditSchema = checkSchema({
 	languages: {
 		in: ['body'],
 		optional: true,
-		isArray: {
-			errorMessage: 'Please enter one or more languages, separated with commas',
-		},
 		custom: {
 			options: (language: string[]) =>
 				language.every((l) => /^[a-zA-Z\s]{2,25}$/.test(l)),
@@ -197,7 +186,7 @@ export const bookEditSchema = checkSchema({
 	},
 	published_at: {
 		in: ['body'],
-		optional: true,
+		optional: { options: { nullable: true, checkFalsy: true } },
 		isISO8601: {
 			errorMessage: 'Published date must be a valid date',
 		},

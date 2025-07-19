@@ -4,7 +4,7 @@ export const normalizeBookInput: RequestHandler = (req, _res, next) => {
 	const fieldsToSplit = ['authors', 'genres', 'languages'];
 
 	for (const field of fieldsToSplit) {
-		const raw = req.body[field];
+		const raw = req.body[field] ?? '';
 
 		if (typeof raw === 'string') {
 			req.body[field] = raw
@@ -14,8 +14,6 @@ export const normalizeBookInput: RequestHandler = (req, _res, next) => {
 		}
 	}
 
-	console.log('Genres: ', req.body.genres);
-
 	if (req.body.new_genres) {
 		req.body.genre = [
 			...(req.body.genres ?? []),
@@ -24,6 +22,8 @@ export const normalizeBookInput: RequestHandler = (req, _res, next) => {
 				.map((newGenre: string) => newGenre.trim()),
 		];
 	}
+
+	console.log('body', req.body);
 
 	next();
 };

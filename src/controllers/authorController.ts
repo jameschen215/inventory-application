@@ -70,7 +70,11 @@ export const getBooksByAuthorId: RequestHandler = async (req, res, next) => {
 		}));
 
 		// res.status(200).json({ author, books });
-		res.render('books', { title: author.name, books });
+		res.render('books', {
+			title: author.name,
+			books,
+			currentPath: `/authors/${authorId}`,
+		});
 	} catch (error) {
 		next(error);
 	}

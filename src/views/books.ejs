@@ -18,7 +18,7 @@
 			<% books.map(book => { %>
 			<tr
 				class="border-b border-zinc-200 h-14 last-of-type:border-none"
-				data-href="/books/<%= book.id %>">
+				data-href="/books/<%= book.id %>?from=<%= encodeURIComponent(currentPath) %>">
 				<td class="text-start"><%= book.title %></td>
 				<td class="text-end"><%= book.price %></td>
 				<td class="text-end"><%= book.stock %></td>

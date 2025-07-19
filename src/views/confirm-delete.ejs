@@ -1,0 +1,28 @@
+<!-- Header -->
+<%- include('partials/header', {title: 'Books'}) %>
+
+<div class="min-h-screen flex flex-col items-center mt-22 px-6">
+	<h1 class="text-3xl font-semibold mt-10">Confirm Deletion</h1>
+	<p class="text-lg mt-8 text-center">
+		Are you certain you wish to permanently delete "<%= locals.book.title %>"?
+	</p>
+	<p class="mt-2 text-lg text-center">This action is irreversible!</p>
+
+	<form
+		action="/books/<%= locals.book.id %>?_method=DELETE&from=<%= encodeURIComponent(returnPath) %>"
+		method="post"
+		class="mt-10 w-full flex justify-center gap-5">
+		<button
+			id="form-cancel-btn"
+			type="button"
+			class="w-full text-blue-500 py-1 px-2 rounded-md bg-transparent border border-blue-500 uppercase">
+			Cancel
+		</button>
+
+		<button
+			type="submit"
+			class="w-full bg-blue-500 py-1 px-2 rounded-md border-none text-zinc-50 uppercase">
+			Confirm
+		</button>
+	</form>
+</div>

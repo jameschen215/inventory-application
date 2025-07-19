@@ -66,7 +66,11 @@ export const getBooksByLanguage: RequestHandler = async (req, res, next) => {
 			stock: formatNumToCompactNotation(row.stock),
 		}));
 
-		res.render('books', { title: language.name, books });
+		res.render('books', {
+			title: language.name,
+			books,
+			currentPath: `/languages/${languageId}`,
+		});
 
 		// res.status(200).json({ language, books });
 	} catch (error) {
