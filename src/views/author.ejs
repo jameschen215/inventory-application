@@ -1,0 +1,56 @@
+<%- include('partials/header', {title: 'Author'}) %>
+
+<div class="mb-8 mt-22 px-6 flex flex-col flex-1">
+	<h1 class="text-3xl text-center"><%= locals.author.name %></h1>
+
+	<div class="flex flex-col mt-8 gap-5 flex-1">
+		<div class="flex items-center">
+			<span
+				class="uppercase font-light text-sm text-zinc-600 basis-[128px] shrink-0"
+				>Gender:
+			</span>
+			<span><%= locals.author.gender %></span>
+		</div>
+
+		<div class="flex items-center">
+			<span
+				class="uppercase font-light text-sm text-zinc-600 basis-[128px] shrink-0">
+				Nationality:
+			</span>
+			<span><%= locals.author.nationality %></span>
+		</div>
+
+		<div class="flex items-center">
+			<span
+				class="uppercase font-light text-sm text-zinc-600 basis-[128px] shrink-0"
+				>Date of Birth:
+			</span>
+			<span><%= locals.author.dob %></span>
+		</div>
+
+		<div class="flex flex-col gap-2">
+			<span class="uppercase font-light text-sm text-zinc-600"
+				>Biography:
+			</span>
+			<span><%= locals.author.bio %></span>
+		</div>
+
+		<div class="flex">
+			<a
+				href="/authors/<%= author.id %>/books"
+				class="text-zinc-500 font-light border-b">
+				See Books...
+			</a>
+		</div>
+
+		<div class="flex justify-between gap-5 mt-auto">
+			<a href="" class="text-red-500 text-center py-1 px-2 rounded-md">
+				Delete
+			</a>
+
+			<a href="" class="text-blue-500 text-center py-1 px-2 rounded-md">
+				Edit
+			</a>
+		</div>
+	</div>
+</div>

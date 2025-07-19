@@ -10,6 +10,7 @@ import {
 	capitalizeAll,
 } from '../lib/utils.js';
 import { CustomNotFoundError } from '../errors/CustomNotFoundError.js';
+import { format } from 'date-fns';
 
 // 1. Get all authors
 export const getAuthors: RequestHandler = async (_req, res, next) => {
@@ -25,6 +26,34 @@ export const getAuthors: RequestHandler = async (_req, res, next) => {
 		}));
 
 		res.render('authors', { title: 'Authors', authors });
+	} catch (error) {
+		next(error);
+	}
+};
+
+// 2. Get author by id
+export const getAuthorById: RequestHandler = async (req, res, next) => {
+	const authorId = Number(req.params['authorId']);
+
+	try {
+		const authorRes = await query('SELECT * FROM authors WHERE id = $1', [
+			authorId,
+		]);
+
+		if (authorRes.rowCount === 0) {
+			throw new CustomNotFoundError('Author Not Found');
+		}
+
+		const author: AuthorType = authorRes.rows[0];
+		const formatted = {
+			...author,
+			gender: author.gender ? capitalize(author.gender) : 'N/A',
+			nationality: author.nationality ? capitalize(author.nationality) : 'N/A',
+			dob: author.dob ? format(author.dob, 'yyyy-MM-dd') : 'N/A',
+			bio: author.bio ? capitalize(author.bio) : 'No Biography.',
+		};
+
+		res.render('author', { author: formatted });
 	} catch (error) {
 		next(error);
 	}
