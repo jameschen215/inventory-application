@@ -9,6 +9,7 @@ import {
 	capitalize,
 	capitalizeAll,
 } from '../lib/utils.js';
+import { CustomNotFoundError } from '../errors/CustomNotFoundError.js';
 
 // 1. Get all authors
 export const getAuthors: RequestHandler = async (_req, res, next) => {
@@ -39,7 +40,7 @@ export const getBooksByAuthorId: RequestHandler = async (req, res, next) => {
 		]);
 
 		if (authorRes.rowCount === 0) {
-			return res.status(404).json({ error: 'Author not found' });
+			throw new CustomNotFoundError('Author Not Found');
 		}
 
 		const author = authorRes.rows[0] as AuthorType;

@@ -8,6 +8,7 @@ import {
 	formatCurrency,
 	formatNumToCompactNotation,
 } from '../lib/utils.js';
+import { CustomNotFoundError } from '../errors/CustomNotFoundError.js';
 
 // 1. Get all languages
 export const getLanguages: RequestHandler = async (_req, res, next) => {
@@ -36,7 +37,8 @@ export const getBooksByLanguage: RequestHandler = async (req, res, next) => {
 	]);
 
 	if (langRes.rowCount === 0) {
-		return res.status(404).json({ error: 'Language not found' });
+		// return res.status(404).json({ error: 'Language not found' });
+		throw new CustomNotFoundError('Language Not Found');
 	}
 
 	const language = langRes.rows[0] as LanguageType;

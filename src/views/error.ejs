@@ -1,0 +1,15 @@
+<%- include('partials/header', {title: 'Error'}) %>
+
+<div class="flex flex-col justify-center items-center gap-10 mt-22 px-6">
+	<h1 class="text-center text-3xl md:text-5xl"><%= locals.title %></h1>
+
+	<p class="text-lg text-center">
+		<%= locals.statusCode %> - <%= locals.message %>
+	</p>
+
+	<a
+		href="/"
+		class="bg-blue-500 py-1 px-5 rounded-md border-none text-zinc-50 uppercase">
+		Go Back Home
+	</a>
+</div>

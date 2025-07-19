@@ -8,6 +8,7 @@ import {
 	formatCurrency,
 	formatNumToCompactNotation,
 } from '../lib/utils.js';
+import { CustomNotFoundError } from '../errors/CustomNotFoundError.js';
 
 // 1. Get all genres
 export const getGenres: RequestHandler = async (_req, res, next) => {
@@ -30,7 +31,8 @@ export const getBooksByGenreId: RequestHandler = async (req, res, next) => {
 	const genreRes = await query('SELECT * FROM genres WHERE id = $1', [genreId]);
 
 	if (genreRes.rowCount === 0) {
-		return res.status(404).json({ error: 'Genre not found' });
+		// return res.status(404).json({ error: 'Genre not found' });
+		throw new CustomNotFoundError('Genre Not Found');
 	}
 
 	const genre = genreRes.rows[0] as GenreType;

@@ -48,7 +48,7 @@ app.use('/languages', languageRouter);
 
 // Error handlers
 app.use((req, res) => {
-	throw new CustomNotFoundError('Page not found');
+	throw new CustomNotFoundError('Page Not Found');
 });
 
 app.use(globalErrorHandler);
