@@ -3,31 +3,68 @@
 <!-- Search -->
 <%- include('partials/search') %>
 
-<div class="px-6 mt-4">
-	<% if (locals.authors) { %>
-	<table class="table-auto w-full">
-		<thead class="w-full">
-			<tr class="border-b border-zinc-200 h-14">
-				<th class="text-start">Name</th>
-				<th class="text-end">Gender</th>
-				<th class="text-end">Nationality</th>
-			</tr>
-		</thead>
-		<tbody>
-			<% authors.map(author => { %>
-			<tr
-				class="border-b border-zinc-200 h-14 last-of-type:border-none"
-				data-href="authors/<%= author.id %>">
-				<td class="text-start"><%= author.name %></td>
-				<td class="text-end"><%= author.gender ?? 'N/A' %></td>
-				<td class="text-end uppercase"><%= author.nationality ?? 'N/A' %></td>
-			</tr>
+<div class="px-6 mt-8 flex flex-col">
+	<% if (locals.authors) { %> <% authors.map(author => { %>
+	<div class="flex items-center gap-6 py-5 not-last:border-b border-zinc-200">
+		<div class="justify-self-start block"><%= author.name %></div>
 
-			<%})%>
-		</tbody>
-	</table>
-
-	<% } else { %>
+		<div class="ml-auto flex gap-6">
+			<a
+				href="/authors/<%= author.id %>"
+				class="text-blue-500 font-light inline-block">
+				<span aria-hidden="true" class="size-6">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						class="lucide lucide-user-cog-icon lucide-user-cog w-full h-full">
+						<path d="M10 15H6a4 4 0 0 0-4 4v2" />
+						<path d="m14.305 16.53.923-.382" />
+						<path d="m15.228 13.852-.923-.383" />
+						<path d="m16.852 12.228-.383-.923" />
+						<path d="m16.852 17.772-.383.924" />
+						<path d="m19.148 12.228.383-.923" />
+						<path d="m19.53 18.696-.382-.924" />
+						<path d="m20.772 13.852.924-.383" />
+						<path d="m20.772 16.148.924.383" />
+						<circle cx="18" cy="15" r="3" />
+						<circle cx="9" cy="7" r="4" />
+					</svg>
+				</span>
+				<span class="sr-only hidden">Profile</span>
+			</a>
+			<a
+				href="/authors/<%= author.id %>/books"
+				class="text-blue-500 font-light block">
+				<span aria-hidden="true" class="size-6">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						class="lucide lucide-book-copy-icon lucide-book-copy w-full h-full">
+						<path d="M2 16V4a2 2 0 0 1 2-2h11" />
+						<path
+							d="M22 18H11a2 2 0 1 0 0 4h10.5a.5.5 0 0 0 .5-.5v-15a.5.5 0 0 0-.5-.5H11a2 2 0 0 0-2 2v12" />
+						<path d="M5 14H4a2 2 0 1 0 0 4h1" />
+					</svg>
+				</span>
+				<span class="sr-only hidden">Books</span></a
+			>
+		</div>
+	</div>
+	<% }) %> <% } else { %>
 	<p>No Author.</p>
 	<% } %>
 </div>
