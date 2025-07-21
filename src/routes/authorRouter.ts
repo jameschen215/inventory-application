@@ -6,6 +6,7 @@ import {
 	deleteAuthorById,
 	getAuthorById,
 	getEditForm,
+	confirmDeletion,
 } from '../controllers/authorController.js';
 import { authorSchema } from '../validators/authorSchema.js';
 
@@ -22,6 +23,9 @@ router.get('/:authorId/books', getBooksByAuthorId);
 
 // 4. Get author edit form
 router.get('/:authorId/edit', getEditForm);
+
+// 6. Confirm deletion
+router.get('/:authorId/confirm-deletion', confirmDeletion);
 
 // 4. Update a author
 router.put('/:authorId/edit', authorSchema, editAuthorById);

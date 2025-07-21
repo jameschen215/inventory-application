@@ -379,9 +379,8 @@ export const confirmDelete: RequestHandler = async (req, res, next) => {
 		}
 
 		const book: { id: number; title: string } = bookRes.rows[0];
-		console.log({ book });
 
-		res.render('confirm-delete', { book, returnPath: req.query.from });
+		res.render('confirm-delete-book', { book, returnPath: req.query.from });
 	} catch (error) {
 		next(error);
 	}

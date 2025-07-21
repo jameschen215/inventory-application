@@ -28,7 +28,7 @@ router.post(
 	createNewBook
 );
 
-router.get('/books/:bookId/confirm', confirmDelete);
+router.get('/books/:bookId/confirm-deletion', confirmDelete);
 
 // 4. Get a book by id
 router.get('/books/:bookId', getBookById);
