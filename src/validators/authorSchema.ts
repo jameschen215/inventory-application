@@ -27,11 +27,18 @@ export const authorSchema = checkSchema({
 			options: { max: 50 },
 			errorMessage: 'Nationality must be at most 50 characters',
 		},
+		isAlpha: {
+			errorMessage: 'Nationality must be real words.',
+		},
 	},
 	dob: {
-		optional: true,
+		in: ['body'],
+		optional: { options: { nullable: true, checkFalsy: true } },
 		isISO8601: {
-			errorMessage: 'Date of birth must be a valid date',
+			errorMessage: 'Published date must be a valid date',
+		},
+		customSanitizer: {
+			options: (value) => (value === '' ? null : value),
 		},
 		toDate: true,
 	},

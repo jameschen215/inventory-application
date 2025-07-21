@@ -11,7 +11,7 @@
 		<div class="ml-auto flex gap-6">
 			<a
 				href="/authors/<%= author.id %>"
-				class="text-blue-500 font-light inline-block">
+				class="text-blue-500 font-light inline-block md:flex md:gap-1">
 				<span aria-hidden="true" class="size-6">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -37,11 +37,11 @@
 						<circle cx="9" cy="7" r="4" />
 					</svg>
 				</span>
-				<span class="sr-only hidden">Profile</span>
+				<span class="sr-only md:not-sr-only">Profile</span>
 			</a>
 			<a
 				href="/authors/<%= author.id %>/books"
-				class="text-blue-500 font-light block">
+				class="text-blue-500 font-light md:flex md:gap-1">
 				<span aria-hidden="true" class="size-6">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -60,7 +60,7 @@
 						<path d="M5 14H4a2 2 0 1 0 0 4h1" />
 					</svg>
 				</span>
-				<span class="sr-only hidden">Books</span></a
+				<span class="sr-only md:not-sr-only">Books</span></a
 			>
 		</div>
 	</div>

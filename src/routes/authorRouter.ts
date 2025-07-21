@@ -5,6 +5,7 @@ import {
 	editAuthorById,
 	deleteAuthorById,
 	getAuthorById,
+	getEditForm,
 } from '../controllers/authorController.js';
 import { authorSchema } from '../validators/authorSchema.js';
 
@@ -19,8 +20,11 @@ router.get('/:authorId', getAuthorById);
 // 3. Get author's books
 router.get('/:authorId/books', getBooksByAuthorId);
 
+// 4. Get author edit form
+router.get('/:authorId/edit', getEditForm);
+
 // 4. Update a author
-router.put('/:authorId', authorSchema, editAuthorById);
+router.put('/:authorId/edit', authorSchema, editAuthorById);
 
 // 5. Delete a author
 router.delete('/:authorId', deleteAuthorById);

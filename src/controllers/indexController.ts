@@ -244,9 +244,10 @@ export const editBookPartially: RequestHandler = async (req, res, next) => {
 			);
 
 			if (updateRes.rowCount === 0) {
-				return res
-					.status(404)
-					.json({ error: 'Book not found or no changes made' });
+				// return res
+				// 	.status(404)
+				// 	.json({ error: 'Book not found or no changes made' });
+				throw new CustomNotFoundError('Book Not Found');
 			}
 		}
 

@@ -59,7 +59,7 @@ export const getAuthorById: RequestHandler = async (req, res, next) => {
 	}
 };
 
-// 2. Get books by author
+// 3. Get books by author
 export const getBooksByAuthorId: RequestHandler = async (req, res, next) => {
 	const authorId = Number(req.params['authorId']);
 
@@ -110,32 +110,76 @@ export const getBooksByAuthorId: RequestHandler = async (req, res, next) => {
 	}
 };
 
-// 3. Update an author
+// 4. Get author form
+export const getEditForm: RequestHandler = async (req, res, next) => {
+	const authorId = Number(req.params['authorId']);
+
+	try {
+		const authorRes = await query('SELECT * FROM authors WHERE id = $1', [
+			authorId,
+		]);
+
+		if (authorRes.rowCount === 0) {
+			throw new CustomNotFoundError('Author Not Found');
+		}
+
+		const author: AuthorType = authorRes.rows[0];
+		const formatted = {
+			...author,
+			gender: author.gender ?? '',
+			nationality: author.nationality ?? '',
+			bio: author.bio ?? '',
+			dob: author.dob ? new Date(author.dob).toISOString().slice(0, 10) : '',
+		};
+
+		res.render('author-form', {
+			title: 'Edit Author',
+			data: formatted,
+			errors: null,
+		});
+	} catch (error) {
+		next(error);
+	}
+};
+
+// 4. Update an author
 export const editAuthorById: RequestHandler = async (req, res, next) => {
+	const authorId = Number(req.params['authorId']);
 	const errors = validationResult(req);
 
 	if (!errors.isEmpty()) {
-		return res.status(400).json({ errors: errors.array(), data: req.body });
+		return res.status(400).render('author-form', {
+			title: 'Edit Author',
+			errors: errors.mapped(),
+			data: {
+				...req.body,
+				id: authorId,
+				dob: req.body['dob']
+					? new Date(req.body['dob']).toISOString().slice(0, 10)
+					: '',
+			},
+		});
 	}
 
-	const authorId = Number(req.params['authorId']);
-	const { name }: { name: string } = matchedData(req);
+	const { name, gender, nationality, bio, dob }: AuthorType = matchedData(req);
 
 	try {
 		const { rowCount } = await query(
-			'UPDATE authors SET name = $1 WHERE id = $2',
-			[name, authorId]
+			`UPDATE authors 
+			 SET name = $1,
+			 		 gender = $2,
+					 nationality = $3,
+					 bio = $4,
+					 dob = $5
+			 WHERE id = $6`,
+			[name, gender, nationality, bio, dob, authorId]
 		);
 
 		if (rowCount === 0) {
-			return res
-				.status(404)
-				.json({ error: 'Author not found or no changes made' });
+			throw new CustomNotFoundError('Author Not Found');
 		}
 
-		res
-			.status(200)
-			.json({ message: `Author ${authorId} updated successfully` });
+		res.status(200).redirect(`/authors/${authorId}`);
 	} catch (error) {
 		next(error);
 	}
