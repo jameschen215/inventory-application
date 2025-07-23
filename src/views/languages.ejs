@@ -1,18 +1,21 @@
-<%- include('partials/header', {title}) %>
+<%- include('partials/header') %>
 
 <!-- Search -->
-<%- include('partials/search') %>
+<div class="mt-22"><%- include('partials/search') %></div>
 
+<% if (locals.languages.length > 0) { %>
 <ul class="px-6 mt-10 flex flex-wrap gap-6 justify-between">
-	<% if (locals.languages) { %> <% languages.map(language => { %>
+	<% languages.map(language => { %>
 	<li
 		class="w-[calc(50%-12px)] h-30 bg-zinc-50 flex items-center justify-center rounded-md text-xl shadow-sm border border-zinc-200">
-		<a href="/languages/<%= language.id %>">
+		<a
+			href="/languages/<%= language.id %>"
+			class="flex items-center justify-center w-full h-full">
 			<span><%= language.name %></span>
 		</a>
 	</li>
-
-	<%})%> <% } else { %>
-	<p>No language.</p>
-	<% } %>
+	<%})%>
 </ul>
+<% } else { %>
+<p class="text-center mt-10">No languages.</p>
+<% } %>

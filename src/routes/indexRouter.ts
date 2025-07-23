@@ -7,7 +7,7 @@ import {
 	deleteBookById,
 	getCreateForm,
 	getEditForm,
-	confirmDelete,
+	confirmDeletion,
 } from '../controllers/indexController.js';
 import { bookCreateSchema, bookEditSchema } from '../validators/bookSchema.js';
 import { normalizeBookInput } from '../middlewares/normalizeBookInput.js';
@@ -28,7 +28,7 @@ router.post(
 	createNewBook
 );
 
-router.get('/books/:bookId/confirm-deletion', confirmDelete);
+router.get('/books/:bookId/confirm-deletion', confirmDeletion);
 
 // 4. Get a book by id
 router.get('/books/:bookId', getBookById);

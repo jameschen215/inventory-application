@@ -30,7 +30,7 @@ export const getBooks: RequestHandler = async (_req, res, next) => {
 			LEFT JOIN genres ON book_genres.genre_id = genres.id
 			LEFT JOIN book_languages ON books.id = book_languages.book_id
 			LEFT JOIN languages ON book_languages.language_id = languages.id
-			GROUP BY books.id;`
+			GROUP BY books.id ORDER BY books.title;`
 		);
 		const books = rows.map((row) => ({
 			...row,
@@ -40,7 +40,8 @@ export const getBooks: RequestHandler = async (_req, res, next) => {
 		}));
 
 		res.render('books', {
-			title: 'Books',
+			headerTitle: 'Books',
+			title: null,
 			books,
 			currentPath: '/',
 		});
@@ -91,9 +92,9 @@ export const getBookById: RequestHandler = async (req, res, next) => {
 				: 'Unknown',
 		};
 
-		// res.status(200).json({ book });
 		res.render('book', {
-			title: 'Book Details',
+			headerTitle: 'Book Details',
+			title: null,
 			book: formattedBook,
 			returnPath: req.query.from ?? '/',
 		});
@@ -297,6 +298,7 @@ export const getCreateForm: RequestHandler = async (req, res, next) => {
 		}));
 
 		res.render('book-form', {
+			headerTitle: 'Books',
 			title: 'Create New Book',
 			genres,
 			errors: null,
@@ -332,7 +334,7 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
 			LEFT JOIN book_languages ON books.id = book_languages.book_id
 			LEFT JOIN languages ON book_languages.language_id = languages.id
 			WHERE books.id = $1
-			GROUP BY books.id;`,
+			GROUP BY books.id ORDER BY books.title;`,
 			[bookId]
 		);
 		if (bookRes.rowCount === 0) {
@@ -355,6 +357,7 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
 		// console.log({ formattedBook });
 
 		res.render('book-form', {
+			headerTitle: 'Books',
 			title: 'Edit Book',
 			genres,
 			errors: null,
@@ -366,21 +369,26 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
 };
 
 // 8. Confirm delete
-export const confirmDelete: RequestHandler = async (req, res, next) => {
+export const confirmDeletion: RequestHandler = async (req, res, next) => {
 	const bookId = Number(req.params['bookId']);
 
 	try {
-		const bookRes = await query('SELECT id, title FROM books WHERE id = $1', [
-			bookId,
-		]);
+		const bookRes = await query(
+			'SELECT id, title as name FROM books WHERE id = $1',
+			[bookId]
+		);
 
 		if (bookRes.rowCount === 0) {
 			throw new CustomNotFoundError('Book Not Found');
 		}
 
-		const book: { id: number; title: string } = bookRes.rows[0];
+		const book = bookRes.rows[0];
 
-		res.render('confirm-delete-book', { book, returnPath: req.query.from });
+		res.render('confirm-deletion', {
+			headerTitle: 'books',
+			data: book,
+			returnPath: req.query.from,
+		});
 	} catch (error) {
 		next(error);
 	}

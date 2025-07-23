@@ -1,11 +1,17 @@
 <!-- Header -->
-<%- include('partials/header', {title}) %>
+<%- include('partials/header') %>
 
 <!-- Search -->
-<%- include('partials/search') %>
+<div class="mt-22">
+	<%- include('partials/search') %>
 
-<div class="px-6 mt-4">
-	<% if (locals.books) { %>
+	<!-- Title -->
+	<%- include('partials/title') %>
+</div>
+
+<!-- Books -->
+<% if (locals.books.length > 0) { %>
+<div class="px-6 mt-5">
 	<table class="table-auto w-full">
 		<thead class="w-full">
 			<tr class="border-b border-zinc-200 h-14">
@@ -17,7 +23,7 @@
 		<tbody>
 			<% books.map(book => { %>
 			<tr
-				class="border-b border-zinc-200 h-14 last-of-type:border-none"
+				class="border-b border-zinc-200 h-14 last-of-type:border-none cursor-pointer hover:bg-zinc-50"
 				data-href="/books/<%= book.id %>?from=<%= encodeURIComponent(currentPath) %>">
 				<td class="text-start"><%= book.title %></td>
 				<td class="text-end"><%= book.price %></td>
@@ -27,8 +33,22 @@
 			<%})%>
 		</tbody>
 	</table>
+</div>
 
+<% } else { %>
+<div class="mt-10">
+	<% if (currentPath !== '/') { %>
+	<p class="text-center">No book related to <%= title ?? headerTitle %>.</p>
+
+	<p class="text-center">
+		<a
+			href="<%= currentPath %>/confirm-deletion"
+			class="mt-2 inline-block border-b border-zinc-500 cursor-pointer"
+			>You can delete them here.</a
+		>
+	</p>
 	<% } else { %>
-	<p>No book.</p>
+	<p class="text-center">No books.</p>
 	<% } %>
 </div>
+<% } %>

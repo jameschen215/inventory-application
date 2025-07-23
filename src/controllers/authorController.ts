@@ -26,7 +26,7 @@ export const getAuthors: RequestHandler = async (_req, res, next) => {
 			gender: row.gender ? capitalize(row.gender) : null,
 		}));
 
-		res.render('authors', { title: 'Authors', authors });
+		res.render('authors', { headerTitle: 'Authors', title: null, authors });
 	} catch (error) {
 		next(error);
 	}
@@ -54,7 +54,11 @@ export const getAuthorById: RequestHandler = async (req, res, next) => {
 			bio: author.bio ? capitalize(author.bio) : 'No Biography.',
 		};
 
-		res.render('author', { author: formatted });
+		res.render('author', {
+			headerTitle: 'Author Details',
+			title: author.name,
+			author: formatted,
+		});
 	} catch (error) {
 		next(error);
 	}
@@ -89,7 +93,8 @@ export const getBooksByAuthorId: RequestHandler = async (req, res, next) => {
 						LEFT JOIN book_languages ON books.id = book_languages.book_id
 						LEFT JOIN languages ON book_languages.language_id = languages.id
 						GROUP BY books.id
-						HAVING $1 = ANY(array_agg(authors.id));`,
+						HAVING $1 = ANY(array_agg(authors.id))
+						ORDER BY books.id;`,
 			[authorId]
 		);
 
@@ -102,7 +107,8 @@ export const getBooksByAuthorId: RequestHandler = async (req, res, next) => {
 
 		// res.status(200).json({ author, books });
 		res.render('books', {
-			title: author.name,
+			headerTitle: author.name,
+			title: null,
 			books,
 			currentPath: `/authors/${authorId}`,
 		});
@@ -134,6 +140,7 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
 		};
 
 		res.render('author-form', {
+			headerTitle: 'Author Details',
 			title: 'Edit Author',
 			data: formatted,
 			errors: null,
@@ -232,7 +239,10 @@ export const confirmDeletion: RequestHandler = async (req, res, next) => {
 
 		const author: { id: number; name: string } = authorRes.rows[0];
 
-		res.render('confirm-delete-author', { author });
+		res.render('confirm-deletion', {
+			headerTitle: 'Authors',
+			data: author,
+		});
 	} catch (error) {
 		next(error);
 	}

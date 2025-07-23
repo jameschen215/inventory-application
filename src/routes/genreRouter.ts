@@ -4,6 +4,7 @@ import {
 	getBooksByGenreId,
 	getGenres,
 	deleteGenreById,
+	getConfirmDeletion,
 } from '../controllers/genreController.js';
 import { genreSchema } from '../validators/genreSchema.js';
 
@@ -18,5 +19,8 @@ router.get('/:genreId', getBooksByGenreId);
 // 3. Put a genre
 router.put('/:genreId', genreSchema, editGenreById);
 
-// 4. Delete a genre
+// 4. Get confirm deletion
+router.get('/:genreId/confirm-deletion', getConfirmDeletion);
+
+// 5. Delete a genre
 router.delete('/:genreId', deleteGenreById);

@@ -9,24 +9,44 @@
 		<script src="/scripts/main.js" defer></script>
 		<script src="/scripts/sidebar.js" defer></script>
 		<script src="/scripts/tr-links.js" defer></script>
+		<script src="/scripts/title.js" defer></script>
 	</head>
-	<body>
+	<body class="relative">
 		<aside
 			id="sidebar"
-			class="fixed top-0 -left-72 h-screen w-72 bg-white text-zinc-950 z-20 transition-transform duration-300">
+			class="fixed top-0 -left-72 md:left-0 h-screen w-72 md:w-auto lg:w-72 border-r border-zinc-200 bg-white text-zinc-950 z-20 transition-transform duration-300">
 			<!-- Brand -->
 			<div class="flex items-center h-14 px-8">
-				<a href="/">
-					<span class="text-xl uppercase">Inventory</span>
-					<span class="text-xl uppercase text-amber-600">App</span>
+				<a href="/" class="flex items-center gap-2">
+					<div class="size-6 text-amber-600" aria-hidden="true">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="lucide lucide-book-open-icon lucide-book-open w-full h-full">
+							<path d="M12 7v14" />
+							<path
+								d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
+						</svg>
+					</div>
+					<div class="md:sr-only lg:not-sr-only">
+						<span class="text-xl uppercase">Inventory</span>
+						<span class="text-xl uppercase text-amber-600">App</span>
+					</div>
 				</a>
 			</div>
 
 			<!-- Nav links -->
 			<ul class="mt-6 flex flex-col gap-5 px-1">
 				<li
-					class="<%= currentPath === '/' ? 'bg-zinc-50' : '' %> px-7 py-3 rounded-md">
-					<a href="/" class="flex gap-3">
+					class="<%= currentPath === '/' ? 'bg-zinc-50' : '' %> px-7 py-3 rounded-md hover:bg-zinc-50">
+					<a href="/" class="flex items-center gap-3">
 						<span class="inline-block size-6">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -45,13 +65,15 @@
 								<path d="M4 4v16" />
 							</svg>
 						</span>
-						<span class="text-lg font-light">Books</span>
+						<span class="text-lg font-light md:sr-only lg:not-sr-only"
+							>Books</span
+						>
 					</a>
 				</li>
 
 				<li
-					class="<%= currentPath === '/authors' ? 'bg-zinc-50' : ''%> px-7 py-3 rounded-md">
-					<a href="/authors" class="flex gap-3">
+					class="<%= currentPath === '/authors' ? 'bg-zinc-50' : ''%> px-7 py-3 rounded-md hover:bg-zinc-50">
+					<a href="/authors" class="flex items-center gap-3">
 						<span class="inline-block size-6">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -70,12 +92,14 @@
 								<circle cx="9" cy="7" r="4" />
 							</svg>
 						</span>
-						<span class="text-lg font-light">Authors</span>
+						<span class="text-lg font-light md:sr-only lg:not-sr-only"
+							>Authors</span
+						>
 					</a>
 				</li>
 				<li
-					class="<%= currentPath === '/genres' ? 'bg-zinc-50' : ''%> px-7 py-3 rounded-md">
-					<a href="/genres" class="flex gap-3">
+					class="<%= currentPath === '/genres' ? 'bg-zinc-50' : ''%> px-7 py-3 rounded-md hover:bg-zinc-50">
+					<a href="/genres" class="flex items-center gap-3">
 						<span class="inline-block size-6">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -94,12 +118,14 @@
 								<circle cx="17.5" cy="17.5" r="3.5" />
 							</svg>
 						</span>
-						<span class="text-lg font-light">Genres</span>
+						<span class="text-lg font-light md:sr-only lg:not-sr-only"
+							>Genres</span
+						>
 					</a>
 				</li>
 				<li
-					class="<%= currentPath === '/languages' ? 'bg-zinc-50' : ''%> px-7 py-3 rounded-md">
-					<a href="/languages" class="flex gap-3">
+					class="<%= currentPath === '/languages' ? 'bg-zinc-50' : ''%> px-7 py-3 rounded-md hover:bg-zinc-50">
+					<a href="/languages" class="flex items-center gap-3">
 						<span class="inline-block size-6">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -120,7 +146,9 @@
 								<path d="M14 18h6" />
 							</svg>
 						</span>
-						<span class="text-lg font-light">Languages</span>
+						<span class="text-lg font-light md:sr-only lg:not-sr-only"
+							>Languages</span
+						>
 					</a>
 				</li>
 			</ul>
@@ -128,7 +156,7 @@
 
 		<main
 			id="main"
-			class="min-h-screen flex-1 flex flex-col text-zinc-950 transition-transform duration-300">
+			class="min-h-screen absolute top-0 left-0 md:left-[88px] lg:left-72 w-full md:w-[calc(100%-88px)] lg:w-[calc(100%-288px)] flex-1 flex flex-col text-zinc-950 transition-transform duration-300">
 			<%- body %>
 		</main>
 	</body>

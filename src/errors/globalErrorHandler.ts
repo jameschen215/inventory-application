@@ -20,6 +20,7 @@ export function globalErrorHandler(
 	const title = statusCode === 500 ? 'Server Error' : 'Error';
 
 	res.status(statusCode).render('error', {
+		headerTitle: 'Error',
 		title: capitalize(title),
 		message: capitalize(message),
 		statusCode,
