@@ -1,10 +1,7 @@
-<%- include('partials/header') %>
+<!-- Search -->
+<%- include('partials/search') %>
 
-<div class="mt-22">
-	<!-- Search -->
-	<%- include('partials/search') %>
-</div>
-
+<!-- Page content -->
 <% if (locals.genres.length > 0) { %>
 <ul class="px-6 mt-10 flex flex-wrap gap-6">
 	<% genres.map(genre => { %>

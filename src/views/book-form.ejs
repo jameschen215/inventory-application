@@ -1,5 +1,3 @@
-<%- include('partials/header') %>
-
 <!-- define form action and method -->
 <% const formAction = title.includes('Create') ? '/books/create' :
 `/books/${locals.data.id}/edit?_method=PUT` %>

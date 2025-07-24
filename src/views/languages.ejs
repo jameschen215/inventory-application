@@ -1,8 +1,7 @@
-<%- include('partials/header') %>
-
 <!-- Search -->
-<div class="mt-22"><%- include('partials/search') %></div>
+<%- include('partials/search') %>
 
+<!-- Page content -->
 <% if (locals.languages.length > 0) { %>
 <ul class="px-6 mt-10 flex flex-wrap gap-6 justify-between">
 	<% languages.map(language => { %>

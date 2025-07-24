@@ -1,17 +1,9 @@
-<!-- Header -->
-<%- include('partials/header') %>
-
 <!-- Search -->
-<div class="mt-22">
-	<%- include('partials/search') %>
-
-	<!-- Title -->
-	<%- include('partials/title') %>
-</div>
+<%- include('partials/search') %>
 
 <!-- Books -->
 <% if (locals.books.length > 0) { %>
-<div class="px-6 mt-5">
+<div class="px-6 mt-2">
 	<table class="table-auto w-full">
 		<thead class="w-full">
 			<tr class="border-b border-zinc-200 h-14">
@@ -36,7 +28,7 @@
 </div>
 
 <% } else { %>
-<div class="mt-10">
+<div class="mt-2">
 	<% if (currentPath !== '/') { %>
 	<p class="text-center">No book related to <%= title ?? headerTitle %>.</p>
 

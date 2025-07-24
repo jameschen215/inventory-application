@@ -15,7 +15,9 @@ import {
 import { CustomNotFoundError } from '../errors/CustomNotFoundError.js';
 
 // 1. Get all books
-export const getBooks: RequestHandler = async (_req, res, next) => {
+export const getBooks: RequestHandler = async (req, res, next) => {
+	const { q = '' } = req.query || {};
+
 	try {
 		const { rows }: { rows: BookDisplayType[] } = await query(
 			`SELECT 
@@ -30,7 +32,10 @@ export const getBooks: RequestHandler = async (_req, res, next) => {
 			LEFT JOIN genres ON book_genres.genre_id = genres.id
 			LEFT JOIN book_languages ON books.id = book_languages.book_id
 			LEFT JOIN languages ON book_languages.language_id = languages.id
-			GROUP BY books.id ORDER BY books.title;`
+			GROUP BY books.id 
+			HAVING books.title ILIKE $1
+			ORDER BY books.title;`,
+			[`%${q}%`]
 		);
 		const books = rows.map((row) => ({
 			...row,
@@ -40,8 +45,8 @@ export const getBooks: RequestHandler = async (_req, res, next) => {
 		}));
 
 		res.render('books', {
-			headerTitle: 'Books',
-			title: null,
+			headerTitle: 'Book Inventory',
+			title: 'All books',
 			books,
 			currentPath: '/',
 		});

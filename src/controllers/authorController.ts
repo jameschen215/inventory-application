@@ -14,10 +14,13 @@ import { format } from 'date-fns';
 import { CustomBadRequestError } from '../errors/CustomBadRequestError.js';
 
 // 1. Get all authors
-export const getAuthors: RequestHandler = async (_req, res, next) => {
+export const getAuthors: RequestHandler = async (req, res, next) => {
+	const { q = '' } = req.query || {};
+
 	try {
 		const { rows }: { rows: AuthorType[] } = await query(
-			`SELECT * FROM authors`
+			`SELECT * FROM authors WHERE name ILIKE $1`,
+			['%' + q + '%']
 		);
 
 		const authors = rows.map((row) => ({

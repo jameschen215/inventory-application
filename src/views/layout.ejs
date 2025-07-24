@@ -14,9 +14,9 @@
 	<body class="relative">
 		<aside
 			id="sidebar"
-			class="fixed top-0 -left-72 md:left-0 h-screen w-72 md:w-auto lg:w-72 border-r border-zinc-200 bg-white text-zinc-950 z-20 transition-transform duration-300">
+			class="fixed top-0 -left-72 md:left-0 h-screen w-72 md:w-auto lg:w-64 border-r border-zinc-200 bg-white text-zinc-950 z-20 transition-transform duration-300">
 			<!-- Brand -->
-			<div class="flex items-center h-14 px-8">
+			<div class="flex items-center h-14 px-5">
 				<a href="/" class="flex items-center gap-2">
 					<div class="size-6 text-amber-600" aria-hidden="true">
 						<svg
@@ -45,7 +45,7 @@
 			<!-- Nav links -->
 			<ul class="mt-6 flex flex-col gap-5 px-1">
 				<li
-					class="<%= currentPath === '/' ? 'bg-zinc-50' : '' %> px-7 py-3 rounded-md hover:bg-zinc-50">
+					class="<%= currentPath === '/' ? 'bg-zinc-50' : '' %> px-4 py-3 rounded-md hover:bg-zinc-50">
 					<a href="/" class="flex items-center gap-3">
 						<span class="inline-block size-6">
 							<svg
@@ -72,7 +72,7 @@
 				</li>
 
 				<li
-					class="<%= currentPath === '/authors' ? 'bg-zinc-50' : ''%> px-7 py-3 rounded-md hover:bg-zinc-50">
+					class="<%= currentPath === '/authors' ? 'bg-zinc-50' : ''%> px-4 py-3 rounded-md hover:bg-zinc-50">
 					<a href="/authors" class="flex items-center gap-3">
 						<span class="inline-block size-6">
 							<svg
@@ -98,7 +98,7 @@
 					</a>
 				</li>
 				<li
-					class="<%= currentPath === '/genres' ? 'bg-zinc-50' : ''%> px-7 py-3 rounded-md hover:bg-zinc-50">
+					class="<%= currentPath === '/genres' ? 'bg-zinc-50' : ''%> px-4 py-3 rounded-md hover:bg-zinc-50">
 					<a href="/genres" class="flex items-center gap-3">
 						<span class="inline-block size-6">
 							<svg
@@ -124,7 +124,7 @@
 					</a>
 				</li>
 				<li
-					class="<%= currentPath === '/languages' ? 'bg-zinc-50' : ''%> px-7 py-3 rounded-md hover:bg-zinc-50">
+					class="<%= currentPath === '/languages' ? 'bg-zinc-50' : ''%> px-4 py-3 rounded-md hover:bg-zinc-50">
 					<a href="/languages" class="flex items-center gap-3">
 						<span class="inline-block size-6">
 							<svg
@@ -156,8 +156,14 @@
 
 		<main
 			id="main"
-			class="min-h-screen absolute top-0 left-0 md:left-[88px] lg:left-72 w-full md:w-[calc(100%-88px)] lg:w-[calc(100%-288px)] flex-1 flex flex-col text-zinc-950 transition-transform duration-300">
-			<%- body %>
+			class="min-h-screen absolute top-0 left-0 md:left-16 lg:left-64 w-full md:w-[calc(100%-64px)] lg:w-[calc(100%-256px)] flex-1 flex flex-col text-zinc-950 transition-transform duration-300">
+			<!-- Header -->
+			<%- include('partials/header') %>
+
+			<div class="w-full mx-auto mt-14">
+				<!-- Page content -->
+				<%- body %>
+			</div>
 		</main>
 	</body>
 </html>
