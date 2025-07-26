@@ -66,7 +66,7 @@ export async function seed() {
 				10,
 				19.99,
 				'2014-09-04',
-				null,
+				'/images/01.jpg',
 			],
 			[
 				"Charlotte's Web",
@@ -75,7 +75,7 @@ export async function seed() {
 				5,
 				9.99,
 				'1952-10-15',
-				null,
+				'/images/02.jpg',
 			],
 			[
 				'Why Nations Fail',
@@ -84,7 +84,7 @@ export async function seed() {
 				8,
 				25.0,
 				'2012-03-13',
-				null,
+				'/images/03.jpg',
 			],
 			[
 				'Oracle Bones',
@@ -93,7 +93,7 @@ export async function seed() {
 				7,
 				18.0,
 				'2006-08-15',
-				null,
+				'/images/04.jpg',
 			],
 		];
 

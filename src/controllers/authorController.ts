@@ -29,7 +29,11 @@ export const getAuthors: RequestHandler = async (req, res, next) => {
 			gender: row.gender ? capitalize(row.gender) : null,
 		}));
 
-		res.render('authors', { headerTitle: 'Authors', title: null, authors });
+		res.render('authors', {
+			headerTitle: 'Book Inventory',
+			title: 'Authors',
+			authors,
+		});
 	} catch (error) {
 		next(error);
 	}
@@ -110,10 +114,9 @@ export const getBooksByAuthorId: RequestHandler = async (req, res, next) => {
 
 		// res.status(200).json({ author, books });
 		res.render('books', {
-			headerTitle: author.name,
-			title: null,
+			headerTitle: 'Book Inventory',
+			title: author.name,
 			books,
-			currentPath: `/authors/${authorId}`,
 		});
 	} catch (error) {
 		next(error);
@@ -143,7 +146,7 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
 		};
 
 		res.render('author-form', {
-			headerTitle: 'Author Details',
+			headerTitle: 'Book Inventory',
 			title: 'Edit Author',
 			data: formatted,
 			errors: null,
@@ -243,7 +246,8 @@ export const confirmDeletion: RequestHandler = async (req, res, next) => {
 		const author: { id: number; name: string } = authorRes.rows[0];
 
 		res.render('confirm-deletion', {
-			headerTitle: 'Authors',
+			headerTitle: 'Book Inventory',
+			title: null,
 			data: author,
 		});
 	} catch (error) {

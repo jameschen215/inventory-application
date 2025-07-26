@@ -1,68 +1,70 @@
-<!-- Search -->
-<%- include('partials/search') %>
+<div class="flex-1 w-full max-w-xl mx-auto flex flex-col">
+	<!-- Search -->
+	<%- include('partials/search') %>
 
-<div class="px-6 mt-4 flex flex-col">
-	<% if (locals.authors.length > 0) { %> <% authors.map(author => { %>
-	<div class="flex items-center gap-6 py-5 not-last:border-b border-zinc-200">
-		<div class="justify-self-start block"><%= author.name %></div>
+	<!-- Content -->
+	<div class="flex-1 w-full max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
+		<!-- Title -->
+		<%- include('partials/title') %>
 
-		<div class="ml-auto flex gap-6">
-			<a
-				href="/authors/<%= author.id %>"
-				class="text-blue-500 font-light inline-block md:flex md:gap-1">
-				<span aria-hidden="true" class="size-6">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="1.5"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						class="lucide lucide-user-cog-icon lucide-user-cog w-full h-full">
-						<path d="M10 15H6a4 4 0 0 0-4 4v2" />
-						<path d="m14.305 16.53.923-.382" />
-						<path d="m15.228 13.852-.923-.383" />
-						<path d="m16.852 12.228-.383-.923" />
-						<path d="m16.852 17.772-.383.924" />
-						<path d="m19.148 12.228.383-.923" />
-						<path d="m19.53 18.696-.382-.924" />
-						<path d="m20.772 13.852.924-.383" />
-						<path d="m20.772 16.148.924.383" />
-						<circle cx="18" cy="15" r="3" />
-						<circle cx="9" cy="7" r="4" />
-					</svg>
-				</span>
-				<span class="sr-only md:not-sr-only">Profile</span>
-			</a>
-			<a
-				href="/authors/<%= author.id %>/books"
-				class="text-blue-500 font-light md:flex md:gap-1">
-				<span aria-hidden="true" class="size-6">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="1.5"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						class="lucide lucide-book-copy-icon lucide-book-copy w-full h-full">
-						<path d="M2 16V4a2 2 0 0 1 2-2h11" />
-						<path
-							d="M22 18H11a2 2 0 1 0 0 4h10.5a.5.5 0 0 0 .5-.5v-15a.5.5 0 0 0-.5-.5H11a2 2 0 0 0-2 2v12" />
-						<path d="M5 14H4a2 2 0 1 0 0 4h1" />
-					</svg>
-				</span>
-				<span class="sr-only md:not-sr-only">Books</span></a
-			>
+		<!-- Content -->
+		<% if (locals.authors.length > 0) { %> <% authors.map(author => { %>
+		<div class="flex items-center gap-6 py-4 not-last:border-b border-zinc-200">
+			<div class="justify-self-start block"><%= author.name %></div>
+
+			<div class="ml-auto flex gap-8">
+				<a
+					href="/authors/<%= author.id %>/books"
+					class="text-blue-500 font-light md:flex md:gap-1">
+					<span aria-hidden="true" class="size-6">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="lucide lucide-book-copy-icon lucide-book-copy w-full h-full">
+							<path d="M2 16V4a2 2 0 0 1 2-2h11" />
+							<path
+								d="M22 18H11a2 2 0 1 0 0 4h10.5a.5.5 0 0 0 .5-.5v-15a.5.5 0 0 0-.5-.5H11a2 2 0 0 0-2 2v12" />
+							<path d="M5 14H4a2 2 0 1 0 0 4h1" />
+						</svg>
+					</span>
+					<span class="sr-only">Books</span></a
+				>
+				<a
+					href="/authors/<%= author.id %>"
+					class="text-blue-500 font-light inline-block md:flex md:gap-1">
+					<span aria-hidden="true" class="size-6">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="lucide lucide-user-pen-icon lucide-user-pen w-full h-full">
+							<path d="M11.5 15H7a4 4 0 0 0-4 4v2" />
+							<path
+								d="M21.378 16.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z" />
+							<circle cx="10" cy="7" r="4" />
+						</svg>
+					</span>
+					<span class="sr-only">Profile</span>
+				</a>
+			</div>
 		</div>
+
+		<% }) %>
 	</div>
-	<% }) %> <% } else { %>
+	<% } else { %>
 	<p class="text-center">No Authors.</p>
 	<% } %>
 </div>

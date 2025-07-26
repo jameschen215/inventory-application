@@ -5,6 +5,7 @@ import {
 	getGenres,
 	deleteGenreById,
 	getConfirmDeletion,
+	getEditForm,
 } from '../controllers/genreController.js';
 import { genreSchema } from '../validators/genreSchema.js';
 
@@ -14,10 +15,13 @@ export const router = Router();
 router.get('/', getGenres);
 
 // 2. Get genre by id
-router.get('/:genreId', getBooksByGenreId);
+router.get('/:genreId/books', getBooksByGenreId);
+
+// 3. Get genre form
+router.get('/:genreId/edit', getEditForm);
 
 // 3. Put a genre
-router.put('/:genreId', genreSchema, editGenreById);
+router.put('/:genreId/edit', genreSchema, editGenreById);
 
 // 4. Get confirm deletion
 router.get('/:genreId/confirm-deletion', getConfirmDeletion);

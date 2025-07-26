@@ -46,7 +46,7 @@ export const getBooks: RequestHandler = async (req, res, next) => {
 
 		res.render('books', {
 			headerTitle: 'Book Inventory',
-			title: 'All books',
+			title: 'Books',
 			books,
 			currentPath: '/',
 		});
@@ -362,7 +362,7 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
 		// console.log({ formattedBook });
 
 		res.render('book-form', {
-			headerTitle: 'Books',
+			headerTitle: 'Book Inventory',
 			title: 'Edit Book',
 			genres,
 			errors: null,
@@ -390,7 +390,8 @@ export const confirmDeletion: RequestHandler = async (req, res, next) => {
 		const book = bookRes.rows[0];
 
 		res.render('confirm-deletion', {
-			headerTitle: 'books',
+			headerTitle: 'Book Inventory',
+			title: null,
 			data: book,
 			returnPath: req.query.from,
 		});

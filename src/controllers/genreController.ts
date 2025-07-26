@@ -9,6 +9,7 @@ import {
 	formatNumToCompactNotation,
 } from '../lib/utils.js';
 import { CustomNotFoundError } from '../errors/CustomNotFoundError.js';
+import { title } from 'process';
 
 // 1. Get all genres
 export const getGenres: RequestHandler = async (_req, res, next) => {
@@ -21,7 +22,11 @@ export const getGenres: RequestHandler = async (_req, res, next) => {
 			name: capitalize(row.name),
 		}));
 
-		res.render('genres', { headerTitle: 'Genres', title: null, genres });
+		res.render('genres', {
+			headerTitle: 'Book Inventory',
+			title: 'Genres',
+			genres,
+		});
 	} catch (error) {
 		next(error);
 	}
@@ -71,10 +76,9 @@ export const getBooksByGenreId: RequestHandler = async (req, res, next) => {
 
 		res.render('books', {
 			mode: 'show',
-			headerTitle: 'Genres',
+			headerTitle: 'Book Inventory',
 			title: genre.name,
 			books,
-			currentPath: `/genres/${genreId}`,
 		});
 	} catch (error) {
 		next(error);
@@ -98,40 +102,12 @@ export const editGenreById: RequestHandler = async (req, res, next) => {
 
 			const genre: GenreType = genreRes.rows[0];
 
-			const { rows }: { rows: BookDisplayType[] } = await query(
-				`SELECT 
-					books.*,
-					json_agg(DISTINCT authors.name) AS authors,
-					json_agg(DISTINCT genres.name) AS genres,
-					json_agg(DISTINCT languages.name) AS languages
-				FROM books
-				LEFT JOIN book_authors ON books.id = book_authors.book_id
-				LEFT JOIN authors ON book_authors.author_id = authors.id
-				LEFT JOIN book_genres ON books.id = book_genres.book_id
-				LEFT JOIN genres ON book_genres.genre_id = genres.id
-				LEFT JOIN book_languages ON books.id = book_languages.book_id
-				LEFT JOIN languages ON book_languages.language_id = languages.id
-				GROUP BY books.id
-				HAVING $1 = ANY(array_agg(genres.id))
-				ORDER BY books.title;`,
-				[genreId]
-			);
-
-			const books = rows.map((row) => ({
-				...row,
-				title: capitalize(row.title),
-				price: formatCurrency(row.price),
-				stock: formatNumToCompactNotation(row.stock),
-			}));
-
-			return res.status(400).render('books', {
-				mode: 'edit',
-				headerTitle: 'Genres',
+			return res.status(400).render('edit-form', {
+				mode: 'genre',
+				headerTitle: 'Book Inventory',
 				title: genre.name,
 				errors: errors.mapped(),
-				data: req.body,
-				books,
-				currentPath: `/genres/${genreId}`,
+				data: { ...req.body, id: genreId },
 			});
 		} catch (error) {
 			next(error);
@@ -151,7 +127,7 @@ export const editGenreById: RequestHandler = async (req, res, next) => {
 		}
 
 		// res.status(200).json({ message: `Genre ${genreId} updated successfully` });
-		res.status(200).redirect(`/genres/${genreId}`);
+		res.status(200).redirect(`/genres`);
 	} catch (error) {
 		next(error);
 	}
@@ -189,7 +165,38 @@ export const getConfirmDeletion: RequestHandler = async (req, res, next) => {
 
 		const genre: GenreType = genreRes.rows[0];
 
-		res.render('confirm-deletion', { headerTitle: 'genres', data: genre });
+		res.render('confirm-deletion', {
+			headerTitle: 'Book Inventory',
+			title: null,
+			data: genre,
+		});
+	} catch (error) {
+		next(error);
+	}
+};
+
+// Get edit form
+export const getEditForm: RequestHandler = async (req, res, next) => {
+	const genreId = Number(req.params['genreId']);
+
+	try {
+		const genreRes = await query('SELECT * FROM genres WHERE id = $1', [
+			genreId,
+		]);
+
+		if (genreRes.rowCount === 0) {
+			throw new CustomNotFoundError('Genre Not Found');
+		}
+
+		const genre: GenreType = genreRes.rows[0];
+
+		res.render('edit-form', {
+			mode: 'genre',
+			headerTitle: 'Book Inventory',
+			title: 'Edit Genre',
+			errors: null,
+			data: genre,
+		});
 	} catch (error) {
 		next(error);
 	}

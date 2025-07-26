@@ -1,0 +1,45 @@
+<!-- define form action and method -->
+<% const formAction = locals.mode === 'genre' ?
+`/genres/${locals.data.id}/edit?_method=PUT` :
+`/languages/${locals.data.id}/edit?_method=PUT` %>
+
+<div class="flex-1">
+	<div
+		class="w-full max-w-md mx-auto p-6 rounded-lg shadow-md bg-white md:mt-24">
+		<%- include('partials/title') %>
+
+		<form action="<%= formAction %>" method="post" class="flex flex-col gap-5">
+			<div class="flex flex-col">
+				<label
+					for="name"
+					class="uppercase text-sm text-zinc-600 font-light mb-1"
+					>Name *</label
+				>
+				<input
+					type="text"
+					id="name"
+					name="name"
+					value="<%= locals.data?.name ?? ''%>"
+					class="border border-zinc-300 outline-none px-3 py-2 rounded-md" />
+				<% if (locals.errors?.name) { %>
+				<p class="text-sm text-red-500 mt-1"><%= errors.name.msg %></p>
+				<% } %>
+			</div>
+
+			<div class="flex gap-5">
+				<button
+					id="form-cancel-btn"
+					type="button"
+					class="w-full bg-blue-500 py-1 px-2 rounded-md border-none text-zinc-50 uppercase">
+					Cancel
+				</button>
+
+				<button
+					type="submit"
+					class="w-full bg-blue-500 py-2 px-2 rounded-md border-none text-zinc-50 uppercase">
+					Submit
+				</button>
+			</div>
+		</form>
+	</div>
+</div>

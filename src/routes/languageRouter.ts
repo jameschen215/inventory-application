@@ -5,6 +5,7 @@ import {
 	editLanguageById,
 	deleteLanguageById,
 	getConfirmDeletion,
+	getEditForm,
 } from '../controllers/languageController.js';
 import { languageSchema } from '../validators/languageSchema.js';
 
@@ -14,10 +15,13 @@ export const router = Router();
 router.get('/', getLanguages);
 
 // 2. Get books by language
-router.get('/:languageId', getBooksByLanguage);
+router.get('/:languageId/books', getBooksByLanguage);
+
+// 3. Get language form
+router.get('/:languageId/edit', getEditForm);
 
 // 3. Update a language
-router.put('/:languageId', languageSchema, editLanguageById);
+router.put('/:languageId/edit', languageSchema, editLanguageById);
 
 // 4. Get confirm deletion
 router.get('/:languageId/confirm-deletion', getConfirmDeletion);

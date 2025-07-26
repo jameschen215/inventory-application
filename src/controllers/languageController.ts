@@ -22,7 +22,11 @@ export const getLanguages: RequestHandler = async (_req, res, next) => {
 			name: capitalize(row.name),
 		}));
 
-		res.render('languages', { headerTitle: 'Languages', languages });
+		res.render('languages', {
+			headerTitle: 'Book Inventory',
+			title: 'Languages',
+			languages,
+		});
 	} catch (error) {
 		next(error);
 	}
@@ -32,23 +36,23 @@ export const getLanguages: RequestHandler = async (_req, res, next) => {
 export const getBooksByLanguage: RequestHandler = async (req, res, next) => {
 	const languageId = Number(req.params['languageId']);
 
-	const langRes = await query('SELECT * FROM languages WHERE id = $1', [
-		languageId,
-	]);
-
-	if (langRes.rowCount === 0) {
-		// return res.status(404).json({ error: 'Language not found' });
-		throw new CustomNotFoundError('Language Not Found');
-	}
-
-	const language = langRes.rows[0] as LanguageType;
-
 	try {
+		const langRes = await query('SELECT * FROM languages WHERE id = $1', [
+			languageId,
+		]);
+
+		if (langRes.rowCount === 0) {
+			// return res.status(404).json({ error: 'Language not found' });
+			throw new CustomNotFoundError('Language Not Found');
+		}
+
+		const language = langRes.rows[0] as LanguageType;
+
 		const { rows }: { rows: BookDisplayType[] } = await query(
 			`SELECT 
 						books.*,
 						json_agg(DISTINCT authors.name) AS authors,
-						json_agg(DISTINCT genres.name) AS genres,
+						json_agg(DISTINCT languages.name) AS languages,
 						json_agg(DISTINCT languages.name) AS languages
 					FROM books
 					LEFT JOIN book_authors ON books.id = book_authors.book_id
@@ -62,6 +66,7 @@ export const getBooksByLanguage: RequestHandler = async (req, res, next) => {
 					ORDER BY books.title;`,
 			[languageId]
 		);
+
 		const books = rows.map((row) => ({
 			...row,
 			title: capitalize(row.title),
@@ -70,11 +75,9 @@ export const getBooksByLanguage: RequestHandler = async (req, res, next) => {
 		}));
 
 		res.render('books', {
-			mode: 'show',
-			headerTitle: 'Languages',
+			headerTitle: 'Book Inventory',
 			title: language.name,
 			books,
-			currentPath: `/languages/${languageId}`,
 		});
 
 		// res.status(200).json({ language, books });
@@ -100,39 +103,12 @@ export const editLanguageById: RequestHandler = async (req, res, next) => {
 
 			const language: LanguageType = languageRes.rows[0];
 
-			const { rows }: { rows: BookDisplayType[] } = await query(
-				`SELECT 
-						books.*,
-						json_agg(DISTINCT authors.name) AS authors,
-						json_agg(DISTINCT genres.name) AS genres,
-						json_agg(DISTINCT languages.name) AS languages
-					FROM books
-					LEFT JOIN book_authors ON books.id = book_authors.book_id
-					LEFT JOIN authors ON book_authors.author_id = authors.id
-					LEFT JOIN book_genres ON books.id = book_genres.book_id
-					LEFT JOIN genres ON book_genres.genre_id = genres.id
-					LEFT JOIN book_languages ON books.id = book_languages.book_id
-					LEFT JOIN languages ON book_languages.language_id = languages.id
-					GROUP BY books.id
-					HAVING $1 = ANY(array_agg(languages.id))
-					ORDER BY books.title;`,
-				[languageId]
-			);
-			const books = rows.map((row) => ({
-				...row,
-				title: capitalize(row.title),
-				price: formatCurrency(row.price),
-				stock: formatNumToCompactNotation(row.stock),
-			}));
-
-			return res.status(400).render('books', {
-				mode: 'edit',
-				headerTitle: 'Languages',
+			return res.status(400).render('edit-form', {
+				mode: 'language',
+				headerTitle: 'Book Inventory',
 				title: language.name,
 				errors: errors.mapped(),
-				data: req.body,
-				books,
-				currentPath: `/genres/${languageId}`,
+				data: { ...req.body, id: languageId },
 			});
 		} catch (error) {
 			next(error);
@@ -151,7 +127,7 @@ export const editLanguageById: RequestHandler = async (req, res, next) => {
 			throw new CustomNotFoundError('Language Not Found');
 		}
 
-		res.status(200).redirect(`/languages/${languageId}`);
+		res.status(200).redirect(`/languages`);
 	} catch (error) {
 		next(error);
 	}
@@ -192,7 +168,35 @@ export const getConfirmDeletion: RequestHandler = async (req, res, next) => {
 		const language: LanguageType = langRes.rows[0];
 
 		res.render('confirm-deletion', {
-			headerTitle: 'languages',
+			headerTitle: 'Book Inventory',
+			title: null,
+			data: language,
+		});
+	} catch (error) {
+		next(error);
+	}
+};
+
+// Get edit form
+export const getEditForm: RequestHandler = async (req, res, next) => {
+	const languageId = Number(req.params['languageId']);
+
+	try {
+		const languageRes = await query('SELECT * FROM languages WHERE id = $1', [
+			languageId,
+		]);
+
+		if (languageRes.rowCount === 0) {
+			throw new CustomNotFoundError('language Not Found');
+		}
+
+		const language: LanguageType = languageRes.rows[0];
+
+		res.render('edit-form', {
+			mode: 'language',
+			headerTitle: 'Book Inventory',
+			title: 'Edit Language',
+			errors: null,
 			data: language,
 		});
 	} catch (error) {
