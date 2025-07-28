@@ -126,7 +126,6 @@ export const editGenreById: RequestHandler = async (req, res, next) => {
 			throw new CustomNotFoundError('Genre Not Found');
 		}
 
-		// res.status(200).json({ message: `Genre ${genreId} updated successfully` });
 		res.status(200).redirect(`/genres`);
 	} catch (error) {
 		next(error);

@@ -359,7 +359,7 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
 				: '',
 		};
 
-		// console.log({ formattedBook });
+		const previousUrl = req.originalUrl.split('/').slice(0, -1).join('/');
 
 		res.render('book-form', {
 			headerTitle: 'Book Inventory',
@@ -367,6 +367,7 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
 			genres,
 			errors: null,
 			data: formattedBook,
+			previousUrl,
 		});
 	} catch (error) {
 		next(error);
@@ -388,12 +389,18 @@ export const confirmDeletion: RequestHandler = async (req, res, next) => {
 		}
 
 		const book = bookRes.rows[0];
+		const previousUrl = req.originalUrl.split('/').slice(0, -1).join('/');
+		const returnUrl =
+			typeof req.query.from === 'string'
+				? req.query.from.split('/').slice(0, 3).join('/')
+				: '/';
 
 		res.render('confirm-deletion', {
 			headerTitle: 'Book Inventory',
 			title: null,
 			data: book,
-			returnPath: req.query.from,
+			previousUrl,
+			returnUrl,
 		});
 	} catch (error) {
 		next(error);

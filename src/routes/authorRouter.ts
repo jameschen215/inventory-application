@@ -9,6 +9,7 @@ import {
 	confirmDeletion,
 } from '../controllers/authorController.js';
 import { authorSchema } from '../validators/authorSchema.js';
+import { requireAdmin } from '../middlewares/requireAdmin.js';
 
 export const router = Router();
 
@@ -22,13 +23,13 @@ router.get('/:authorId', getAuthorById);
 router.get('/:authorId/books', getBooksByAuthorId);
 
 // 4. Get author edit form
-router.get('/:authorId/edit', getEditForm);
+router.get('/:authorId/edit', requireAdmin, getEditForm);
 
 // 6. Confirm deletion
-router.get('/:authorId/confirm-deletion', confirmDeletion);
+router.get('/:authorId/confirm-deletion', requireAdmin, confirmDeletion);
 
 // 4. Update a author
-router.put('/:authorId/edit', authorSchema, editAuthorById);
+router.put('/:authorId/edit', requireAdmin, authorSchema, editAuthorById);
 
 // 5. Delete a author
-router.delete('/:authorId', deleteAuthorById);
+router.delete('/:authorId', requireAdmin, deleteAuthorById);

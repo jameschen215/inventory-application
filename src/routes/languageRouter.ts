@@ -8,6 +8,7 @@ import {
 	getEditForm,
 } from '../controllers/languageController.js';
 import { languageSchema } from '../validators/languageSchema.js';
+import { requireAdmin } from '../middlewares/requireAdmin.js';
 
 export const router = Router();
 
@@ -18,13 +19,13 @@ router.get('/', getLanguages);
 router.get('/:languageId/books', getBooksByLanguage);
 
 // 3. Get language form
-router.get('/:languageId/edit', getEditForm);
+router.get('/:languageId/edit', requireAdmin, getEditForm);
 
 // 3. Update a language
-router.put('/:languageId/edit', languageSchema, editLanguageById);
+router.put('/:languageId/edit', requireAdmin, languageSchema, editLanguageById);
 
 // 4. Get confirm deletion
-router.get('/:languageId/confirm-deletion', getConfirmDeletion);
+router.get('/:languageId/confirm-deletion', requireAdmin, getConfirmDeletion);
 
 // 5. Delete a language
-router.delete('/:languageId', deleteLanguageById);
+router.delete('/:languageId', requireAdmin, deleteLanguageById);

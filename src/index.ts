@@ -7,6 +7,8 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import expressLayouts from 'express-ejs-layouts';
 import methodOverride from 'method-override';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
 
 import { CustomNotFoundError } from './errors/CustomNotFoundError.js';
 import { globalErrorHandler } from './errors/globalErrorHandler.js';
@@ -14,6 +16,7 @@ import { router as indexRouter } from './routes/indexRouter.js';
 import { router as genreRouter } from './routes/genreRouter.js';
 import { router as authorRouter } from './routes/authorRouter.js';
 import { router as languageRouter } from './routes/languageRouter.js';
+import { router as adminRouter } from './routes/adminRouter.js';
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,6 +35,7 @@ app.use(cors());
 app.use(helmet());
 app.use(morgan('dev'));
 app.use(methodOverride('_method')); // allows ?_method=DELETE
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -40,11 +44,19 @@ app.use((req, res, next) => {
 	next();
 });
 
+// Get the login state
+app.use((req, res, next) => {
+	// res.locals.isLoggedIn = !!(req.cookies.admin); // convert to boolean
+	res.locals.isLoggedIn = Boolean(req.cookies.admin);
+	next();
+});
+
 // Routes
 app.use('/', indexRouter);
 app.use('/authors', authorRouter);
 app.use('/genres', genreRouter);
 app.use('/languages', languageRouter);
+app.use('/admin', adminRouter);
 
 // Error handlers
 app.use((req, res) => {

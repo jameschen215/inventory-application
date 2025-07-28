@@ -11,6 +11,7 @@ import {
 } from '../controllers/indexController.js';
 import { bookCreateSchema, bookEditSchema } from '../validators/bookSchema.js';
 import { normalizeBookInput } from '../middlewares/normalizeBookInput.js';
+import { requireAdmin } from '../middlewares/requireAdmin.js';
 
 export const router = Router();
 
@@ -28,21 +29,22 @@ router.post(
 	createNewBook
 );
 
-router.get('/books/:bookId/confirm-deletion', confirmDeletion);
+router.get('/books/:bookId/confirm-deletion', requireAdmin, confirmDeletion);
 
 // 4. Get a book by id
 router.get('/books/:bookId', getBookById);
 
 // 5. Get a book edit form
-router.get('/books/:bookId/edit', getEditForm);
+router.get('/books/:bookId/edit', requireAdmin, getEditForm);
 
 // 6. Update a book
 router.put(
 	'/books/:bookId/edit',
+	requireAdmin,
 	normalizeBookInput,
 	bookEditSchema,
 	editBookPartially
 );
 
 // 7. Delete a book
-router.delete('/books/:bookId', deleteBookById);
+router.delete('/books/:bookId', requireAdmin, deleteBookById);

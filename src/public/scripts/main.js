@@ -6,18 +6,18 @@ if (cancelBtn) {
 	});
 }
 
-const mobileInput = document.querySelector('[data-device="mobile"]');
-const desktopInput = document.querySelector('[data-device="desktop"]');
+// const mobileInput = document.querySelector('[data-device="mobile"]');
+// const desktopInput = document.querySelector('[data-device="desktop"]');
 
-if (getComputedStyle(mobileInput).display !== 'none') {
-	mobileInput.addEventListener('keydown', (ev) => {
-		console.log(ev.key);
-	});
-} else {
-	desktopInput.addEventListener('keydown', (ev) => {
-		console.log(ev.key);
-	});
-}
+// if (getComputedStyle(mobileInput).display !== 'none') {
+// 	mobileInput.addEventListener('keydown', (ev) => {
+// 		console.log(ev.key);
+// 	});
+// } else {
+// 	desktopInput.addEventListener('keydown', (ev) => {
+// 		console.log(ev.key);
+// 	});
+// }
 
 window.addEventListener('pageshow', function () {
 	document.querySelectorAll('input[name="q"]').forEach((input) => {

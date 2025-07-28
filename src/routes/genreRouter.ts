@@ -8,6 +8,7 @@ import {
 	getEditForm,
 } from '../controllers/genreController.js';
 import { genreSchema } from '../validators/genreSchema.js';
+import { requireAdmin } from '../middlewares/requireAdmin.js';
 
 export const router = Router();
 
@@ -18,13 +19,13 @@ router.get('/', getGenres);
 router.get('/:genreId/books', getBooksByGenreId);
 
 // 3. Get genre form
-router.get('/:genreId/edit', getEditForm);
+router.get('/:genreId/edit', requireAdmin, getEditForm);
 
 // 3. Put a genre
-router.put('/:genreId/edit', genreSchema, editGenreById);
+router.put('/:genreId/edit', requireAdmin, genreSchema, editGenreById);
 
 // 4. Get confirm deletion
-router.get('/:genreId/confirm-deletion', getConfirmDeletion);
+router.get('/:genreId/confirm-deletion', requireAdmin, getConfirmDeletion);
 
 // 5. Delete a genre
-router.delete('/:genreId', deleteGenreById);
+router.delete('/:genreId', requireAdmin, deleteGenreById);
