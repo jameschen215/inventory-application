@@ -2,7 +2,7 @@
 <% const formAction = title.includes('Create') ? '/books/create' :
 `/books/${locals.data.id}/edit?_method=PUT` %>
 
-<div class="w-full max-w-md mx-auto my-8 p-6 rounded-lg shadow-md bg-white">
+<div class="w-full max-w-md mx-auto p-6 rounded-lg shadow-md bg-white">
 	<%- include('partials/title') %>
 
 	<form action="<%= formAction %>" method="post" class="flex flex-col gap-5">
