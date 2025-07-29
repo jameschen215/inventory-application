@@ -145,14 +145,12 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
 			dob: author.dob ? new Date(author.dob).toISOString().slice(0, 10) : '',
 		};
 
-		const previousUrl = req.originalUrl.split('/').slice(0, -1).join('/');
-
 		res.render('author-form', {
 			headerTitle: 'Book Inventory',
 			title: 'Edit Author',
 			data: formatted,
 			errors: null,
-			previousUrl,
+			cancelPath: req.query.from || '/',
 		});
 	} catch (error) {
 		next(error);

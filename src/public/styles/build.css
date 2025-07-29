@@ -9,7 +9,6 @@
       "Courier New", monospace;
     --color-red-500: oklch(63.7% 0.237 25.331);
     --color-amber-500: oklch(76.9% 0.188 70.08);
-    --color-amber-600: oklch(66.6% 0.179 58.318);
     --color-lime-500: oklch(76.8% 0.233 130.85);
     --color-lime-600: oklch(64.8% 0.2 131.684);
     --color-green-600: oklch(62.7% 0.194 149.214);
@@ -336,6 +335,9 @@
   .min-h-screen {
     min-height: 100vh;
   }
+  .w-24 {
+    width: calc(var(--spacing) * 24);
+  }
   .w-72 {
     width: calc(var(--spacing) * 72);
   }
@@ -468,9 +470,6 @@
   .border-zinc-300 {
     border-color: var(--color-zinc-300);
   }
-  .border-zinc-500 {
-    border-color: var(--color-zinc-500);
-  }
   .bg-blue-500 {
     background-color: var(--color-blue-500);
   }
@@ -507,8 +506,8 @@
   .px-6 {
     padding-inline: calc(var(--spacing) * 6);
   }
-  .px-20 {
-    padding-inline: calc(var(--spacing) * 20);
+  .py-0\.5 {
+    padding-block: calc(var(--spacing) * 0.5);
   }
   .py-1 {
     padding-block: calc(var(--spacing) * 1);
@@ -527,9 +526,6 @@
   }
   .pr-2 {
     padding-right: calc(var(--spacing) * 2);
-  }
-  .pl-3 {
-    padding-left: calc(var(--spacing) * 3);
   }
   .pl-10 {
     padding-left: calc(var(--spacing) * 10);
@@ -591,12 +587,6 @@
   .text-green-600 {
     color: var(--color-green-600);
   }
-  .text-lime-500 {
-    color: var(--color-lime-500);
-  }
-  .text-lime-600 {
-    color: var(--color-lime-600);
-  }
   .text-red-500 {
     color: var(--color-red-500);
   }
@@ -654,11 +644,6 @@
     -webkit-backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
     backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
   }
-  .transition-all {
-    transition-property: all;
-    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
-    transition-duration: var(--tw-duration, var(--default-transition-duration));
-  }
   .transition-colors {
     transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to;
     transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
@@ -698,14 +683,6 @@
       background-color: var(--color-white);
     }
   }
-  .hover\:border-b {
-    &:hover {
-      @media (hover: hover) {
-        border-bottom-style: var(--tw-border-style);
-        border-bottom-width: 1px;
-      }
-    }
-  }
   .hover\:border-blue-500 {
     &:hover {
       @media (hover: hover) {
@@ -727,13 +704,6 @@
       }
     }
   }
-  .hover\:bg-zinc-50 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-zinc-50);
-      }
-    }
-  }
   .hover\:bg-zinc-100 {
     &:hover {
       @media (hover: hover) {
@@ -741,17 +711,17 @@
       }
     }
   }
+  .hover\:text-blue-500 {
+    &:hover {
+      @media (hover: hover) {
+        color: var(--color-blue-500);
+      }
+    }
+  }
   .hover\:text-zinc-50 {
     &:hover {
       @media (hover: hover) {
         color: var(--color-zinc-50);
-      }
-    }
-  }
-  .hover\:underline {
-    &:hover {
-      @media (hover: hover) {
-        text-decoration-line: underline;
       }
     }
   }
