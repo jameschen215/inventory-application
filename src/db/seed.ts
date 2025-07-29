@@ -14,35 +14,35 @@ export async function seed() {
 		const authors = [
 			[
 				'Yuval Noah Harari',
-				'male',
+				'Male',
 				'Israel',
 				'Israeli historian and professor at Hebrew University. Known for exploring big-picture questions about history and humanity.',
 				'1976-02-24',
 			],
 			[
 				'E. B. White',
-				'male',
+				'Male',
 				'US',
 				'American writer known for children’s books and essays. Also co-authored The Elements of Style.',
 				'1899-07-11',
 			],
 			[
 				'Daron Acemoglu',
-				'male',
+				'Male',
 				'US',
 				'Turkish-American economist and MIT professor, known for research in political economy and development.',
 				'1967-09-03',
 			],
 			[
 				'James A. Robinson',
-				'male',
+				'Male',
 				'UK',
 				'British political scientist and economist, co-author of multiple works on institutions and development.',
 				null,
 			],
 			[
 				'Peter Hessler',
-				'male',
+				'Male',
 				'US',
 				'American journalist and author known for writing about China.',
 				'1969-06-14',
@@ -53,7 +53,7 @@ export async function seed() {
 			await client.query(
 				`INSERT INTO authors (name, gender, nationality, bio, dob) VALUES ($1, $2, $3, $4, $5)
         ON CONFLICT DO NOTHING`,
-				[name, gender, nationality, bio, dob]
+				[name, gender, nationality?.toUpperCase(), bio, dob]
 			);
 		}
 

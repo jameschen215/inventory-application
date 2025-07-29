@@ -1,16 +1,16 @@
+import { format } from 'date-fns';
 import { RequestHandler } from 'express';
+import { matchedData, validationResult } from 'express-validator';
+
+import {
+	capitalize,
+	formatCurrency,
+	formatNumToCompactNotation,
+} from '../lib/utils.js';
 import { query } from '../db/pool.js';
 import { AuthorType } from '../types/db-types.js';
 import { BookDisplayType } from '../types/BookDisplayType.js';
-import { matchedData, validationResult } from 'express-validator';
-import {
-	formatCurrency,
-	formatNumToCompactNotation,
-	capitalize,
-	capitalizeAll,
-} from '../lib/utils.js';
 import { CustomNotFoundError } from '../errors/CustomNotFoundError.js';
-import { format } from 'date-fns';
 import { CustomBadRequestError } from '../errors/CustomBadRequestError.js';
 
 // 1. Get all authors
@@ -18,19 +18,14 @@ export const getAuthors: RequestHandler = async (req, res, next) => {
 	const { q = '' } = req.query || {};
 
 	try {
-		const { rows }: { rows: AuthorType[] } = await query(
+		const authorsRes = await query(
 			`SELECT * FROM authors WHERE name ILIKE $1`,
-			['%' + q + '%']
+			[`%${q}%`]
 		);
 
-		const authors = rows.map((row) => ({
-			...row,
-			name: capitalizeAll(row.name),
-			gender: row.gender ? capitalize(row.gender) : null,
-		}));
+		const authors: AuthorType[] = authorsRes.rows;
 
 		res.render('authors', {
-			headerTitle: 'Book Inventory',
 			title: 'Authors',
 			authors,
 		});
@@ -55,14 +50,13 @@ export const getAuthorById: RequestHandler = async (req, res, next) => {
 		const author: AuthorType = authorRes.rows[0];
 		const formatted = {
 			...author,
-			gender: author.gender ? capitalize(author.gender) : 'N/A',
-			nationality: author.nationality ? capitalize(author.nationality) : 'N/A',
+			gender: author.gender ?? 'N/A',
+			nationality: author.nationality ?? 'N/A',
 			dob: author.dob ? format(author.dob, 'yyyy-MM-dd') : 'N/A',
-			bio: author.bio ? capitalize(author.bio) : 'No Biography.',
+			bio: author.bio ?? 'No Biography.',
 		};
 
 		res.render('author', {
-			headerTitle: 'Author Details',
 			title: author.name,
 			author: formatted,
 		});
@@ -86,35 +80,32 @@ export const getBooksByAuthorId: RequestHandler = async (req, res, next) => {
 
 		const author = authorRes.rows[0] as AuthorType;
 
-		const { rows }: { rows: BookDisplayType[] } = await query(
+		const booksRes = await query(
 			`SELECT 
-							books.*,
-							json_agg(DISTINCT authors.name) AS authors,
-							json_agg(DISTINCT genres.name) AS genres,
-							json_agg(DISTINCT languages.name) AS languages
-						FROM books
-						LEFT JOIN book_authors ON books.id = book_authors.book_id
-						LEFT JOIN authors ON book_authors.author_id = authors.id
-						LEFT JOIN book_genres ON books.id = book_genres.book_id
-						LEFT JOIN genres ON book_genres.genre_id = genres.id
-						LEFT JOIN book_languages ON books.id = book_languages.book_id
-						LEFT JOIN languages ON book_languages.language_id = languages.id
-						GROUP BY books.id
-						HAVING $1 = ANY(array_agg(authors.id))
-						ORDER BY books.id;`,
+				books.*,
+				json_agg(DISTINCT authors.name) AS authors,
+				json_agg(DISTINCT genres.name) AS genres,
+				json_agg(DISTINCT languages.name) AS languages
+			FROM books
+			LEFT JOIN book_authors ON books.id = book_authors.book_id
+			LEFT JOIN authors ON book_authors.author_id = authors.id
+			LEFT JOIN book_genres ON books.id = book_genres.book_id
+			LEFT JOIN genres ON book_genres.genre_id = genres.id
+			LEFT JOIN book_languages ON books.id = book_languages.book_id
+			LEFT JOIN languages ON book_languages.language_id = languages.id
+			GROUP BY books.id
+			HAVING $1 = ANY(array_agg(authors.id))
+			ORDER BY books.id;`,
 			[authorId]
 		);
 
-		const books = rows.map((row) => ({
+		const books: BookDisplayType[] = booksRes.rows.map((row) => ({
 			...row,
-			title: capitalize(row.title),
 			price: formatCurrency(row.price),
 			stock: formatNumToCompactNotation(row.stock),
 		}));
 
-		// res.status(200).json({ author, books });
 		res.render('books', {
-			headerTitle: 'Book Inventory',
 			title: author.name,
 			books,
 		});
@@ -146,7 +137,6 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
 		};
 
 		res.render('author-form', {
-			headerTitle: 'Book Inventory',
 			title: 'Edit Author',
 			data: formatted,
 			errors: null,
@@ -176,18 +166,34 @@ export const editAuthorById: RequestHandler = async (req, res, next) => {
 		});
 	}
 
-	const { name, gender, nationality, bio, dob }: AuthorType = matchedData(req);
-
+	const formData: AuthorType = matchedData(req);
+	const formattedFormData = {
+		...formData,
+		name: capitalize(formData.name),
+		gender: formData.gender ? capitalize(formData.gender) : null,
+		nationality: formData.nationality
+			? formData.nationality.toUpperCase()
+			: null,
+		bio: formData.bio ? capitalize(formData.bio) : null,
+		dob: formData.dob ? new Date(formData.dob) : null,
+	};
 	try {
 		const { rowCount } = await query(
 			`UPDATE authors 
-			 SET name = $1,
-			 		 gender = $2,
-					 nationality = $3,
-					 bio = $4,
-					 dob = $5
-			 WHERE id = $6`,
-			[name, gender, nationality, bio, dob, authorId]
+			SET name = $1,
+					gender = $2,
+					nationality = $3,
+					bio = $4,
+					dob = $5
+			WHERE id = $6`,
+			[
+				formattedFormData.name,
+				formattedFormData.gender,
+				formattedFormData.nationality,
+				formattedFormData.bio,
+				formattedFormData.dob,
+				authorId,
+			]
 		);
 
 		if (rowCount === 0) {
@@ -206,12 +212,12 @@ export const deleteAuthorById: RequestHandler = async (req, res, next) => {
 
 	try {
 		// 1. Check if the author is linked to any books
-		const { rowCount } = await query(
+		const findRes = await query(
 			'SELECT 1 FROM book_authors WHERE author_id = $1 LIMIT 1',
 			[authorId]
 		);
 
-		if (rowCount && rowCount > 0) {
+		if (findRes.rowCount && findRes.rowCount > 0) {
 			throw new CustomBadRequestError(
 				"Can't delete author: still associated with one or more books"
 			);
@@ -246,16 +252,10 @@ export const confirmDeletion: RequestHandler = async (req, res, next) => {
 
 		const author: { id: number; name: string } = authorRes.rows[0];
 
-		const previousUrl = req.originalUrl.split('/').slice(0, -1).join('/');
-		const cancelPath =
-			typeof req.query.from === 'string' ? req.query.from : '/';
-
 		res.render('confirm-deletion', {
-			headerTitle: 'Book Inventory',
 			title: null,
 			data: author,
-			previousUrl,
-			cancelPath,
+			cancelPath: req.query.from ?? '/',
 		});
 	} catch (error) {
 		next(error);

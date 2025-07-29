@@ -12,8 +12,9 @@ async function initializeDatabase() {
 
 		// Drop existing table if existing
 		console.log('Dropping existing tables...');
-		await client.query(
-			`DROP TABLE IF EXISTS
+		await client.query(`
+			DROP TYPE IF EXISTS gender CASCADE;
+			DROP TABLE IF EXISTS
 				book_genres, 
 				book_languages,
 				book_authors,
@@ -21,8 +22,7 @@ async function initializeDatabase() {
 				authors,
 				genres,
 				languages
-			CASCADE;`
-		);
+			CASCADE;`);
 
 		// Create new tables
 		console.log('Creating tables...');
@@ -30,7 +30,7 @@ async function initializeDatabase() {
 			DO $$
 			BEGIN
   			IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'gender') THEN
-    			CREATE TYPE gender AS ENUM ('male', 'female');
+    			CREATE TYPE gender AS ENUM ('Male', 'Female');
   			END IF;
 			END$$;
 

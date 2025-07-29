@@ -4,9 +4,9 @@ import { RequestHandler } from 'express';
 export const getAdminPasswordForm: RequestHandler = (req, res) => {
 	// If already logged in, redirect to the original URL they wanted
 	if (req.cookies.admin) {
-		const redirectUrl =
+		const redirectPath =
 			typeof req.query.redirect === 'string' ? req.query.redirect : '/';
-		return res.redirect(redirectUrl);
+		return res.redirect(redirectPath);
 	}
 
 	res.render('admin-page', {
