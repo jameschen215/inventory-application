@@ -6,6 +6,11 @@
 		<title>Book Inventory</title>
 
 		<link rel="stylesheet" href="/styles/build.css" />
+
+		<!-- Lucid icons -->
+		<link
+			rel="stylesheet"
+			href="https://unpkg.com/lucide-static@latest/font/lucide.css" />
 		<script src="/scripts/main.js" defer></script>
 		<script src="/scripts/sidebar.js" defer></script>
 		<script src="/scripts/tr-links.js" defer></script>
@@ -18,7 +23,7 @@
 			<!-- Brand -->
 			<div class="flex items-center h-16 px-5">
 				<a href="/" class="flex items-center gap-2">
-					<div class="size-6 text-amber-600" aria-hidden="true">
+					<div class="size-6 text-amber-500" aria-hidden="true">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="24"
@@ -36,17 +41,18 @@
 						</svg>
 					</div>
 					<div class="md:sr-only lg:not-sr-only">
-						<span class="text-xl uppercase">Inventory</span>
-						<span class="text-xl uppercase text-amber-600">App</span>
+						<span class="text-xl uppercase">Inv</span
+						><span class="text-xl uppercase text-amber-500">App</span>
 					</div>
 				</a>
 			</div>
 
 			<!-- Nav links -->
 			<ul class="mt-10 flex flex-col gap-5 px-1">
-				<li
-					class="<%= currentPath === '/' ? 'bg-zinc-100' : '' %> px-4 py-3 rounded-sm hover:bg-zinc-100">
-					<a href="/" class="flex items-center gap-3">
+				<li>
+					<a
+						href="/"
+						class="flex items-center gap-3 <%= currentPath === '/' || currentPath.startsWith('/books') ? 'bg-zinc-100' : '' %> px-4 py-3 rounded-sm hover:bg-zinc-100">
 						<span class="inline-block size-6">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -71,9 +77,10 @@
 					</a>
 				</li>
 
-				<li
-					class="<%= currentPath === '/authors' ? 'bg-zinc-100' : ''%> px-4 py-3 rounded-sm hover:bg-zinc-100">
-					<a href="/authors" class="flex items-center gap-3">
+				<li>
+					<a
+						href="/authors"
+						class="flex items-center gap-3 <%= currentPath.startsWith('/authors') ? 'bg-zinc-100' : '' %> px-4 py-3 rounded-sm hover:bg-zinc-100">
 						<span class="inline-block size-6">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -97,9 +104,10 @@
 						>
 					</a>
 				</li>
-				<li
-					class="<%= currentPath === '/genres' ? 'bg-zinc-100' : ''%> px-4 py-3 rounded-sm hover:bg-zinc-100">
-					<a href="/genres" class="flex items-center gap-3">
+				<li>
+					<a
+						href="/genres"
+						class="flex items-center gap-3 <%= currentPath.startsWith('/genres') ? 'bg-zinc-100' : '' %> px-4 py-3 rounded-sm hover:bg-zinc-100">
 						<span class="inline-block size-6">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -123,9 +131,10 @@
 						>
 					</a>
 				</li>
-				<li
-					class="<%= currentPath === '/languages' ? 'bg-zinc-100' : ''%> px-4 py-3 rounded-sm hover:bg-zinc-100">
-					<a href="/languages" class="flex items-center gap-3">
+				<li>
+					<a
+						href="/languages"
+						class="flex items-center gap-3 <%= currentPath.startsWith('/languages') ? 'bg-zinc-100' : '' %> px-4 py-3 rounded-sm hover:bg-zinc-100">
 						<span class="inline-block size-6">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"

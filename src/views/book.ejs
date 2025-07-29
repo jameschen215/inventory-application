@@ -63,14 +63,14 @@
 
 				<div class="flex justify-between">
 					<a
-						href="/books/<%= book.id %>/confirm-deletion?from=<%= encodeURIComponent(returnPath) %>"
-						class="text-red-500 hover:underline"
+						href="/books/<%= book.id %>/confirm-deletion?from=<%= encodeURIComponent(currentPath) %>"
+						class="text-red-500 border border-red-500 px-6 py-1 rounded-sm hover:bg-red-500 hover:text-zinc-50 transition-colors duration-200"
 						>Delete</a
 					>
 
 					<a
-						href="/books/<%= book.id %>/edit"
-						class="text-blue-500 hover:underline"
+						href="/books/<%= book.id %>/edit?from=<%= encodeURIComponent(currentPath) %>"
+						class="text-blue-500 border border-blue-500 px-6 py-1 rounded-sm hover:bg-blue-500 hover:text-zinc-50 transition-colors duration-200"
 						>Edit</a
 					>
 				</div>

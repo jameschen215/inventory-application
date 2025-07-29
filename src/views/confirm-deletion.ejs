@@ -13,14 +13,14 @@
 			method="post"
 			class="mt-20 w-full flex justify-between gap-5">
 			<a
-				href="/admin?redirect=<%= encodeURIComponent(previousUrl) %>"
-				class="w-full max-w-48 cursor-pointer bg-blue-500 py-1 px-2 rounded-md border-none text-zinc-50 flex items-center justify-center">
+				href="/admin?redirect=<%= encodeURIComponent(cancelPath) %>"
+				class="cursor-pointer border border-blue-500 px-6 py-1 rounded-sm text-blue-500 flex items-center justify-center hover:bg-blue-500 hover:text-zinc-50 transition-colors duration-200">
 				Cancel</a
 			>
 
 			<button
 				type="submit"
-				class="w-full max-w-48 cursor-pointer bg-blue-500 py-1 px-2 rounded-md border-none text-zinc-50">
+				class="cursor-pointer text-blue-500 border border-blue-500 px-6 py-1 rounded-sm hover:bg-blue-500 hover:text-zinc-50 transition-colors duration-200">
 				Confirm
 			</button>
 		</form>

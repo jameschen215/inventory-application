@@ -308,6 +308,7 @@ export const getCreateForm: RequestHandler = async (req, res, next) => {
 			genres,
 			errors: null,
 			data: null,
+			cancelPath: req.query.from || '/',
 		});
 	} catch (error) {
 		next(error);
@@ -359,15 +360,13 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
 				: '',
 		};
 
-		const previousUrl = req.originalUrl.split('/').slice(0, -1).join('/');
-
 		res.render('book-form', {
 			headerTitle: 'Book Inventory',
 			title: 'Edit Book',
 			genres,
 			errors: null,
 			data: formattedBook,
-			previousUrl,
+			cancelPath: req.query.from || '/',
 		});
 	} catch (error) {
 		next(error);
@@ -389,13 +388,12 @@ export const confirmDeletion: RequestHandler = async (req, res, next) => {
 		}
 
 		const book = bookRes.rows[0];
-		const previousUrl = req.originalUrl.split('/').slice(0, -1).join('/');
 
 		res.render('confirm-deletion', {
 			headerTitle: 'Book Inventory',
 			title: null,
 			data: book,
-			previousUrl,
+			cancelPath: req.query.from || '/',
 		});
 	} catch (error) {
 		next(error);

@@ -19,7 +19,7 @@ export const router = Router();
 router.get('/', getBooks);
 
 // 2. Get create form
-router.get('/books/create', getCreateForm);
+router.get('/create', getCreateForm);
 
 // 3. Post a book
 router.post(
