@@ -9,7 +9,7 @@
 		<p class="mt-2 text-lg w-full">This action is irreversible!</p>
 
 		<form
-			action="<%= returnUrl %>/?_method=DELETE"
+			action="<%= currentPath.split('/').slice(0,-1).join('/') %>/?_method=DELETE"
 			method="post"
 			class="mt-20 w-full flex justify-between gap-5">
 			<a

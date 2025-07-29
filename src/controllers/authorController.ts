@@ -145,11 +145,14 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
 			dob: author.dob ? new Date(author.dob).toISOString().slice(0, 10) : '',
 		};
 
+		const previousUrl = req.originalUrl.split('/').slice(0, -1).join('/');
+
 		res.render('author-form', {
 			headerTitle: 'Book Inventory',
 			title: 'Edit Author',
 			data: formatted,
 			errors: null,
+			previousUrl,
 		});
 	} catch (error) {
 		next(error);
@@ -245,10 +248,18 @@ export const confirmDeletion: RequestHandler = async (req, res, next) => {
 
 		const author: { id: number; name: string } = authorRes.rows[0];
 
+		const previousUrl = req.originalUrl.split('/').slice(0, -1).join('/');
+		const returnUrl =
+			typeof req.query.from === 'string'
+				? req.query.from.split('/').slice(0, 3).join('/')
+				: '/';
+
 		res.render('confirm-deletion', {
 			headerTitle: 'Book Inventory',
 			title: null,
 			data: author,
+			previousUrl,
+			returnUrl,
 		});
 	} catch (error) {
 		next(error);

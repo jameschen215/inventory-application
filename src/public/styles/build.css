@@ -465,9 +465,6 @@
     --tw-border-style: none;
     border-style: none;
   }
-  .border-blue-500 {
-    border-color: var(--color-blue-500);
-  }
   .border-zinc-200 {
     border-color: var(--color-zinc-200);
   }
@@ -479,9 +476,6 @@
   }
   .bg-blue-500 {
     background-color: var(--color-blue-500);
-  }
-  .bg-transparent {
-    background-color: transparent;
   }
   .bg-white {
     background-color: var(--color-white);

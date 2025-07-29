@@ -166,11 +166,13 @@ export const getConfirmDeletion: RequestHandler = async (req, res, next) => {
 		}
 
 		const language: LanguageType = langRes.rows[0];
+		const previousUrl = req.originalUrl.split('/').slice(0, -2).join('/');
 
 		res.render('confirm-deletion', {
 			headerTitle: 'Book Inventory',
 			title: null,
 			data: language,
+			previousUrl,
 		});
 	} catch (error) {
 		next(error);

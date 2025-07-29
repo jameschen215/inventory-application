@@ -9,7 +9,7 @@ export const getAdminPasswordForm: RequestHandler = (req, res) => {
 		return res.redirect(redirectUrl);
 	}
 
-	res.render('admin-password-form', {
+	res.render('admin-page', {
 		title: 'Admin',
 		redirect: req.query.redirect || '/',
 	});
@@ -20,7 +20,7 @@ export const saveAdminPassword: RequestHandler = (req, res) => {
 	const { password, redirect } = req.body;
 
 	if (password !== adminPassword) {
-		return res.render('admin-password-form', {
+		return res.render('admin-page', {
 			title: 'Admin',
 			error: 'Incorrect admin password',
 			redirect: redirect,
@@ -30,6 +30,6 @@ export const saveAdminPassword: RequestHandler = (req, res) => {
 
 	const redirectUrl = redirect || '/';
 	res
-		.cookie('admin', true, { maxAge: 60 * 60 * 1000, httpOnly: true })
+		.cookie('admin', true, { maxAge: 60 * 60 * 1000, httpOnly: true }) // 10 minutes
 		.redirect(redirectUrl);
 };

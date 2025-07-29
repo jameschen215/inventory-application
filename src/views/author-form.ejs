@@ -101,12 +101,11 @@
 		</div>
 
 		<div class="flex gap-5">
-			<button
-				id="form-cancel-btn"
-				type="button"
-				class="w-full bg-blue-500 py-1 px-2 rounded-md border-none text-zinc-50 uppercase">
+			<a
+				href="/admin?redirect=<%= encodeURIComponent(previousUrl) %>"
+				class="w-full max-w-48 cursor-pointer bg-blue-500 py-1 px-2 rounded-md border-none text-zinc-50 flex items-center justify-center">
 				Cancel
-			</button>
+			</a>
 
 			<button
 				type="submit"

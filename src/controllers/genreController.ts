@@ -9,7 +9,6 @@ import {
 	formatNumToCompactNotation,
 } from '../lib/utils.js';
 import { CustomNotFoundError } from '../errors/CustomNotFoundError.js';
-import { title } from 'process';
 
 // 1. Get all genres
 export const getGenres: RequestHandler = async (_req, res, next) => {
@@ -163,11 +162,13 @@ export const getConfirmDeletion: RequestHandler = async (req, res, next) => {
 		}
 
 		const genre: GenreType = genreRes.rows[0];
+		const previousUrl = req.originalUrl.split('/').slice(0, -2).join('/');
 
 		res.render('confirm-deletion', {
 			headerTitle: 'Book Inventory',
 			title: null,
 			data: genre,
+			previousUrl,
 		});
 	} catch (error) {
 		next(error);

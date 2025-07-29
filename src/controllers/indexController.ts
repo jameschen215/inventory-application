@@ -390,17 +390,12 @@ export const confirmDeletion: RequestHandler = async (req, res, next) => {
 
 		const book = bookRes.rows[0];
 		const previousUrl = req.originalUrl.split('/').slice(0, -1).join('/');
-		const returnUrl =
-			typeof req.query.from === 'string'
-				? req.query.from.split('/').slice(0, 3).join('/')
-				: '/';
 
 		res.render('confirm-deletion', {
 			headerTitle: 'Book Inventory',
 			title: null,
 			data: book,
 			previousUrl,
-			returnUrl,
 		});
 	} catch (error) {
 		next(error);

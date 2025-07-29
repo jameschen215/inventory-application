@@ -3,6 +3,9 @@
 `/genres/${locals.data.id}/edit?_method=PUT` :
 `/languages/${locals.data.id}/edit?_method=PUT` %>
 
+<!-- define return url -->
+<% const returnUrl = `/admin?redirect=${locals.mode}s` %>
+
 <div class="flex-1">
 	<div
 		class="w-full max-w-md mx-auto p-6 rounded-lg shadow-md bg-white md:mt-24">
@@ -27,16 +30,15 @@
 			</div>
 
 			<div class="flex gap-5">
-				<button
-					id="form-cancel-btn"
-					type="button"
-					class="w-full bg-blue-500 py-1 px-2 rounded-md border-none text-zinc-50 uppercase">
+				<a
+					href="<%= returnUrl %>"
+					class="w-full max-w-48 cursor-pointer bg-blue-500 py-1 px-2 rounded-md border-none text-zinc-50 flex items-center justify-center">
 					Cancel
-				</button>
+				</a>
 
 				<button
 					type="submit"
-					class="w-full bg-blue-500 py-2 px-2 rounded-md border-none text-zinc-50 uppercase">
+					class="w-full bg-blue-500 py-2 px-2 rounded-md border-none text-zinc-50">
 					Submit
 				</button>
 			</div>
