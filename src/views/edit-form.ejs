@@ -1,10 +1,10 @@
 <!-- define form action and method -->
-<% const formAction = locals.mode === 'genre' ?
+<% const formAction = locals.formFor === 'genre' ?
 `/genres/${locals.data.id}/edit?_method=PUT` :
 `/languages/${locals.data.id}/edit?_method=PUT` %>
 
 <!-- define return url -->
-<% const returnUrl = `/admin?redirect=${locals.mode}s` %>
+<% const returnUrl = `/admin?redirect=${locals.formFor}s` %>
 
 <div class="flex-1">
 	<div
