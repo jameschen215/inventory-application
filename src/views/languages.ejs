@@ -16,7 +16,9 @@
 				<a
 					href="/languages/<%= language.id %>/books"
 					class="text-blue-500 font-light md:flex md:gap-1">
-					<span aria-hidden="true" class="size-6">
+					<div
+						aria-hidden="true"
+						class="size-6 border-b border-transparent hover:border-blue-500 transition-colors duration-200">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="24"
@@ -24,22 +26,24 @@
 							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
-							stroke-width="2"
+							stroke-width="1.5"
 							stroke-linecap="round"
 							stroke-linejoin="round"
-							class="lucide lucide-book-copy-icon lucide-book-copy w-full h-full">
-							<path d="M2 16V4a2 2 0 0 1 2-2h11" />
-							<path
-								d="M22 18H11a2 2 0 1 0 0 4h10.5a.5.5 0 0 0 .5-.5v-15a.5.5 0 0 0-.5-.5H11a2 2 0 0 0-2 2v12" />
-							<path d="M5 14H4a2 2 0 1 0 0 4h1" />
+							class="lucide lucide-library-icon lucide-library">
+							<path d="m16 6 4 14" />
+							<path d="M12 6v14" />
+							<path d="M8 8v12" />
+							<path d="M4 4v16" />
 						</svg>
-					</span>
+					</div>
 					<span class="sr-only">Books</span></a
 				>
 				<a
 					href="/languages/<%= language.id %>/edit"
 					class="text-blue-500 font-light inline-block md:flex md:gap-1">
-					<span aria-hidden="true" class="size-6">
+					<span
+						aria-hidden="true"
+						class="size-6 border-b border-transparent hover:border-blue-500 transition-colors duration-200">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="24"
@@ -47,7 +51,7 @@
 							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
-							stroke-width="2"
+							stroke-width="1.5"
 							stroke-linecap="round"
 							stroke-linejoin="round"
 							class="lucide lucide-square-pen-icon lucide-square-pen w-full h-full">

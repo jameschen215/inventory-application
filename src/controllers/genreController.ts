@@ -162,13 +162,12 @@ export const getConfirmDeletion: RequestHandler = async (req, res, next) => {
 		}
 
 		const genre: GenreType = genreRes.rows[0];
-		const previousUrl = req.originalUrl.split('/').slice(0, -2).join('/');
 
 		res.render('confirm-deletion', {
 			headerTitle: 'Book Inventory',
 			title: null,
 			data: genre,
-			previousUrl,
+			cancelPath: req.query.from || '/',
 		});
 	} catch (error) {
 		next(error);

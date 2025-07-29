@@ -31,13 +31,17 @@
 							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
-							stroke-width="2"
+							stroke-width="1.5"
 							stroke-linecap="round"
 							stroke-linejoin="round"
-							class="lucide lucide-book-open-icon lucide-book-open w-full h-full">
+							class="lucide lucide-book-open-text-icon lucide-book-open-text">
 							<path d="M12 7v14" />
+							<path d="M16 12h2" />
+							<path d="M16 8h2" />
 							<path
 								d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
+							<path d="M6 12h2" />
+							<path d="M6 8h2" />
 						</svg>
 					</div>
 					<div class="md:sr-only lg:not-sr-only">
@@ -61,7 +65,7 @@
 								viewBox="0 0 24 24"
 								fill="none"
 								stroke="currentColor"
-								stroke-width="1"
+								stroke-width="1.5"
 								stroke-linecap="round"
 								stroke-linejoin="round"
 								class="lucide lucide-library-icon lucide-library w-full h-full">
@@ -89,7 +93,7 @@
 								viewBox="0 0 24 24"
 								fill="none"
 								stroke="currentColor"
-								stroke-width="1"
+								stroke-width="1.5"
 								stroke-linecap="round"
 								stroke-linejoin="round"
 								class="lucide lucide-users-icon lucide-users w-full h-full">
@@ -116,7 +120,7 @@
 								viewBox="0 0 24 24"
 								fill="none"
 								stroke="currentColor"
-								stroke-width="1"
+								stroke-width="1.5"
 								stroke-linecap="round"
 								stroke-linejoin="round"
 								class="lucide lucide-shapes-icon lucide-shapes w-full h-full">
@@ -143,7 +147,7 @@
 								viewBox="0 0 24 24"
 								fill="none"
 								stroke="currentColor"
-								stroke-width="1"
+								stroke-width="1.5"
 								stroke-linecap="round"
 								stroke-linejoin="round"
 								class="lucide lucide-languages-icon lucide-languages w-full h-full">
@@ -176,7 +180,7 @@
 							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
-							stroke-width="2"
+							stroke-width="1.5"
 							stroke-linecap="round"
 							stroke-linejoin="round"
 							class="lucide lucide-shield-user-icon lucide-shield-user">
@@ -195,7 +199,7 @@
 							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
-							stroke-width="2"
+							stroke-width="1.5"
 							stroke-linecap="round"
 							stroke-linejoin="round"
 							class="lucide lucide-shield-question-mark-icon lucide-shield-question-mark">
@@ -207,7 +211,7 @@
 					</span>
 					<% } %>
 					<span class="text-lg font-light md:sr-only lg:not-sr-only"
-						>Admin</span
+						>Administrator</span
 					>
 				</a>
 			</div>
@@ -215,11 +219,11 @@
 
 		<main
 			id="main"
-			class="min-h-screen absolute top-0 left-0 md:left-16 lg:left-64 w-full md:w-[calc(100%-64px)] lg:w-[calc(100%-256px)] flex-1 flex flex-col text-zinc-950 transition-transform duration-300 bg-zinc-100">
+			class="min-h-screen absolute top-0 left-0 md:left-16 lg:left-64 w-full md:w-[calc(100%-64px)] lg:w-[calc(100%-256px)] flex-1 flex flex-col text-zinc-950 transition-transform duration-300 bg-white">
 			<!-- Header -->
 			<%- include('partials/header') %>
 
-			<div class="w-full mt-16 flex-1 flex flex-col p-6">
+			<div class="w-full mt-16 flex-1 flex flex-col p-6 bg-zinc-100">
 				<!-- Page content -->
 				<%- body %>
 			</div>
