@@ -162,6 +162,7 @@ export const getConfirmDeletion: RequestHandler = async (req, res, next) => {
 			title: null,
 			data: genre,
 			cancelPath: req.query.from || '/',
+			returnPath: req.query.returnTo || '/',
 		});
 	} catch (error) {
 		next(error);

@@ -8,7 +8,6 @@ import morgan from 'morgan';
 import expressLayouts from 'express-ejs-layouts';
 import methodOverride from 'method-override';
 import cookieParser from 'cookie-parser';
-import session from 'express-session';
 
 import { CustomNotFoundError } from './errors/CustomNotFoundError.js';
 import { globalErrorHandler } from './errors/globalErrorHandler.js';
@@ -43,17 +42,6 @@ app.use((req, res, next) => {
 	res.locals.currentPath = req.path;
 	next();
 });
-// app.use(
-// 	session({
-// 		secret: 'session-secret-key',
-// 		resave: false,
-// 		saveUninitialized: false,
-// 		cookie: {
-// 			secure: false,
-// 			maxAge: 24 * 60 * 60 * 1000, // 24 hours
-// 		},
-// 	})
-// );
 
 // Get the login state
 app.use((req, res, next) => {

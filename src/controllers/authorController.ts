@@ -206,7 +206,34 @@ export const editAuthorById: RequestHandler = async (req, res, next) => {
 	}
 };
 
-// 6. Delete an author
+// 6. Confirm deletion
+export const confirmDeletion: RequestHandler = async (req, res, next) => {
+	const authorId = Number(req.params['authorId']);
+
+	try {
+		const authorRes = await query(
+			'SELECT id, name FROM authors WHERE id = $1',
+			[authorId]
+		);
+
+		if (authorRes.rowCount === 0) {
+			throw new CustomNotFoundError('Author Not Found');
+		}
+
+		const author: { id: number; name: string } = authorRes.rows[0];
+
+		res.render('confirm-deletion', {
+			title: null,
+			data: author,
+			cancelPath: req.query.from ?? '/',
+			returnPath: req.query.returnTo ?? '/',
+		});
+	} catch (error) {
+		next(error);
+	}
+};
+
+// 7. Delete an author
 export const deleteAuthorById: RequestHandler = async (req, res, next) => {
 	const authorId = Number(req.params['authorId']);
 
@@ -231,32 +258,6 @@ export const deleteAuthorById: RequestHandler = async (req, res, next) => {
 		}
 
 		res.status(200).redirect('/authors');
-	} catch (error) {
-		next(error);
-	}
-};
-
-// 7. Confirm deletion
-export const confirmDeletion: RequestHandler = async (req, res, next) => {
-	const authorId = Number(req.params['authorId']);
-
-	try {
-		const authorRes = await query(
-			'SELECT id, name FROM authors WHERE id = $1',
-			[authorId]
-		);
-
-		if (authorRes.rowCount === 0) {
-			throw new CustomNotFoundError('Author Not Found');
-		}
-
-		const author: { id: number; name: string } = authorRes.rows[0];
-
-		res.render('confirm-deletion', {
-			title: null,
-			data: author,
-			cancelPath: req.query.from ?? '/',
-		});
 	} catch (error) {
 		next(error);
 	}

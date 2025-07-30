@@ -41,7 +41,7 @@
 
 			<p class="text-center">
 				<a
-					href="<%= currentPath.split('/').slice(0, -1).join('/') %>/confirm-deletion?from=<%= currentPath %>"
+					href="<%= currentPath.split('/').slice(0, -1).join('/') %>/confirm-deletion?from=<%= currentPath %>&returnTo=<%= currentPath.split('/').slice(0,2).join('/') %>"
 					class="mt-2 inline-block underline text-blue-500 font-light cursor-pointer"
 					>You can delete <span class="italic"><%= title %></span> here.</a
 				>

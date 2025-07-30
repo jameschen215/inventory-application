@@ -11,9 +11,9 @@ import {
 import { query } from '../db/pool.js';
 import { BookType, GenreType } from '../types/db-types.js';
 import { BookDisplayType } from '../types/BookDisplayType.js';
-import { insertJoins, processEntity } from '../services/bookHelpers.js';
 import { CustomNotFoundError } from '../errors/CustomNotFoundError.js';
 import { CustomInternalError } from '../errors/CustomInternalError.js';
+import { insertJoins, processEntity } from '../services/bookHelpers.js';
 
 // 1. Get all books
 export const getBooks: RequestHandler = async (req, res, next) => {
@@ -253,7 +253,7 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
 	}
 };
 
-// 6. Partial updating
+// 6. Update a book partially
 export const editBookPartially: RequestHandler = async (req, res, next) => {
 	const bookId = Number(req.params['bookId']);
 	const errors = validationResult(req);

@@ -1,29 +1,19 @@
 import { RequestHandler } from 'express';
+import { matchedData, validationResult } from 'express-validator';
+
 import { query } from '../db/pool.js';
 import { LanguageType } from '../types/db-types.js';
 import { BookDisplayType } from '../types/BookDisplayType.js';
-import { matchedData, validationResult } from 'express-validator';
-import {
-	capitalize,
-	formatCurrency,
-	formatNumToCompactNotation,
-} from '../lib/utils.js';
 import { CustomNotFoundError } from '../errors/CustomNotFoundError.js';
+import { formatCurrency, formatNumToCompactNotation } from '../lib/utils.js';
 
 // 1. Get all languages
 export const getLanguages: RequestHandler = async (_req, res, next) => {
 	try {
-		const { rows }: { rows: LanguageType[] } = await query(
-			'SELECT * FROM languages ORDER BY name;'
-		);
-
-		const languages = rows.map((row) => ({
-			...row,
-			name: capitalize(row.name),
-		}));
+		const languagesRes = await query('SELECT * FROM languages ORDER BY name;');
+		const languages: LanguageType[] = languagesRes.rows;
 
 		res.render('languages', {
-			headerTitle: 'Book Inventory',
 			title: 'Languages',
 			languages,
 		});
@@ -32,7 +22,7 @@ export const getLanguages: RequestHandler = async (_req, res, next) => {
 	}
 };
 
-// 2. Get books by language id
+// 2. Get books in a specific language
 export const getBooksByLanguage: RequestHandler = async (req, res, next) => {
 	const languageId = Number(req.params['languageId']);
 
@@ -42,13 +32,12 @@ export const getBooksByLanguage: RequestHandler = async (req, res, next) => {
 		]);
 
 		if (langRes.rowCount === 0) {
-			// return res.status(404).json({ error: 'Language not found' });
 			throw new CustomNotFoundError('Language Not Found');
 		}
 
 		const language = langRes.rows[0] as LanguageType;
 
-		const { rows }: { rows: BookDisplayType[] } = await query(
+		const booksRes = await query(
 			`SELECT 
 						books.*,
 						json_agg(DISTINCT authors.name) AS authors,
@@ -67,26 +56,48 @@ export const getBooksByLanguage: RequestHandler = async (req, res, next) => {
 			[languageId]
 		);
 
-		const books = rows.map((row) => ({
+		const books: BookDisplayType[] = booksRes.rows.map((row) => ({
 			...row,
-			title: capitalize(row.title),
 			price: formatCurrency(row.price),
 			stock: formatNumToCompactNotation(row.stock),
 		}));
 
 		res.render('books', {
-			headerTitle: 'Book Inventory',
 			title: language.name,
 			books,
 		});
-
-		// res.status(200).json({ language, books });
 	} catch (error) {
 		next(error);
 	}
 };
 
-// 3. Update a language
+// 3. Get edit form
+export const getEditForm: RequestHandler = async (req, res, next) => {
+	const languageId = Number(req.params['languageId']);
+
+	try {
+		const languageRes = await query('SELECT * FROM languages WHERE id = $1', [
+			languageId,
+		]);
+
+		if (languageRes.rowCount === 0) {
+			throw new CustomNotFoundError('language Not Found');
+		}
+
+		const language: LanguageType = languageRes.rows[0];
+
+		res.render('edit-form', {
+			formFor: 'language',
+			title: 'Edit Language',
+			errors: null,
+			data: language,
+		});
+	} catch (error) {
+		next(error);
+	}
+};
+
+// 4. Update a language
 export const editLanguageById: RequestHandler = async (req, res, next) => {
 	const languageId = Number(req.params['languageId']);
 	const errors = validationResult(req);
@@ -104,8 +115,7 @@ export const editLanguageById: RequestHandler = async (req, res, next) => {
 			const language: LanguageType = languageRes.rows[0];
 
 			return res.status(400).render('edit-form', {
-				mode: 'language',
-				headerTitle: 'Book Inventory',
+				formFor: 'language',
 				title: language.name,
 				errors: errors.mapped(),
 				data: { ...req.body, id: languageId },
@@ -133,25 +143,6 @@ export const editLanguageById: RequestHandler = async (req, res, next) => {
 	}
 };
 
-// 4. Delete a language
-export const deleteLanguageById: RequestHandler = async (req, res, next) => {
-	const languageId = Number(req.params['languageId']);
-
-	try {
-		const { rowCount } = await query('DELETE FROM languages WHERE id = $1', [
-			languageId,
-		]);
-
-		if (rowCount === 0) {
-			throw new CustomNotFoundError('Language Not Found');
-		}
-
-		res.status(200).redirect('/languages');
-	} catch (error) {
-		next(error);
-	}
-};
-
 // 5. Get confirm deletion
 export const getConfirmDeletion: RequestHandler = async (req, res, next) => {
 	const languageId = Number(req.params['languageId']);
@@ -168,38 +159,30 @@ export const getConfirmDeletion: RequestHandler = async (req, res, next) => {
 		const language: LanguageType = langRes.rows[0];
 
 		res.render('confirm-deletion', {
-			headerTitle: 'Book Inventory',
 			title: null,
 			data: language,
 			cancelPath: req.query.from || '/',
+			returnPath: req.query.returnTo || '/',
 		});
 	} catch (error) {
 		next(error);
 	}
 };
 
-// Get edit form
-export const getEditForm: RequestHandler = async (req, res, next) => {
+// 6. Delete a language
+export const deleteLanguageById: RequestHandler = async (req, res, next) => {
 	const languageId = Number(req.params['languageId']);
 
 	try {
-		const languageRes = await query('SELECT * FROM languages WHERE id = $1', [
+		const { rowCount } = await query('DELETE FROM languages WHERE id = $1', [
 			languageId,
 		]);
 
-		if (languageRes.rowCount === 0) {
-			throw new CustomNotFoundError('language Not Found');
+		if (rowCount === 0) {
+			throw new CustomNotFoundError('Language Not Found');
 		}
 
-		const language: LanguageType = languageRes.rows[0];
-
-		res.render('edit-form', {
-			mode: 'language',
-			headerTitle: 'Book Inventory',
-			title: 'Edit Language',
-			errors: null,
-			data: language,
-		});
+		res.status(200).redirect('/languages');
 	} catch (error) {
 		next(error);
 	}
