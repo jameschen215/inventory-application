@@ -1,25 +1,26 @@
-import { RequestHandler } from 'express';
 import { format } from 'date-fns';
-
-import { query } from '../db/pool.js';
-import { BookType, GenreType } from '../types/db-types.js';
+import { RequestHandler } from 'express';
 import { matchedData, validationResult } from 'express-validator';
-import { BookDisplayType } from '../types/BookDisplayType.js';
-import { insertJoins, processEntity } from '../services/bookHelpers.js';
+
 import {
 	capitalize,
 	capitalizeAll,
 	formatCurrency,
 	formatNumToCompactNotation,
 } from '../lib/utils.js';
+import { query } from '../db/pool.js';
+import { BookType, GenreType } from '../types/db-types.js';
+import { BookDisplayType } from '../types/BookDisplayType.js';
+import { insertJoins, processEntity } from '../services/bookHelpers.js';
 import { CustomNotFoundError } from '../errors/CustomNotFoundError.js';
+import { CustomInternalError } from '../errors/CustomInternalError.js';
 
 // 1. Get all books
 export const getBooks: RequestHandler = async (req, res, next) => {
 	const { q = '' } = req.query || {};
 
 	try {
-		const { rows }: { rows: BookDisplayType[] } = await query(
+		const booksRes = await query(
 			`SELECT 
 				books.*,
 				json_agg(DISTINCT authors.name) AS authors,
@@ -37,15 +38,13 @@ export const getBooks: RequestHandler = async (req, res, next) => {
 			ORDER BY books.title;`,
 			[`%${q}%`]
 		);
-		const books = rows.map((row) => ({
+		const books: BookDisplayType[] = booksRes.rows.map((row) => ({
 			...row,
-			title: capitalize(row.title),
 			price: formatCurrency(row.price),
 			stock: formatNumToCompactNotation(row.stock),
 		}));
 
 		res.render('books', {
-			headerTitle: 'Book Inventory',
 			title: 'Books',
 			books,
 			currentPath: '/',
@@ -77,15 +76,14 @@ export const getBookById: RequestHandler = async (req, res, next) => {
 			GROUP BY books.id;`,
 			[bookId]
 		);
+
 		if (bookRes.rowCount === 0) {
-			return res.status(404).json({ error: 'Book not found' });
+			throw new CustomNotFoundError('Book Not Found');
 		}
 		const book = bookRes.rows[0] as BookDisplayType;
 
 		const formattedBook = {
 			...book,
-			title: capitalize(book.title),
-			subtitle: book.subtitle ? capitalize(book.subtitle) : null,
 			stock: formatNumToCompactNotation(book.stock),
 			price: formatCurrency(book.price),
 			authors: book.authors.join(', '),
@@ -98,27 +96,40 @@ export const getBookById: RequestHandler = async (req, res, next) => {
 		};
 
 		res.render('book', {
-			headerTitle: 'Book Details',
 			title: null,
 			book: formattedBook,
-			returnPath: req.query.from ?? '/',
+			returnTo: req.query.from,
 		});
 	} catch (error) {
 		next(error);
 	}
 };
 
-// 3. Post a new book
+// 3. Get create form
+export const getCreateForm: RequestHandler = async (req, res, next) => {
+	try {
+		const genresRes = await query(`SELECT * FROM genres`);
+		const genres: GenreType[] = genresRes.rows;
+
+		res.render('book-form', {
+			title: 'Create New Book',
+			genres,
+			errors: null,
+			data: null,
+			cancelPath: req.query.from || '/',
+		});
+	} catch (error) {
+		next(error);
+	}
+};
+
+// 4. Post a new book
 export const createNewBook: RequestHandler = async (req, res, next) => {
 	const errors = validationResult(req);
 
 	if (!errors.isEmpty()) {
-		// return res.status(400).json(errors);
-		const { rows }: { rows: GenreType[] } = await query('SELECT * FROM genres');
-		const genres = rows.map((row) => ({
-			...row,
-			name: row.name.toLowerCase(),
-		}));
+		const genresRes = await query('SELECT * FROM genres');
+		const genres = genresRes.rows;
 
 		return res.status(400).render('book-form', {
 			title: 'Books',
@@ -129,26 +140,31 @@ export const createNewBook: RequestHandler = async (req, res, next) => {
 	}
 
 	const formData = matchedData(req) as BookDisplayType;
-	const {
-		title,
-		subtitle,
-		description,
-		stock,
-		price,
-		published_at,
-		cover_url,
-		authors,
-		genres,
-		languages,
-	} = formData;
+	const formattedFormData = {
+		...formData,
+		title: capitalizeAll(formData.title),
+		subtitle: formData.subtitle ? capitalize(formData.subtitle) : null,
+		description: formData.description ? capitalize(formData.description) : null,
+		authors: formData.authors.map((author) => capitalizeAll(author)),
+		genres: formData.genres.map((genre) => capitalize(genre)),
+		languages: formData.languages.map((lang) => capitalize(lang)),
+	};
 
 	try {
 		// 1. Process related entities
-		const authorIds = (await processEntity('authors', authors)) as number[];
-		const genreIds = (await processEntity('genres', genres)) as number[];
+		const authorIds = (await processEntity(
+			'authors',
+			formattedFormData.authors
+		)) as number[];
+
+		const genreIds = (await processEntity(
+			'genres',
+			formattedFormData.genres
+		)) as number[];
+
 		const languageIds = (await processEntity(
 			'languages',
-			languages
+			formattedFormData.languages
 		)) as number[];
 
 		// 2. Insert new book if not existing
@@ -158,19 +174,19 @@ export const createNewBook: RequestHandler = async (req, res, next) => {
 			 ON CONFLICT DO NOTHING
 			 RETURNING *`,
 			[
-				capitalizeAll(title),
-				capitalize(subtitle),
-				description,
-				stock,
-				price,
-				published_at,
-				cover_url,
+				formattedFormData.title,
+				formattedFormData.subtitle,
+				formattedFormData.description,
+				formattedFormData.stock,
+				formattedFormData.price,
+				formattedFormData.published_at,
+				formattedFormData.cover_url,
 			]
 		);
 		const book: BookType | undefined = insertBookRes.rows[0];
 
 		if (!book) {
-			return res.status(500).json({ error: 'Book insertion failed.' });
+			throw new CustomInternalError('Book insertion failed.');
 		}
 
 		// 3. Insert relationships
@@ -184,27 +200,77 @@ export const createNewBook: RequestHandler = async (req, res, next) => {
 	}
 };
 
-// 4. Partial updating
+// 5. Get edit form
+export const getEditForm: RequestHandler = async (req, res, next) => {
+	const bookId = Number(req.params['bookId']);
+
+	try {
+		const genresRes = await query(`SELECT * FROM genres`);
+		const genres: GenreType[] = genresRes.rows;
+
+		const bookRes = await query(
+			`SELECT 
+				books.*,
+				json_agg(DISTINCT authors.name) AS authors,
+				COALESCE(json_agg(DISTINCT genres.name) FILTER (WHERE genres.name IS NOT NULL), '[]') AS genres,
+				COALESCE(json_agg(DISTINCT languages.name) FILTER (WHERE genres.name IS NOT NULL), '[]') AS languages
+			FROM books
+			LEFT JOIN book_authors ON books.id = book_authors.book_id
+			LEFT JOIN authors ON book_authors.author_id = authors.id
+			LEFT JOIN book_genres ON books.id = book_genres.book_id
+			LEFT JOIN genres ON book_genres.genre_id = genres.id
+			LEFT JOIN book_languages ON books.id = book_languages.book_id
+			LEFT JOIN languages ON book_languages.language_id = languages.id
+			WHERE books.id = $1
+			GROUP BY books.id ORDER BY books.title;`,
+			[bookId]
+		);
+
+		if (bookRes.rowCount === 0) {
+			throw new CustomNotFoundError('Book Not Found');
+		}
+
+		const book = bookRes.rows[0] as BookDisplayType;
+
+		const formattedBook = {
+			...book,
+			authors: book.authors.join(', '),
+			languages: book.languages.join(', '),
+			published_at: book.published_at
+				? new Date(book.published_at).toISOString().slice(0, 10)
+				: '',
+		};
+
+		res.render('book-form', {
+			title: 'Edit Book',
+			genres,
+			errors: null,
+			data: formattedBook,
+			cancelPath: req.query.from || '/',
+		});
+	} catch (error) {
+		next(error);
+	}
+};
+
+// 6. Partial updating
 export const editBookPartially: RequestHandler = async (req, res, next) => {
+	const bookId = Number(req.params['bookId']);
 	const errors = validationResult(req);
 
 	if (!errors.isEmpty()) {
-		// return res.status(400).json({ errors: errors.array(), data: req.body });
-		const { rows }: { rows: GenreType[] } = await query('SELECT * FROM genres');
-		const genres = rows.map((row) => ({
-			...row,
-			name: row.name.toLowerCase(),
-		}));
+		const genresRes = await query('SELECT * FROM genres');
+		const genres = genresRes.rows;
 
 		return res.status(400).render('book-form', {
 			title: 'Books',
 			genres,
 			errors: errors.mapped(),
 			data: req.body,
+			cancelPath: req.query.from ?? '/',
 		});
 	}
 
-	const bookId = Number(req.params['bookId']);
 	const formData = matchedData(req);
 
 	try {
@@ -250,9 +316,6 @@ export const editBookPartially: RequestHandler = async (req, res, next) => {
 			);
 
 			if (updateRes.rowCount === 0) {
-				// return res
-				// 	.status(404)
-				// 	.json({ error: 'Book not found or no changes made' });
 				throw new CustomNotFoundError('Book Not Found');
 			}
 		}
@@ -274,106 +337,7 @@ export const editBookPartially: RequestHandler = async (req, res, next) => {
 	}
 };
 
-// 5. Delete a book
-export const deleteBookById: RequestHandler = async (req, res, next) => {
-	const bookId = Number(req.params['bookId']);
-
-	try {
-		const delRes = await query('DELETE FROM books WHERE id = $1', [bookId]);
-
-		if (delRes.rowCount === 0) {
-			return res.status(404).json({ error: 'Book not found' });
-		}
-
-		const returnTo = typeof req.query.from === 'string' ? req.query.from : '/';
-
-		res.status(200).redirect(returnTo);
-	} catch (error) {
-		next(error);
-	}
-};
-
-// 6. Get create form
-export const getCreateForm: RequestHandler = async (req, res, next) => {
-	try {
-		const { rows }: { rows: GenreType[] } = await query(`SELECT * FROM genres`);
-		const genres: GenreType[] = rows.map((row) => ({
-			...row,
-			name: row.name.toLowerCase(),
-		}));
-
-		res.render('book-form', {
-			headerTitle: 'Books',
-			title: 'Create New Book',
-			genres,
-			errors: null,
-			data: null,
-			cancelPath: req.query.from || '/',
-		});
-	} catch (error) {
-		next(error);
-	}
-};
-
-// 7. Get edit form
-export const getEditForm: RequestHandler = async (req, res, next) => {
-	const bookId = Number(req.params['bookId']);
-
-	try {
-		const { rows }: { rows: GenreType[] } = await query(`SELECT * FROM genres`);
-		const genres: GenreType[] = rows.map((row) => ({
-			...row,
-			name: row.name.toLowerCase(),
-		}));
-
-		const bookRes = await query(
-			`SELECT 
-				books.*,
-				json_agg(DISTINCT authors.name) AS authors,
-				COALESCE(json_agg(DISTINCT genres.name) FILTER (WHERE genres.name IS NOT NULL), '[]') AS genres,
-				COALESCE(json_agg(DISTINCT languages.name) FILTER (WHERE genres.name IS NOT NULL), '[]') AS languages
-			FROM books
-			LEFT JOIN book_authors ON books.id = book_authors.book_id
-			LEFT JOIN authors ON book_authors.author_id = authors.id
-			LEFT JOIN book_genres ON books.id = book_genres.book_id
-			LEFT JOIN genres ON book_genres.genre_id = genres.id
-			LEFT JOIN book_languages ON books.id = book_languages.book_id
-			LEFT JOIN languages ON book_languages.language_id = languages.id
-			WHERE books.id = $1
-			GROUP BY books.id ORDER BY books.title;`,
-			[bookId]
-		);
-		if (bookRes.rowCount === 0) {
-			return res.status(404).json({ error: 'Book not found' });
-		}
-		const book = bookRes.rows[0] as BookDisplayType;
-
-		// console.log('Book: ', book);
-
-		const formattedBook = {
-			...book,
-			authors: book.authors.join(', '),
-			languages: book.languages.join(', '),
-			genres: book.genres.map((g) => g.toLowerCase()),
-			published_at: book.published_at
-				? new Date(book.published_at).toISOString().slice(0, 10)
-				: '',
-		};
-
-		res.render('book-form', {
-			headerTitle: 'Book Inventory',
-			title: 'Edit Book',
-			genres,
-			errors: null,
-			data: formattedBook,
-			cancelPath: req.query.from || '/',
-		});
-	} catch (error) {
-		next(error);
-	}
-};
-
-// 8. Confirm delete
+// 7. Get deleting confirmation page
 export const confirmDeletion: RequestHandler = async (req, res, next) => {
 	const bookId = Number(req.params['bookId']);
 
@@ -387,14 +351,51 @@ export const confirmDeletion: RequestHandler = async (req, res, next) => {
 			throw new CustomNotFoundError('Book Not Found');
 		}
 
-		const book = bookRes.rows[0];
+		const book: { id: number; title: string } = bookRes.rows[0];
+
+		// Store returnTo in cookie if it exists
+		const returnTo =
+			(req.query.returnTo as string) || req.cookies.returnTo || '/';
+
+		if (req.query.returnTo) {
+			res.cookie('returnTo', req.query.returnTo, {
+				maxAge: 10 * 60 * 1000, // 10 minutes
+				httpOnly: true,
+			});
+		}
 
 		res.render('confirm-deletion', {
-			headerTitle: 'Book Inventory',
 			title: null,
 			data: book,
-			cancelPath: req.query.from || '/',
+			cancelPath: req.query.from || returnTo,
+			returnPath: returnTo,
 		});
+	} catch (error) {
+		next(error);
+	}
+};
+
+// 8. Delete a book
+export const deleteBookById: RequestHandler = async (req, res, next) => {
+	const bookId = Number(req.params['bookId']);
+
+	try {
+		const delRes = await query('DELETE FROM books WHERE id = $1', [bookId]);
+
+		if (delRes.rowCount === 0) {
+			throw new CustomNotFoundError('Book Not Found');
+		}
+
+		const returnTo =
+			typeof req.query.returnTo === 'string'
+				? req.query.returnTo
+				: typeof req.body.returnTo === 'string'
+				? req.body.returnTo
+				: req.cookies.returnTo || '/';
+
+		res.clearCookie('returnTo');
+
+		res.status(200).redirect(returnTo);
 	} catch (error) {
 		next(error);
 	}

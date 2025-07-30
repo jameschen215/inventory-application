@@ -43,6 +43,17 @@ app.use((req, res, next) => {
 	res.locals.currentPath = req.path;
 	next();
 });
+// app.use(
+// 	session({
+// 		secret: 'session-secret-key',
+// 		resave: false,
+// 		saveUninitialized: false,
+// 		cookie: {
+// 			secure: false,
+// 			maxAge: 24 * 60 * 60 * 1000, // 24 hours
+// 		},
+// 	})
+// );
 
 // Get the login state
 app.use((req, res, next) => {

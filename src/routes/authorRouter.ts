@@ -25,11 +25,11 @@ router.get('/:authorId/books', getBooksByAuthorId);
 // 4. Get author edit form
 router.get('/:authorId/edit', requireAdmin, getEditForm);
 
-// 6. Confirm deletion
+// 5. Confirm deletion
 router.get('/:authorId/confirm-deletion', requireAdmin, confirmDeletion);
 
-// 4. Update a author
+// 6. Update a author
 router.put('/:authorId/edit', requireAdmin, authorSchema, editAuthorById);
 
-// 5. Delete a author
+// 7. Delete a author
 router.delete('/:authorId', requireAdmin, deleteAuthorById);

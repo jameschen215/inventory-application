@@ -147,7 +147,7 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
 	}
 };
 
-// 4. Update an author
+// 5. Update an author
 export const editAuthorById: RequestHandler = async (req, res, next) => {
 	const authorId = Number(req.params['authorId']);
 	const errors = validationResult(req);
@@ -206,7 +206,7 @@ export const editAuthorById: RequestHandler = async (req, res, next) => {
 	}
 };
 
-// 4. Delete an author
+// 6. Delete an author
 export const deleteAuthorById: RequestHandler = async (req, res, next) => {
 	const authorId = Number(req.params['authorId']);
 
@@ -236,7 +236,7 @@ export const deleteAuthorById: RequestHandler = async (req, res, next) => {
 	}
 };
 
-// 5. Confirm deletion
+// 7. Confirm deletion
 export const confirmDeletion: RequestHandler = async (req, res, next) => {
 	const authorId = Number(req.params['authorId']);
 

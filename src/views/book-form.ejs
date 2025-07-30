@@ -1,6 +1,6 @@
 <!-- define form action and method -->
 <% const formAction = title.includes('Create') ? '/books/create' :
-`/books/${locals.data.id}/edit?_method=PUT` %>
+`/books/${locals.data.id}/edit?_method=PUT&from=${locals.cancelPath}` %>
 
 <div class="w-full max-w-md mx-auto p-6 rounded-lg shadow-md bg-white">
 	<%- include('partials/title') %>
