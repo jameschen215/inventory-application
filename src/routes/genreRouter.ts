@@ -1,4 +1,7 @@
 import { Router } from 'express';
+
+import { genreSchema } from '../validators/genreSchema.js';
+import { requireAdmin } from '../middlewares/requireAdmin.js';
 import {
 	editGenreById,
 	getBooksByGenreId,
@@ -7,8 +10,6 @@ import {
 	getConfirmDeletion,
 	getEditForm,
 } from '../controllers/genreController.js';
-import { genreSchema } from '../validators/genreSchema.js';
-import { requireAdmin } from '../middlewares/requireAdmin.js';
 
 export const router = Router();
 

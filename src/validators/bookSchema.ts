@@ -74,7 +74,7 @@ export const bookCreateSchema = checkSchema({
 		custom: {
 			options: (genre: string[]) =>
 				genre.every((g) => /^[a-zA-Z\s]{2,25}$/.test(g)),
-			errorMessage: 'Each genre must be a valid word (2-25 letters).',
+			errorMessage: 'Each genre must be a valid word (2-25 letters)',
 		},
 	},
 	languages: {
@@ -83,7 +83,7 @@ export const bookCreateSchema = checkSchema({
 		custom: {
 			options: (language: string[]) =>
 				language.every((l) => /^[a-zA-Z\s]{2,25}$/.test(l)),
-			errorMessage: `Each language must be a valid word (2-25 letters).`,
+			errorMessage: `Each language must be a valid word (2-25 letters)`,
 		},
 	},
 	published_at: {
@@ -99,9 +99,16 @@ export const bookCreateSchema = checkSchema({
 	},
 	cover_url: {
 		in: ['body'],
-		optional: true,
+		optional: { options: { nullable: true, checkFalsy: true } }, // This will treat empty strings as optional
 		isString: true,
 		trim: true,
+		custom: {
+			options: (url) =>
+				/^(https:\/\/covers\.openlibrary\.org\/[\w\d\/-]+\.jpg|https:\/\/(?:www\.)?archive\.org\/.+\.(?:jpg|jpeg)$)/i.test(
+					url
+				),
+			errorMessage: 'Book cover URL must come from Open Library',
+		},
 	},
 });
 
@@ -194,8 +201,15 @@ export const bookEditSchema = checkSchema({
 	},
 	cover_url: {
 		in: ['body'],
-		optional: true,
+		optional: { options: { nullable: true, checkFalsy: true } }, // This will treat empty strings as optional
 		isString: true,
 		trim: true,
+		custom: {
+			options: (url) =>
+				/^(https:\/\/covers\.openlibrary\.org\/[\w\d\/-]+\.jpg|https:\/\/(?:www\.)?archive\.org\/.+\.(?:jpg|jpeg)$)/i.test(
+					url
+				),
+			errorMessage: 'Book cover URL must come from Open Library',
+		},
 	},
 });

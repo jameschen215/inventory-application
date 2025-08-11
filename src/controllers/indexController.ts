@@ -112,6 +112,7 @@ export const getCreateForm: RequestHandler = async (req, res, next) => {
 		const genres: GenreType[] = genresRes.rows;
 
 		res.render('book-form', {
+			isEditMode: false,
 			title: 'Create New Book',
 			genres,
 			errors: null,
@@ -132,7 +133,8 @@ export const createNewBook: RequestHandler = async (req, res, next) => {
 		const genres = genresRes.rows;
 
 		return res.status(400).render('book-form', {
-			title: 'Books',
+			isEditMode: false,
+			title: 'Create New Book',
 			genres,
 			errors: errors.mapped(),
 			data: req.body,
@@ -194,7 +196,7 @@ export const createNewBook: RequestHandler = async (req, res, next) => {
 		await insertJoins('book_genres', 'genre_id', book.id, genreIds);
 		await insertJoins('book_languages', 'language_id', book.id, languageIds);
 
-		res.status(201).redirect('/');
+		res.status(201).redirect('/?submitted=true');
 	} catch (error) {
 		next(error);
 	}
@@ -242,6 +244,7 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
 		};
 
 		res.render('book-form', {
+			isEditMode: true,
 			title: 'Edit Book',
 			genres,
 			errors: null,
@@ -263,6 +266,7 @@ export const editBookPartially: RequestHandler = async (req, res, next) => {
 		const genres = genresRes.rows;
 
 		return res.status(400).render('book-form', {
+			isEditMode: true,
 			title: 'Books',
 			genres,
 			errors: errors.mapped(),

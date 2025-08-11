@@ -10,7 +10,7 @@ async function initializeDatabase() {
 		await client.connect();
 		console.log('Connected successfully.');
 
-		// Drop existing table if existing
+		// Drop existing tables and types if existing
 		console.log('Dropping existing tables...');
 		await client.query(`
 			DROP TYPE IF EXISTS gender CASCADE;

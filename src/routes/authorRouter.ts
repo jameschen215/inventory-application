@@ -1,4 +1,7 @@
 import { Router } from 'express';
+
+import { authorSchema } from '../validators/authorSchema.js';
+import { requireAdmin } from '../middlewares/requireAdmin.js';
 import {
 	getAuthors,
 	getBooksByAuthorId,
@@ -8,8 +11,6 @@ import {
 	getEditForm,
 	confirmDeletion,
 } from '../controllers/authorController.js';
-import { authorSchema } from '../validators/authorSchema.js';
-import { requireAdmin } from '../middlewares/requireAdmin.js';
 
 export const router = Router();
 

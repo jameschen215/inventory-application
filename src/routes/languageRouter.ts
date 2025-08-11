@@ -1,14 +1,15 @@
 import { Router } from 'express';
+
+import { requireAdmin } from '../middlewares/requireAdmin.js';
+import { languageSchema } from '../validators/languageSchema.js';
 import {
-	getBooksByLanguage,
+	getEditForm,
 	getLanguages,
 	editLanguageById,
+	getBooksByLanguage,
 	deleteLanguageById,
 	getConfirmDeletion,
-	getEditForm,
 } from '../controllers/languageController.js';
-import { languageSchema } from '../validators/languageSchema.js';
-import { requireAdmin } from '../middlewares/requireAdmin.js';
 
 export const router = Router();
 

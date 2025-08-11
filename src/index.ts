@@ -31,7 +31,20 @@ app.set('layout', 'layout'); // will use views/layout.ejs
 
 // Middlewares
 app.use(cors());
-app.use(helmet());
+app.use(
+	helmet.contentSecurityPolicy({
+		directives: {
+			defaultSrc: ["'self'"],
+			imgSrc: [
+				"'self'",
+				'data',
+				'https://covers.openlibrary.org',
+				'https://archive.org',
+				'https://*.archive.org', // for redirects
+			],
+		},
+	})
+);
 app.use(morgan('dev'));
 app.use(methodOverride('_method')); // allows ?_method=DELETE
 app.use(cookieParser());

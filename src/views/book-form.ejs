@@ -1,11 +1,342 @@
 <!-- define form action and method -->
-<% const formAction = title.includes('Create') ? '/books/create' :
-`/books/${locals.data.id}/edit?_method=PUT&from=${locals.cancelPath}` %>
+<% const formAction = !isEditMode ? `/books/create?from=${locals.cancelPath}` :
+`/books/${locals.data?.id}/edit?_method=PUT&from=${locals.cancelPath}` %>
 
-<div class="w-full max-w-md mx-auto p-6 rounded-lg shadow-md bg-white">
+<div class="w-full max-w-lg mx-auto p-6 rounded-lg shadow-md bg-white">
+	<!-- Skip Link for Keyboard Navigation -->
+	<a
+		href="#main-form"
+		class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded">
+		Skip to form
+	</a>
+
 	<%- include('partials/title') %>
 
-	<form action="<%= formAction %>" method="post" class="flex flex-col gap-5">
+	<!-- Form Instructions -->
+	<div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
+		<h2 class="text-sm font-medium text-blue-900 mb-2">Form Instructions</h2>
+		<p class="text-sm text-blue-800">
+			Fields marked with an asterisk (*) are required. <% if (isEditMode) { %>
+			You are editing an existing book entry. <% } else { %> Please fill in all
+			required information to add a new book. <% } %>
+		</p>
+	</div>
+
+	<form
+		id="book-form"
+		action="<%= formAction %>"
+		method="post"
+		class="flex flex-col gap-6"
+		aria-label="<%= !isEditMode ? 'Add new book' : 'Edit book details' %>"
+		novalidate>
+		<!-- Basic Information Section -->
+
+		<fieldset class="border border-zinc-200 rounded-lg p-4">
+			<legend class="text-lg font-semibold text-zinc-800 px-2">
+				Basic Information
+			</legend>
+
+			<!-- Title -->
+			<div class="mb-4">
+				<label for="title" class="block text-sm font-medium text-zinc-700 mb-2">
+					Title <span class="text-red-500" aria-label="required">*</span>
+				</label>
+				<input
+					type="text"
+					id="title"
+					name="title"
+					value="<%= locals.data?.title ?? '' %>"
+					required
+					aria-required="true"
+					aria-describedby="<%= locals.errors?.title ? 'title-error' : '' %>"
+					class="w-full border border-zinc-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none px-3 py-2 rounded-md transition-colors duration-20" />
+			</div>
+
+			<!-- Subtitle -->
+			<div class="mb-4">
+				<label
+					for="subtitle"
+					class="block text-sm font-medium text-zinc-700 mb-2">
+					Subtitle
+				</label>
+				<input
+					type="text"
+					id="subtitle"
+					name="subtitle"
+					value="<%= locals.data?.subtitle ?? '' %>"
+					aria-describedby="<%= locals.errors?.subtitle ? 'subtitle-error' : 'subtitle-help' %>"
+					class="w-full border border-zinc-300 focus:ring-2 focus:border-blue-500 focus:ring-blue-200 outline-none px-3 py-2 rounded-md transition-colors duration-200" />
+
+				<p id="subtitle-help" class="text-sm text-zinc-500 mt-1">
+					Optional subtitle or tagline for the book
+				</p>
+			</div>
+
+			<!-- Authors -->
+			<div class="mb-4">
+				<label
+					for="authors"
+					class="block text-sm font-medium text-zinc-700 mb-2">
+					Author(s) <span class="text-red-500" aria-label="required">*</span>
+				</label>
+				<input
+					type="text"
+					id="authors"
+					name="authors"
+					value="<%= locals.data?.authors ?? '' %>"
+					required
+					aria-required="true"
+					aria-describedby="<%= locals.errors?.authors ? 'authors-error' : 'authors-help' %>"
+					placeholder="e.g., Jane Doe, John Smith"
+					class="w-full border border-zinc-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none px-3 py-2 rounded-md transition-colors duration-200" />
+
+				<p id="authors-help" class="text-sm text-zinc-500 mt-1">
+					List multiple authors separated by commas
+				</p>
+			</div>
+
+			<!-- Languages -->
+			<div class="mb-4">
+				<label
+					for="languages"
+					class="block text-sm font-medium text-zinc-700 mb-2">
+					Language(s)
+				</label>
+				<input
+					type="text"
+					id="languages"
+					name="languages"
+					value="<%= locals.data?.languages ?? '' %>"
+					aria-describedby="<%= locals.errors?.languages ? 'languages-error' : 'languages-help' %>"
+					placeholder="e.g., English, Spanish"
+					class="w-full border border-zinc-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none px-3 py-2 rounded-md transition-colors duration-200" />
+
+				<p id="languages-help" class="text-sm text-zinc-500 mt-1">
+					List multiple languages separated by commas
+				</p>
+			</div>
+		</fieldset>
+
+		<!-- Genre Selection Section -->
+		<fieldset class="border border-zinc-200 rounded-lg p-4">
+			<legend class="text-lg font-semibold text-zinc-800 px-2">
+				Genre Selection
+			</legend>
+
+			<!-- Existing Genres -->
+			<div class="mb-4">
+				<div class="mb-3">
+					<span class="block text-sm font-medium text-zinc-700 mb-2"
+						>Choose existing genres</span
+					>
+					<p class="text-sm text-zinc-500 mb-3">
+						Select all genres that apply to this book
+					</p>
+				</div>
+
+				<div
+					class="grid grid-cols-2 md:grid-cols-3 gap-3 p-4 border border-zinc-300 rounded-md">
+					<% if (genres && genres.length> 0) { %> <% genres.forEach(genre=> { %>
+					<label
+						class="flex items-center gap-2 cursor-pointer hover:bg-white p-2 rounded transition-colors duration-200">
+						<input type="checkbox" name="genres" id="genre-<%=
+						genre.name.replace(/\s+/g, '-').toLowerCase() %>" value="<%=
+						genre.name %>" <%=locals.data?.genres?.includes(genre.name) ?
+						'checked' : '' %> class="w-4 h-4 text-blue-600 border-zinc-300
+						rounded focus:ring-blue-500 focus:ring-2" />
+						<span class="text-sm text-zinc-700 capitalize select-none">
+							<%= genre.name %>
+						</span>
+					</label>
+					<% }) %> <% } else { %>
+					<p class="text-sm text-zinc-500 col-span-full">
+						No existing genres available
+					</p>
+					<% } %>
+				</div>
+			</div>
+
+			<!-- New Genres -->
+			<div class="mb-4">
+				<label
+					for="new_genres"
+					class="block text-sm font-medium text-zinc-700 mb-2">
+					Add new genre(s)
+				</label>
+				<input
+					type="text"
+					id="new_genres"
+					name="new_genres"
+					value="<%= locals.data?.new_genres ?? '' %>"
+					aria-describedby="<%= locals.errors?.genres ? 'new-genres-error' : 'new-genres-help' %>"
+					placeholder="e.g., Science Fiction, Mystery"
+					class="w-full border border-zinc-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none px-3 py-2 rounded-md transition-colors duration-200" />
+				<% if (locals.errors?.genres) { %>
+				<p
+					id="new-genres-error"
+					class="text-sm text-red-600 mt-1 flex items-center">
+					<%= errors.genres.msg %>
+				</p>
+				<% } else { %>
+				<p id="new-genres-help" class="text-sm text-zinc-500 mt-1">
+					Enter new genres separated by commas if none of the above options fit
+				</p>
+				<% } %>
+			</div>
+		</fieldset>
+
+		<!-- Inventory and Pricing Section -->
+		<fieldset class="border border-zinc-200 rounded-lg p-4">
+			<legend class="text-lg font-semibold text-zinc-800 px-2">
+				Inventory & Pricing
+			</legend>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<!-- Stock -->
+				<div>
+					<label
+						for="stock"
+						class="block text-sm font-medium text-zinc-700 mb-2">
+						Stock Quantity
+						<span class="text-red-500" aria-label="required">*</span>
+					</label>
+					<input
+						type="number"
+						id="stock"
+						name="stock"
+						min="0"
+						step="1"
+						value="<%= locals.data?.stock ?? '' %>"
+						required
+						aria-required="true"
+						aria-describedby="<%= locals.errors?.stock ? 'stock-error' : 'stock-help' %>"
+						class="w-full border border-zinc-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none px-3 py-2 rounded-md transition-colors duration-200" />
+
+					<p id="stock-help" class="text-sm text-zinc-500 mt-1">
+						Number of copies available
+					</p>
+				</div>
+
+				<!-- Price -->
+				<div>
+					<label
+						for="price"
+						class="block text-sm font-medium text-zinc-700 mb-2">
+						Price <span class="text-red-500" aria-label="required">*</span>
+					</label>
+					<div class="relative">
+						<span class="absolute left-3 top-2 text-zinc-500">$</span>
+						<input
+							type="number"
+							id="price"
+							name="price"
+							min="0"
+							step="0.01"
+							value="<%= locals.data?.price ?? '' %>"
+							required
+							aria-required="true"
+							aria-describedby="<%= locals.errors?.price ? 'price-error' : 'price-help' %>"
+							class="w-full border border-zinc-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none pl-8 pr-3 py-2 rounded-md transition-colors duration-200" />
+
+						<p id="price-help" class="text-sm text-zinc-500 mt-1">
+							Price in USD
+						</p>
+					</div>
+				</div>
+			</div>
+		</fieldset>
+
+		<!-- Additional Details Section -->
+		<fieldset class="border border-zinc-200 rounded-lg p-4">
+			<legend class="text-lg font-semibold text-zinc-800 px-2">
+				Additional Details
+			</legend>
+
+			<!-- Publication Date -->
+			<div class="mb-4">
+				<label
+					for="published_at"
+					class="block text-sm font-medium text-zinc-700 mb-2">
+					Publication Date
+				</label>
+				<input
+					type="date"
+					name="published_at"
+					id="published_at"
+					value="<%= locals.data?.published_at ?? '' %>"
+					aria-describedby="<%= locals.errors?.published_at ? 'published-error' : 'published-help' %>"
+					class="w-full border border-zinc-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none px-3 py-2 rounded-md transition-colors duration-200" />
+
+				<p id="published-help" class="text-sm text-zinc-500 mt-1">
+					When was this book first published?
+				</p>
+			</div>
+
+			<!-- Cover URL -->
+			<div class="mb-4">
+				<label
+					for="cover_url"
+					class="block text-sm font-medium text-zinc-700 mb-2">
+					Cover Image URL
+				</label>
+				<input
+					type="text"
+					name="cover_url"
+					id="cover_url"
+					value="<%= locals.data?.cover_url ?? '' %>"
+					aria-describedby="<%= locals.errors?.cover_url ? 'cover-error' : 'cover-help' %>"
+					placeholder="https://example.com/book-cover.jpg"
+					class="w-full border border-zinc-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none px-3 py-2 rounded-md transition-colors duration-200" />
+				<!-- <% if (locals.errors?.cover_url) { %>
+				<p id="cover-error" class="text-sm text-red-600 mt-1 flex items-center">
+					<%= errors.cover_url.msg %>
+				</p>
+				<% } else { %> -->
+				<p id="cover-help" class="text-sm text-zinc-500 mt-1">
+					Link to the book's cover image from Open Library (optional)
+				</p>
+				<!-- <% } %> -->
+			</div>
+
+			<!-- Description -->
+			<div class="mb-4">
+				<label
+					for="description"
+					class="block text-sm font-medium text-zinc-700 mb-2">
+					Description
+				</label>
+				<textarea
+					name="description"
+					id="description"
+					rows="6"
+					aria-describedby="<%= locals.errors?.description ? 'description-error' : 'description-help' %>"
+					placeholder="Enter a detailed description of the book..."
+					class="w-full border border-zinc-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none px-3 py-2 rounded-md transition-colors duration-200 resize-vertical">
+<%= locals.data?.description ?? '' %></textarea
+				>
+
+				<p id="description-help" class="text-sm text-zinc-500 mt-1">
+					Provide a summary or description of the book's content
+				</p>
+			</div>
+		</fieldset>
+
+		<!-- Form Actions -->
+		<div class="flex flex-col sm:flex-row gap-4 pt-4">
+			<button
+				id="cancel-btn"
+				type="button"
+				class="flex-1 inline-flex items-center justify-center px-6 py-2 border border-zinc-300 text-zinc-700 bg-white rounded-md hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 transition-colors duration-200 cursor-pointer">
+				Cancel
+			</button>
+
+			<button
+				type="submit"
+				class="flex-1 inline-flex items-center justify-center px-6 py-2 border border-blue-600 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 cursor-pointer">
+				<%= isEditMode ? 'Update Book' : 'Add Book' %>
+			</button>
+		</div>
+		<!-- 
 		<div class="flex flex-col">
 			<label for="title" class="uppercase text-sm text-zinc-600 font-light mb-1"
 				>Title *</label
@@ -84,8 +415,8 @@
 			<% } %>
 		</div>
 
-		<!-- Genre -->
-		<div class="flex flex-col">
+
+		<!-- <div class="flex flex-col">
 			<fieldset>
 				<legend class="uppercase text-sm text-zinc-600 font-light mb-1">
 					Choose genres
@@ -93,11 +424,11 @@
 
 				<div
 					class="grid grid-cols-3 gap-y-2 border border-zinc-300 px-3 py-3 rounded-md">
-					<% genres.map(genre => { %>
+					<% genres.map(genre=> { %>
 					<div class="flex items-center gap-1">
 						<input type="checkbox" name="genres" id="<%= genre.name %>"
-						value="<%= genre.name %>" <%=
-						locals.data?.genres?.includes(genre.name) ? 'checked' : '' %> />
+						value="<%= genre.name %>"
+						<%=locals.data?.genres?.includes(genre.name) ? 'checked' : '' %> />
 						<label
 							for="<%= genre.name %>"
 							class="capitalize text-base font-light">
@@ -107,9 +438,9 @@
 					<% })%>
 				</div>
 			</fieldset>
-		</div>
+		</div> -->
 
-		<div class="flex flex-col">
+		<!-- <div class="flex flex-col">
 			<label
 				for="new_genres"
 				class="uppercase text-sm text-zinc-600 font-light mb-1"
@@ -221,11 +552,11 @@
 			<% if (locals.errors?.description) { %>
 			<p class="text-sm text-red-500 mt-1"><%= errors.description.msg %></p>
 			<% } %>
-		</div>
+		</div> -->
 
-		<div class="flex justify-between gap-5">
+		<!-- <div class="flex justify-between gap-5">
 			<a
-				href="/admin?redirect=<%= encodeURIComponent(cancelPath) %>"
+
 				class="cursor-pointer text-blue-500 py-1 px-6 rounded-sm border border-blue-500 hover:bg-blue-500 hover:text-zinc-50 flex items-center justify-center transition-colors duration-200">
 				Cancel
 			</a>
@@ -235,6 +566,6 @@
 				class="cursor-pointer py-1 px-6 rounded-sm border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-zinc-50 transition-colors duration-200">
 				Submit
 			</button>
-		</div>
+		</div> -->
 	</form>
 </div>

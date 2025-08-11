@@ -6,19 +6,6 @@ if (cancelBtn) {
 	});
 }
 
-// const mobileInput = document.querySelector('[data-device="mobile"]');
-// const desktopInput = document.querySelector('[data-device="desktop"]');
-
-// if (getComputedStyle(mobileInput).display !== 'none') {
-// 	mobileInput.addEventListener('keydown', (ev) => {
-// 		console.log(ev.key);
-// 	});
-// } else {
-// 	desktopInput.addEventListener('keydown', (ev) => {
-// 		console.log(ev.key);
-// 	});
-// }
-
 // Empty search value when go back in history
 window.addEventListener('pageshow', function () {
 	document.querySelectorAll('input[name="q"]').forEach((input) => {
