@@ -1,61 +1,149 @@
-<div class="flex-1 w-full max-w-md mx-auto flex items-center justify-center">
-	<div class="w-full rounded-md shadow-md p-6 bg-white">
-		<div class="flex flex-col gap-4">
-			<h1 class="text-3xl text-center"><%= locals.author.name %></h1>
+<div class="flex-1 w-full max-w-2xl mx-auto flex items-center justify-center">
+	<div class="w-full rounded-lg shadow-lg p-8 bg-white">
+		<div class="flex flex-col gap-6">
+			<!-- Author Header -->
+			<div class="text-center border-b border-zinc-200 pb-6">
+				<h1 class="text-3xl md:text-4xl font-light text-zinc-800 mb-2">
+					<%= locals.author.name || 'Unknown Author' %>
+				</h1>
+				<p class="text-zinc-500 text-sm uppercase tracking-wide">
+					Author Profile
+				</p>
+			</div>
 
-			<div class="flex flex-col mt-8 gap-5 flex-1">
-				<div class="flex items-center">
-					<span
-						class="uppercase font-light text-sm text-zinc-600 basis-[128px] shrink-0"
-						>Gender:
-					</span>
-					<span><%= locals.author.gender %></span>
+			<!-- Author Details -->
+			<section class="space-y-6">
+				<dl class="grid gap-4">
+					<!-- Gender -->
+					<% if (locals.author?.gender) { %>
+					<div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0">
+						<dt
+							class="font-medium text-sm text-zinc-600 sm:basis-32 sm:shrink-0">
+							Gender:
+						</dt>
+						<dd class="text-zinc-800 capitalize sm:ml-4">
+							<%= author.gender %>
+						</dd>
+					</div>
+					<% } %>
+
+					<!-- Nationality -->
+					<% if (locals.author?.nationality) { %>
+					<div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0">
+						<dt
+							class="font-medium text-sm text-zinc-600 sm:basis-32 sm:shrink-0">
+							Nationality:
+						</dt>
+						<dd class="text-zinc-800 sm:ml-4"><%= author.nationality %></dd>
+					</div>
+					<% } %>
+
+					<!-- Date of Birth -->
+					<% if (locals.author?.dob) { %>
+					<div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0">
+						<dt
+							class="font-medium text-sm text-zinc-600 sm:basis-32 sm:shrink-0">
+							Born:
+						</dt>
+						<dd class="text-zinc-800 sm:ml-4"><%= author.dob %></dd>
+					</div>
+					<% } %>
+
+					<!-- Biography -->
+					<% if (locals.author?.bio) { %>
+					<div class="flex flex-col gap-2 pt-2">
+						<dt class="font-medium text-sm text-zinc-600">Biography:</dt>
+						<dd
+							class="text-zinc-700 leading-relaxed text-sm sm:text-base bg-zinc-50 p-4 rounded-md">
+							<%= author.bio %>
+						</dd>
+					</div>
+					<% } %>
+				</dl>
+
+				<!-- Books Section -->
+				<div class="border-t border-zinc-200 pt-6">
+					<div class="flex items-center justify-between mb-3">
+						<h2 class="text-sm font-medium text-zinc-800">Published Works:</h2>
+						<a
+							href="/authors/<%= author.id %>/books"
+							class="inline-flex items-center gap-2 text-blue-500 hover:text-blue-700 text-sm font-medium transition-colors duration-300">
+							View All Books
+							<svg
+								class="w-4 h-4"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24">
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M9 5l7 7-7 7"></path>
+							</svg>
+						</a>
+					</div>
+					<p class="text-zinc-500 text-sm">
+						Explore the complete collection of books by <%= author.name %>.
+					</p>
 				</div>
+			</section>
 
-				<div class="flex items-center">
-					<span
-						class="uppercase font-light text-sm text-zinc-600 basis-[128px] shrink-0">
-						Nationality:
-					</span>
-					<span><%= locals.author.nationality %></span>
-				</div>
+			<!-- Action Buttons -->
+			<div
+				class="flex flex-col sm:flex-row justify-between gap-3 pt-6 border-t border-zinc-200">
+				<!-- Back Button -->
+				<a
+					href="/authors"
+					class="inline-flex items-center justify-center gap-2 px-4 py-2 text-zinc-600 bg-white border border-zinc-300 rounded-md hover:bg-zinc-50 focus:bg-zinc-50 focus:ring-2 focus:ring-zinc-300 transition-colors text-sm font-medium">
+					<svg
+						class="w-4 h-4"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M15 19l-7-7 7-7"></path>
+					</svg>
+					Back to Authors
+				</a>
 
-				<div class="flex items-center">
-					<span
-						class="uppercase font-light text-sm text-zinc-600 basis-[128px] shrink-0"
-						>Date of Birth:
-					</span>
-					<span><%= locals.author.dob %></span>
-				</div>
+				<!-- Edit Button -->
+				<a
+					href="/authors/<%= author.id %>/edit?from=<%= encodeURIComponent(locals.currentPath || '/authors') %>"
+					class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white border border-blue-500 rounded-md hover:bg-blue-600 focus:bg-blue-600 focus:ring-2 focus:ring-blue-300 transition-colors text-sm font-medium">
+					<svg
+						class="w-4 h-4"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+					</svg>
+					Edit Author
+				</a>
 
-				<div class="flex flex-col gap-2">
-					<span class="uppercase font-light text-sm text-zinc-600"
-						>Biography:
-					</span>
-					<span><%= locals.author.bio %></span>
-				</div>
-
-				<div class="flex">
-					<a
-						href="/authors/<%= author.id %>/books"
-						class="text-blue-500 font-light underline">
-						See Books...
-					</a>
-				</div>
-
-				<div class="flex justify-between gap-5 mt-8">
-					<a
-						href="/authors/<%= author.id %>/confirm-deletion?from=<%= encodeURIComponent(currentPath) %>"
-						class="text-red-500 text-center w-24 py-0.5 rounded-sm border border-red-500 flex items-center justify-center hover:bg-red-500 hover:text-zinc-50 transition-colors duration-200">
-						Delete
-					</a>
-
-					<a
-						href="/authors/<%= author.id %>/edit?from=<%= encodeURIComponent(currentPath) %>"
-						class="text-blue-500 text-center w-24 py-0.5 rounded-sm border border-blue-500 flex items-center justify-center hover:bg-blue-500 hover:text-zinc-50 transition-colors duration-200">
-						Edit
-					</a>
-				</div>
+				<!-- Delete Button -->
+				<a
+					href="/authors/<%= author.id %>/confirm-deletion?from=<%= encodeURIComponent(locals.currentPath || '/authors') %>"
+					class="inline-flex items-center justify-center gap-2 px-4 py-2 text-red-600 bg-white border border-red-300 rounded-md hover:bg-red-50 hover:border-red-400 hover:text-red-700 focus:bg-red-50 focus:ring-2 focus:ring-red-300 transition-colors text-sm font-medium">
+					<svg
+						class="w-4 h-4"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+					</svg>
+					Delete Author
+				</a>
 			</div>
 		</div>
 	</div>

@@ -44,6 +44,10 @@ export const authorSchema = checkSchema({
 	},
 	bio: {
 		optional: true,
+		isLength: {
+			options: { max: 1000 },
+			errorMessage: 'Biography must be at most 1000 characters',
+		},
 		isString: {
 			errorMessage: 'Bio must be a string',
 		},

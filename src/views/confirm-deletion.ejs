@@ -1,29 +1,91 @@
-<div class="flex-1 w-full max-w-lg mx-auto flex justify-center items-center">
-	<div
-		class="flex flex-col items-center bg-white p-6 md:p-10 shadow-md rounded-lg">
-		<h1 class="text-3xl font-semibold">Confirm Deletion</h1>
-		<p class="text-lg mt-8">
-			Are you sure you want to permanently delete
-			<span class="italic font-semibold"><%= locals.data?.name %>?</span>
-		</p>
-		<p class="mt-2 text-lg w-full">This action is irreversible!</p>
+<div class="flex-1 w-full max-w-md mx-auto flex justify-center items-center md:p4 min-h-[60vh]">
+  <div class="w-full bg-white rounded-lg shadow-lg border border-red-200 overflow-hidden">
+    <!-- Header with warning icon -->
+    <div class="bg-red-50 border-b border-red-200 px-6 py-4">
+      <div class="flex flex-col items-center justify-center gap-1">
+        <h1 class="text-xl font-semibold text-red-900">Confirm Deletion</h1>
+        <p class="text-sm text-red-700 mt-0.5">This action cannot be undone</p>
+      </div>
+    </div>
 
-		<form
-			action="<%= currentPath.split('/').slice(0,-1).join('/') %>/?_method=DELETE"
-			method="post"
-			class="mt-20 w-full flex justify-between gap-5">
-			<input type="hidden" name="returnTo" value="<%= returnPath %>" />
-			<a
-				href="<%= cancelPath %>"
-				class="cursor-pointer border border-blue-500 px-6 py-1 rounded-sm text-blue-500 flex items-center justify-center hover:bg-blue-500 hover:text-zinc-50 transition-colors duration-200">
-				Cancel
-			</a>
+    <!-- Content -->
+    <div class="px-6 py-6">
+      <div class="text-center space-y-4">
+        <p class="text-base text-zinc-700">Are you sure you want to permanently delete</p>
 
-			<button
-				type="submit"
-				class="cursor-pointer text-blue-500 border border-blue-500 px-6 py-1 rounded-sm hover:bg-blue-500 hover:text-zinc-50 transition-colors duration-200">
-				Confirm
-			</button>
-		</form>
-	</div>
+        <div class="bg-zinc-50 border border-zinc-200 rounded-lg p-4">
+          <p class="font-semibold text-lg text-zinc-900">
+            "<%= locals.data?.name || locals.data?.title || 'this item' %>?"
+          </p>
+          <% if (locals.data?.subtitle) { %>
+          <p class="text-sm text-zinc-600 mt-1 italic"><%= locals.data.subtitle %></p>
+          <% } %>
+        </div>
+
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div class="flex items-start gap-3">
+            <svg
+              class="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+            <div class="text-left">
+              <p class="font-medium text-red-800 text-sm">Warning</p>
+              <p class="text-red-700 text-sm mt-1">
+                This action is irreversible. The item will be permanently removed from the system.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <form
+        action="<%= (locals.currentPath || '').split('/').slice(0,-1).join('/') %>/?_method=DELETE"
+        method="post"
+        class="mt-8"
+      >
+        <input type="hidden" name="returnTo" value="<%= locals.returnPath || locals.cancelPath || '/' %>" />
+
+        <div class="flex flex-col-reverse sm:flex-row gap-3">
+          <!-- Cancel Button (Primary) -->
+          <a
+            href="<%= locals.cancelPath || '/' %>"
+            class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-zinc-100 text-zinc-700 border border-zinc-300 rounded-md hover:bg-zinc-200 focus:bg-zinc-200 focus:ring-2 focus:ring-zinc-400 transition-colors font-medium text-sm"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+            Cancel
+          </a>
+
+          <!-- Delete Button (Danger) -->
+          <button
+            type="submit"
+            class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white border border-red-600 rounded-md hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 transition-colors font-medium text-sm"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              ></path>
+            </svg>
+            Delete
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
+
+<script src="/scripts/confirm-deletion.js"></script>

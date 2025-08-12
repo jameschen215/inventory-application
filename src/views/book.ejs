@@ -1,164 +1,216 @@
-<div class="flex-1 w-full max-w-4xl mx-auto flex items-center justify-center">
-	<article class="w-full rounded-md shadow-md p-6 bg-white" role="main">
-		<!-- Book Details Header -->
-		<div class="sr-only">
-			<h1>Book Details for <%= book.title %></h1>
-		</div>
+<div class="flex-1 w-full max-w-6xl mx-auto flex items-center justify-center p-4">
+  <article class="w-full rounded-lg shadow-lg bg-white overflow-hidden" role="main">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="Breadcrumb" class="bg-zinc-50 border-b border-zinc-200 px-6 py-3">
+      <ol class="flex items-center space-x-2 text-sm text-zinc-600">
+        <li>
+          <a href="/books" class="hover:text-blue-600 transition-colors">Books</a>
+        </li>
+        <li>
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fill-rule="evenodd"
+              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+        </li>
+        <li class="text-zinc-900 font-medium truncate" title="<%= book.title %>"><%= book.title %></li>
+      </ol>
+    </nav>
 
-		<div class="flex flex-col md:flex-row gap-8">
-			<!-- Book Cover Section -->
-			<div
-				class="w-full md:flex-2 flex items-center justify-center"
-				role="img"
-				aria-labelledby="cover-description">
-				<% if (book.cover_url) { %>
-				<div class="relative">
-					<img
-						src="<%= book.cover_url %>"
-						alt="Cover of <%= book.title %><% if (book.subtitle) { %>: <%= book.subtitle %><% } %> by <%= book.authors %>"
-						class="max-w-full h-auto shadow-sm"
-						loading="lazy" />
-					<div id="cover-description" class="sr-only">
-						Book cover image for <%= book.title %>
-					</div>
-				</div>
-				<% } else { %>
-				<div
-					class="w-full aspect-[1/1.5] md:flex-2 flex items-center justify-center border border-zinc-200 text-zinc-400"
-					role="img"
-					aria-label="No cover image available for <%= book.title %>">
-					<span aria-hidden="true">No Cover</span>
-				</div>
-				<% } %>
-			</div>
+    <div class="p-6 lg:p-8">
+      <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Book Cover Section -->
+        <div class="lg:w-1/3 flex flex-col items-center">
+          <div class="w-full max-w-sm">
+            <% if (book.cover_url) { %>
+            <div class="relative group">
+              <img
+                src="<%= book.cover_url %>"
+                alt="Cover of <%= book.title %><% if (book.subtitle) { %>: <%= book.subtitle %><% } %> by <%= book.authors %>"
+                class="w-full h-auto shadow-lg rounded-md transition-transform group-hover:scale-105"
+                loading="lazy"
+              />
+            </div>
+            <% } else { %>
+            <div
+              class="w-full aspect-[2/3] flex items-center justify-center border-2 border-dashed border-zinc-300 text-zinc-400 rounded-md bg-zinc-50"
+              role="img"
+              aria-label="No cover image available for <%= book.title %>"
+            >
+              <div class="text-center">
+                <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  ></path>
+                </svg>
+                <span class="text-sm">No Cover Available</span>
+              </div>
+            </div>
+            <% } %>
+          </div>
 
-			<!-- Book Information Section -->
-			<div class="w-full md:flex-3 flex flex-col">
-				<!-- Title & Subtitle -->
-				<div>
-					<h1 id="book-title" class="text-3xl my-4 focus:outline" tabindex="-1">
-						<%= book.title %>
-					</h1>
-					<% if (book.subtitle) { %>
-					<h2
-						id="book-subtitle"
-						class="text-lg font-extralight italic text-zinc-500 -mt-2.5">
-						- <%= book.subtitle %>
-					</h2>
-					<% } %>
-				</div>
+          <!-- Quick Stats -->
+          <div class="mt-6 w-full max-w-sm">
+            <div class="bg-zinc-50 rounded-lg p-4 space-y-3">
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-zinc-600">Stock</span>
+                <span
+                  class="text-sm font-semibold <%= parseInt(book.stock) > 10 ? 'text-green-600' : parseInt(book.stock) > 0 ? 'text-yellow-600' : 'text-red-600' %>"
+                >
+                  <%= book.stock %> available
+                </span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-zinc-600">Price</span>
+                <span class="text-lg font-bold text-zinc-900"><%= book.price %></span>
+              </div>
+              <% if (book.published_at) { %>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-zinc-600">Published</span>
+                <span class="text-sm font-medium">
+                  <time datetime="<%= book.published_at %>"><%= new Date(book.published_at).getFullYear() %></time>
+                </span>
+              </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
 
-				<!-- Author Information -->
-				<p class="text-lg text-zinc-800 my-4">
-					<span class="sr-only">Written by: </span>
-					<strong><%= book.authors %></strong>
-				</p>
+        <!-- Book Information Section -->
+        <div class="lg:w-2/3 flex flex-col">
+          <!-- Title & Subtitle -->
+          <header class="mb-6">
+            <h1 class="text-4xl font-bold text-zinc-900 leading-tight mb-2"><%= book.title %></h1>
+            <% if (book.subtitle) { %>
+            <h2 class="text-xl text-zinc-600 font-light italic"><%= book.subtitle %></h2>
+            <% } %>
+          </header>
 
-				<!-- Description -->
-				<% if (book.description) { %>
-				<section aria-labelledby="description-heading">
-					<h3 id="description-heading" class="sr-only">Book Description</h3>
+          <!-- Author Information -->
+          <div class="mb-6">
+            <p class="text-lg text-zinc-700">
+              <span class="text-zinc-500">by</span>
+              <strong class="text-zinc-900 ml-1"><%= book.authors %></strong>
+            </p>
+          </div>
 
-					<p class="text-base text-zinc-950 font-light leading-relaxed">
-						<%= book.description %>
-					</p>
-				</section>
-				<% } %>
+          <!-- Description -->
+          <% if (book.description) { %>
+          <section class="mb-8">
+            <h3 class="text-lg font-semibold text-zinc-900 mb-3">Description</h3>
+            <div class="prose prose-zinc max-w-none">
+              <p class="text-zinc-700 leading-relaxed text-base"><%= book.description %></p>
+            </div>
+          </section>
+          <% } %>
 
-				<hr
-					class="my-6 text-zinc-300"
-					role="separator"
-					aria-label="Book details separator" />
+          <!-- Book Details Grid -->
+          <section class="mb-8">
+            <h3 class="text-lg font-semibold text-zinc-900 mb-4">Details</h3>
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="bg-white border border-zinc-200 rounded-lg p-4">
+                <dt class="text-sm font-medium text-zinc-500 mb-1">Publication Date</dt>
+                <dd class="text-base text-zinc-900">
+                  <time datetime="<%= book.published_at %>"><%= book.published_at %></time>
+                </dd>
+              </div>
 
-				<!-- Book Metadata -->
-				<section aria-labelledby="metadata-heading" class="mb-6">
-					<h3 id="metadata-heading" class="sr-only">Book Information</h3>
+              <div class="bg-white border border-zinc-200 rounded-lg p-4">
+                <dt class="text-sm font-medium text-zinc-500 mb-1">Availability</dt>
+                <dd class="text-base">
+                  <div class="flex items-center gap-2">
+                    <div
+                      class="w-3 h-3 rounded-full <%= parseInt(book.stock) > 10 ? 'bg-green-500' : parseInt(book.stock) ? 'bg-yellow-500' : 'bg-red-500' %>"
+                    ></div>
+                    <span class="text-zinc-900">
+                      <%= parseInt(book.stock) > 0 ? `${book.stock} in stock` : 'Out of stock' %>
+                    </span>
+                  </div>
+                </dd>
+              </div>
 
-					<dl class="flex flex-col gap-4 md:flex-row md:flex-wrap">
-						<div class="flex md:items-baseline gap-2">
-							<dt class="text-base font-semibold">Genre:</dt>
-							<dd class="text-base"><%= book.genres %></dd>
-						</div>
+              <div class="bg-white border border-zinc-200 rounded-lg p-4">
+                <dt class="text-sm font-medium text-zinc-500 mb-1">Genre</dt>
+                <dd class="text-base text-zinc-900">
+                  <% if (book.genres.length > 0) { %>
+                  <div class="flex flex-wrap gap-1">
+                    <% book.genres.forEach(genre => { %>
+                    <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                      <%= genre.trim() %>
+                    </span>
+                    <% }) %>
+                  </div>
+                  <% } else { %>
+                  <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                    <%= 'Not specified' %>
+                  </span>
+                  <% } %>
+                </dd>
+              </div>
 
-						<div class="flex md:items-baseline gap-2">
-							<dt class="text-base font-semibold">Language:</dt>
-							<dd class="text-base"><%= book.languages %></dd>
-						</div>
+              <div class="bg-white border border-zinc-200 rounded-lg p-4">
+                <dt class="text-sm font-medium text-zinc-500 mb-1">Language</dt>
+                <dd class="text-base text-zinc-900">
+                  <% if (book.languages.length > 0) { %>
+                  <div class="flex flex-wrap gap-1">
+                    <% book.languages.forEach(language => { %>
+                    <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                      <%= language.trim() %>
+                    </span>
+                    <% }) %>
+                  </div>
+                  <% } else { %>
+                  <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                    <%= 'Not specified' %>
+                  </span>
+                  <% } %>
+                </dd>
+              </div>
+            </dl>
+          </section>
 
-						<div class="flex md:items-baseline gap-2">
-							<dt class="text-base font-semibold">Published:</dt>
-							<dd class="text-base">
-								<time datetime="<%= book.published_at %>"
-									><%= book.published_at %></time
-								>
-							</dd>
-						</div>
+          <!-- Action Buttons -->
+          <div class="border-t border-zinc-200 pt-6">
+            <div class="flex flex-col sm:flex-row justify-between gap-3">
+              <!-- Edit/Delete Actions -->
+              <a
+                href="/books/<%= book.id %>/edit?from=<%= encodeURIComponent(locals.currentPath || '/books') %>"
+                class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 text-white border border-blue-500 rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-300 transition-colors text-sm font-medium"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  ></path>
+                </svg>
+                Edit Book
+              </a>
 
-						<div class="flex md:items-baseline gap-2">
-							<dt class="text-base font-semibold">Stock:</dt>
-							<dd
-								class="text-base"
-								aria-label="<%= book.stock %> copies available">
-								<%= book.stock %>
-							</dd>
-						</div>
-
-						<div class="flex md:items-baseline gap-2">
-							<dt class="text-base font-semibold">Price:</dt>
-							<dd class="text-base" aria-label="Price: <%= book.price %>">
-								<%= book.price %>
-							</dd>
-						</div>
-					</dl>
-				</section>
-
-				<hr
-					class="my-6 text-zinc-300"
-					role="separator"
-					aria-label="Actions separator" />
-
-				<!-- Action Buttons -->
-				<section aria-labelledby="actions-heading">
-					<h3 id="actions-heading" class="sr-only">Book Actions</h3>
-
-					<div class="flex justify-between">
-						<a
-							href="/books/<%= book.id %>/confirm-deletion?from=<%= encodeURIComponent(currentPath) %>&returnTo=<%= returnTo %>"
-							class="text-red-500 border border-red-500 px-6 py-1 rounded-sm hover:bg-red-500 hover:text-zinc-50 transition-colors duration-200"
-							role="button"
-							aria-describedby="delete-warning">
-							Delete
-						</a>
-						<div id="delete-warning" class="sr-only">
-							Warning: This action will permanently delete this book from your
-							inventory
-						</div>
-
-						<a
-							href="/books/<%= book.id %>/edit?from=<%= encodeURIComponent(currentPath) %>"
-							class="text-blue-500 border border-blue-500 px-6 py-1 rounded-sm hover:bg-blue-500 hover:text-zinc-50 transition-colors duration-200"
-							role="button">
-							Edit
-						</a>
-					</div>
-				</section>
-			</div>
-		</div>
-
-		<!-- Structured Data for Screen Readers -->
-		<div
-			class="sr-only"
-			role="region"
-			aria-label="Book summary for screen readers">
-			<p>
-				This is "<%= book.title %><% if (book.subtitle) { %>: <%= book.subtitle
-				%><% } %>" by <%= book.authors %>, published in <%= book.published_at
-				%>. <% if (book.description) { %>The book is described as: <%=
-				book.description %><% } %> It is available in <%= book.languages %>
-				language<%= book.languages.includes(',') ? 's' : '' %> and categorized
-				under <%= book.genres %>. Currently <%= book.stock %> copies are in
-				stock at <%= book.price %> each.
-			</p>
-		</div>
-	</article>
+              <a
+                href="/books/<%= book.id %>/confirm-deletion?from=<%= encodeURIComponent(locals.currentPath || '/books') %>&returnTo=<%= locals.returnTo || '/books' %>"
+                class="inline-flex items-center justify-center gap-2 px-4 py-2 text-red-600 bg-white border border-red-300 rounded-md hover:bg-red-50 hover:border-red-400 focus:ring-2 focus:ring-red-300 transition-colors text-sm font-medium"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  ></path>
+                </svg>
+                Delete Book
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
 </div>

@@ -1,138 +1,113 @@
 <!-- Books -->
 <div class="flex-1 w-full max-w-lg mx-auto flex flex-col">
-	<!-- Search -->
-	<%- include('partials/search') %>
+  <!-- Search -->
+  <%- include('partials/search') %>
 
-	<!-- Content -->
-	<div class="flex-1 bg-white p-6 rounded-lg shadow-md">
-		<!-- Title -->
-		<%- include('partials/title') %>
+  <!-- Content -->
+  <div class="flex-1 bg-white p-6 rounded-lg shadow-md">
+    <!-- Title -->
+    <%- include('partials/title') %>
 
-		<!-- Book data -->
-		<% if (locals.books.length > 0) { %>
-		<div
-			class="overflow-x-auto"
-			tabindex="0"
-			role="region"
-			aria-label="Books table"></div>
-		<table
-			class="table-auto w-full"
-			role="table"
-			aria-label="List of books with title, price, and stock information"
-			aria-rowcount="<%= books.length + 1 %>">
-			<caption class="sr-only">
-				Books inventory showing <%= books.length %> <%= books.length === 1 ?
-				'book' : 'books'%>. Click on any row to view book details.
-			</caption>
+    <!-- Book data -->
+    <% if (locals.books.length > 0) { %>
+    <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Books table"></div>
+    <table
+      class="table-auto w-full"
+      role="table"
+      aria-label="List of books with title, price, and stock information"
+      aria-rowcount="<%= books.length + 1 %>"
+    >
+      <caption class="sr-only">
+        Books inventory showing <%= books.length %> <%= books.length === 1 ? 'book' : 'books'%>. Click on any row to
+        view book details.
+      </caption>
 
-			<thead class="w-full" role="rowgroup">
-				<tr class="border-b border-zinc-200 h-14" role="row" aria-rowindex="1">
-					<th
-						class="text-start px-3"
-						role="columnheader"
-						scope="col"
-						tabindex="0">
-						Title
-					</th>
-					<th
-						class="text-end px-3"
-						role="columnheader"
-						scope="col"
-						tabindex="0">
-						Price
-					</th>
-					<th
-						class="text-end px-3"
-						role="columnheader"
-						scope="col"
-						tabindex="0">
-						Stock
-					</th>
-				</tr>
-			</thead>
+      <thead class="w-full" role="rowgroup">
+        <tr class="border-b border-zinc-200 h-14" role="row" aria-rowindex="1">
+          <th class="text-start px-3" role="columnheader" scope="col" tabindex="0">Title</th>
+          <th class="text-end px-3" role="columnheader" scope="col" tabindex="0">Price</th>
+          <th class="text-end px-3" role="columnheader" scope="col" tabindex="0">Stock</th>
+        </tr>
+      </thead>
 
-			<tbody role="rowgroup">
-				<% books.map((book, index) => { %>
-				<tr
-					class="border-b border-zinc-200 h-14 last-of-type:border-none cursor-pointer hover:bg-zinc-100 focus:bg-zinc-100"
-					data-href="/books/<%= book.id %>?from=<%= encodeURIComponent(currentPath) %>"
-					role="row"
-					aria-rowindex="<%= index + 2 %>"
-					tabindex="0"
-					aria-label="Book: <%= book.title %>, Price: <%= book.price %>, Stock: <%= book.stock %>. Press Enter to view details."
-					data-book-row="true">
-					<td
-						class="text-start px-3"
-						role="gridcell"
-						headers="title-header"
-						aria-describedby="book-<%= book.id%>-title">
-						<%= book.title %>
-					</td>
-					<td
-						class="text-end px-3"
-						role="gridcell"
-						headers="price-header"
-						aria-label="Price: <%= book.price %>">
-						<%= book.price %>
-					</td>
-					<td
-						class="text-end px-3"
-						role="gridcell"
-						headers="stock-header"
-						aria-label="Stock: <%= book.stock %>">
-						<%= book.stock %>
-					</td>
-				</tr>
-				<%})%>
-			</tbody>
-		</table>
+      <tbody role="rowgroup">
+        <% books.map((book, index) => { %>
+        <tr
+          class="border-b border-zinc-200 h-14 last-of-type:border-none cursor-pointer hover:bg-zinc-100 focus:bg-zinc-100"
+          data-href="/books/<%= book.id %>?from=<%= encodeURIComponent(currentPath) %>"
+          role="row"
+          aria-rowindex="<%= index + 2 %>"
+          tabindex="0"
+          aria-label="Book: <%= book.title %>, Price: <%= book.price %>, Stock: <%= book.stock %>. Press Enter to view details."
+          data-book-row="true"
+        >
+          <td
+            class="text-start px-3"
+            role="gridcell"
+            headers="title-header"
+            aria-describedby="book-<%= book.id%>-title"
+          >
+            <%= book.title %>
+          </td>
+          <td class="text-end px-3" role="gridcell" headers="price-header" aria-label="Price: <%= book.price %>">
+            <%= book.price %>
+          </td>
+          <td class="text-end px-3" role="gridcell" headers="stock-header" aria-label="Stock: <%= book.stock %>">
+            <%= book.stock %>
+          </td>
+        </tr>
+        <%})%>
+      </tbody>
+    </table>
 
-		<!-- Table Navigation Instructions -->
-		<div
-			class="mt-4 text-sm text-zinc-600"
-			role="region"
-			aria-label="Table navigation instructions">
-			<p class="sr-only">
-				Use Tab to navigate between table rows. Press Enter to view book
-				details. Use arrow keys to navigate within the table when focused.
-			</p>
-			<p class="text-center" aria-live="polite" id="table-status">
-				Showing <%= books.length %> <%= books.length === 1 ? 'book' : 'books' %>
-			</p>
-		</div>
+    <!-- Table Navigation Instructions -->
+    <div class="mt-4 text-sm text-zinc-600" role="region" aria-label="Table navigation instructions">
+      <p class="sr-only">
+        Use Tab to navigate between table rows. Press Enter to view book details. Use arrow keys to navigate within the
+        table when focused.
+      </p>
+      <p class="text-center" aria-live="polite" id="table-status">
+        Showing <%= books.length %> <%= books.length === 1 ? 'book' : 'books' %>
+      </p>
+    </div>
 
-		<% } else { %>
-		<!-- Empty State -->
+    <% } else { %>
+    <!-- Empty State -->
 
-		<div class="mt-8" role="region" aria-label="No books message">
-			<% if (currentPath !== '/') { %>
-			<div class="text-center">
-				<p class="mb-4" role="status" aria-live="polite">
-					No book related to
-					<span class="italic font-medium"><%= title %></span>.
-				</p>
+    <div class="mt-8" role="region" aria-label="No books message">
+      <% if (currentPath !== '/') { %>
+      <div class="text-center">
+        <p class="mb-4" role="status" aria-live="polite">
+          No book related to
+          <span class="italic font-medium"><%= title %></span>
+          .
+        </p>
 
-				<p class="mb-2">
-					<a
-						href="<%= currentPath.split('/').slice(0, -1).join('/') %>/confirm-deletion?from=<%= currentPath %>&returnTo=<%= currentPath.split('/').slice(0,2).join('/') %>"
-						class="mt-2 inline-block underline text-blue-500 font-light cursor-pointer"
-						aria-label="Delete <%= title %> category">
-						Delete <span class="italic"><%= title %></span>
-					</a>
-				</p>
-			</div>
+        <p class="mb-2">
+          <a
+            href="<%= currentPath.split('/').slice(0, -1).join('/') %>/confirm-deletion?from=<%= currentPath %>&returnTo=<%= currentPath.split('/').slice(0,2).join('/') %>"
+            class="mt-2 inline-block underline text-blue-500 font-light cursor-pointer"
+            aria-label="Delete <%= title %> category"
+          >
+            Delete
+            <span class="italic"><%= title %></span>
+          </a>
+        </p>
+      </div>
 
-			<% } else { %>
-			<div class="text-center">
-				<p class="mb-4" role="status" aria-live="polite">
-					No books in your inventory yet.
-				</p>
-				<p class="mb-4" role="status" aria-live="polite">
-					Click <span class="text-blue-500 text-xl">+</span> to add one.
-				</p>
-			</div>
-			<% } %>
-		</div>
-	</div>
-	<% } %>
+      <% } else { %>
+      <div class="text-center">
+        <p class="mb-4" role="status" aria-live="polite">No books in your inventory yet.</p>
+        <p class="mb-4" role="status" aria-live="polite">
+          Click
+          <span class="text-blue-500 text-xl">+</span>
+          to add one.
+        </p>
+      </div>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
 </div>
+
+<script src="/scripts/book-table.js"></script>
