@@ -9,3 +9,8 @@
 - book details done
 - books done
 - confirm deletion done
+- edit-form
+- error page done
+
+- genres page done
+- languages page done

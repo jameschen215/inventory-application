@@ -1,4 +1,4 @@
-<div class="flex flex-col justify-center items-center gap-10 mt-22 px-6">
+<!-- <div class="flex flex-col justify-center items-center gap-10 mt-22 px-6">
 	<h1 class="text-center text-3xl md:text-5xl"><%= locals.title %></h1>
 
 	<p class="text-lg text-center">
@@ -10,4 +10,72 @@
 		class="bg-blue-500 py-1 px-5 rounded-md border-none text-zinc-50 uppercase">
 		Go Back Home
 	</a>
+</div> -->
+
+<!-- Not James -->
+
+<div class="flex-1 flex items-center justify-center px-4 -mt-20">
+  <div class="max-w-lg w-full text-center">
+    <!-- Error Content -->
+    <div class="space-y-6">
+      <!-- Title -->
+      <div class="mb-6">
+        <h1 class="text-3xl md:text-4xl font-bold text-zinc-900 mb-2">
+          Oops!
+          <span>Error <%= locals.statusCode %></span>
+        </h1>
+      </div>
+
+      <div class="space-y-6">
+        <p class="text-2xl text-zinc-700"><%= locals.message || 'Something went wrong' %></p>
+
+        <!-- Context-specific help text -->
+        <% if (locals.statusCode === 404) { %>
+        <p class="text-zinc-500">
+          The page you're looking for might have been moved, deleted, or you entered the wrong URL.
+        </p>
+        <% } else if (locals.statusCode === 500) { %>
+        <p class="text-zinc-500">We're experiencing some technical difficulties. Please try again in a moment.</p>
+        <% } else if (locals.statusCode === 403) { %>
+        <p class="text-zinc-500">
+          You don't have permission to access this resource. Please contact an administrator if you believe this is an
+          error.
+        </p>
+        <% } else { %>
+        <p class="text-zinc-500">Please try again or contact support if the problem persists.</p>
+        <% } %>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex justify-around items-center pt-4">
+        <!-- Go Back Button -->
+        <button
+          id="back-btn-on-error"
+          class="text-zinc-600 px-2 py-1 rounded-md underline underline-offset-2 hover:text-zinc-900 focus:ring-2 focus:ring-zinc-300 transition-colors font-medium cursor-pointer"
+        >
+          Go Back
+        </button>
+
+        <!-- Home Button -->
+        <a
+          href="/"
+          class="text-zinc-600 px-2 py-1 rounded-md underline underline-offset-2 hover:text-zinc-900 focus:ring-2 focus:ring-zinc-300 transition-colors font-medium cursor-pointer"
+        >
+          Go Home
+        </a>
+      </div>
+
+      <!-- Support Contact (for 500 errors) -->
+      <% if (locals.statusCode === 500) { %>
+      <div class="pt-8 border-t border-zinc-200">
+        <p class="text-sm text-zinc-500 mb-2">Still having trouble?</p>
+        <a href="mailto:jameschen215@gmail.com" class="text-blue-500 hover:text-blue-600 text-sm underline">
+          Contact Support
+        </a>
+      </div>
+      <% } %>
+    </div>
+  </div>
 </div>
+
+<script src="/scripts/error.js"></script>

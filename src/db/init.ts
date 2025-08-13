@@ -2,17 +2,17 @@ import { Client } from 'pg';
 import { dbConfig } from './pool.js';
 
 async function initializeDatabase() {
-	const client = new Client(dbConfig);
+  const client = new Client(dbConfig);
 
-	try {
-		// Connect to database
-		console.log('Connecting to database...');
-		await client.connect();
-		console.log('Connected successfully.');
+  try {
+    // Connect to database
+    console.log('Connecting to database...');
+    await client.connect();
+    console.log('Connected successfully.');
 
-		// Drop existing tables and types if existing
-		console.log('Dropping existing tables...');
-		await client.query(`
+    // Drop existing tables and types if existing
+    console.log('Dropping existing tables...');
+    await client.query(`
 			DROP TYPE IF EXISTS gender CASCADE;
 			DROP TABLE IF EXISTS
 				book_genres, 
@@ -24,9 +24,9 @@ async function initializeDatabase() {
 				languages
 			CASCADE;`);
 
-		// Create new tables
-		console.log('Creating tables...');
-		await client.query(`
+    // Create new tables
+    console.log('Creating tables...');
+    await client.query(`
 			DO $$
 			BEGIN
   			IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'gender') THEN
@@ -86,21 +86,21 @@ async function initializeDatabase() {
 			);
 		`);
 
-		console.log('Tables created successfully');
-	} catch (error: unknown) {
-		const err = error as { message?: string; code?: string; detail?: string };
+    console.log('Tables created successfully');
+  } catch (error: unknown) {
+    const err = error as { message?: string; code?: string; detail?: string };
 
-		console.error('Database initialization error details', {
-			message: err.message,
-			code: err.code,
-			detail: err.detail,
-		});
+    console.error('Database initialization error details', {
+      message: err.message,
+      code: err.code,
+      detail: err.detail,
+    });
 
-		throw err;
-	} finally {
-		await client.end();
-		console.log('Database connection closed.');
-	}
+    throw err;
+  } finally {
+    await client.end();
+    console.log('Database connection closed.');
+  }
 }
 
 initializeDatabase();

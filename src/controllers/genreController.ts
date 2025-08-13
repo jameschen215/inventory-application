@@ -6,11 +6,18 @@ import { GenreType } from '../types/db-types.js';
 import { BookDisplayType } from '../types/BookDisplayType.js';
 import { CustomNotFoundError } from '../errors/CustomNotFoundError.js';
 import { formatCurrency, formatNumToCompactNotation } from '../lib/utils.js';
+import { CustomBadRequestError } from '../errors/CustomBadRequestError.js';
 
 // 1. Get all genres
 export const getGenres: RequestHandler = async (_req, res, next) => {
   try {
-    const genresRes = await query('SELECT * FROM genres ORDER BY name');
+    const genresRes = await query(`
+      SELECT DISTINCT g.* 
+      FROM genres g 
+      JOIN book_genres bg ON g.id = bg.genre_id
+      ORDER BY g.name;
+      `);
+
     const genres: GenreType[] = genresRes.rows;
 
     res.render('genres', {
@@ -163,9 +170,18 @@ export const deleteGenreById: RequestHandler = async (req, res, next) => {
   const genreId = Number(req.params['genreId']);
 
   try {
-    const { rowCount } = await query('DELETE FROM genres WHERE id = $1', [genreId]);
+    // 1. Check if genre is linked to any books
+    const bookRes = await query(`SELECT 1 FROM book_genres WHERE genre_id = $1 LIMIT 1`, [genreId]);
+    if (bookRes.rowCount && bookRes.rowCount > 0) {
+      throw new CustomBadRequestError(
+        "Can't delete genre: still associated with one or more books",
+      );
+    }
 
-    if (rowCount === 0) {
+    // 2. Proceed with deletion
+    const genreRes = await query('DELETE FROM genres WHERE id = $1', [genreId]);
+
+    if (genreRes.rowCount === 0) {
       throw new CustomNotFoundError('Genre Not Found');
     }
 
