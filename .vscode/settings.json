@@ -1,19 +1,12 @@
 {
-  "git.ignoreLimitWarning": true,
-  "postman.settings.dotenv-detection-notification-visibility": false,
-  "cSpell.words": ["ILIKE"],
-
-  // Associate EJS files with HTML language mode
   "files.associations": {
-    "*.ejs": "html"
+    "*.ejs": "ejs"
   },
-
-  // Set Prettier as default formatter for EJS
   "[ejs]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "j69.ejs-beautify",
     "editor.formatOnSave": true
   },
-
-  // Tell Prettier to use HTML parser for EJS files
-  "prettier.documentSelectors": ["**/*.ejs"]
+  "beautify.language": {
+    "html": ["ejs"]
+  }
 }

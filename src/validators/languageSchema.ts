@@ -9,8 +9,8 @@ export const languageSchema = checkSchema({
 			errorMessage: 'Language is required',
 		},
 		isLength: {
-			options: { min: 1, max: 25 },
-			errorMessage: 'Language must be between 1 and 25 characters',
+			options: { min: 2, max: 25 },
+			errorMessage: 'Language must be between 2 and 25 characters',
 		},
 	},
 });
