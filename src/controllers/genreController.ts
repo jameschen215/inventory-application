@@ -93,7 +93,7 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
 
 		const genre: GenreType = genreRes.rows[0];
 
-		res.render('edit-form', {
+		res.render('genre-language-form', {
 			formFor: 'genre',
 			title: 'Edit Genre',
 			errors: null,
