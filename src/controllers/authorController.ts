@@ -1,32 +1,34 @@
-import { format } from "date-fns";
-import { RequestHandler } from "express";
-import { matchedData, validationResult } from "express-validator";
+import { format } from 'date-fns';
+import { RequestHandler } from 'express';
+import { matchedData, validationResult } from 'express-validator';
 
 import {
   capitalize,
   formatCurrency,
   formatNumToCompactNotation,
-} from "../lib/utils.js";
-import { query } from "../db/pool.js";
-import { AuthorType } from "../types/db-types.js";
-import { BookDisplayType } from "../types/BookDisplayType.js";
-import { CustomNotFoundError } from "../errors/CustomNotFoundError.js";
-import { CustomBadRequestError } from "../errors/CustomBadRequestError.js";
+} from '../lib/utils.js';
+import { query } from '../db/pool.js';
+import { AuthorType } from '../types/db-types.js';
+import { BookDisplayType } from '../types/BookDisplayType.js';
+import { CustomNotFoundError } from '../errors/CustomNotFoundError.js';
+import { CustomBadRequestError } from '../errors/CustomBadRequestError.js';
 
 // 1. Get all authors
 export const getAuthors: RequestHandler = async (req, res, next) => {
-  const { q = "" } = req.query || {};
+  const { q = '' } = req.query || {};
 
   try {
     const authorsRes = await query(
-      `SELECT * FROM authors WHERE name ILIKE $1`,
+      `SELECT DISTINCT a.* FROM authors a
+      JOIN book_authors ba ON a.id = ba.author_id
+      WHERE a.name ILIKE $1`,
       [`%${q}%`],
     );
 
     const authors: AuthorType[] = authorsRes.rows;
 
-    res.render("authors", {
-      title: "Authors",
+    res.render('authors', {
+      title: 'Authors',
       authors,
     });
   } catch (error) {
@@ -36,27 +38,27 @@ export const getAuthors: RequestHandler = async (req, res, next) => {
 
 // 2. Get author by id
 export const getAuthorById: RequestHandler = async (req, res, next) => {
-  const authorId = Number(req.params["authorId"]);
+  const authorId = Number(req.params['authorId']);
 
   try {
-    const authorRes = await query("SELECT * FROM authors WHERE id = $1", [
+    const authorRes = await query('SELECT * FROM authors WHERE id = $1', [
       authorId,
     ]);
 
     if (authorRes.rowCount === 0) {
-      throw new CustomNotFoundError("Author Not Found");
+      throw new CustomNotFoundError('Author Not Found');
     }
 
     const author: AuthorType = authorRes.rows[0];
     const formatted = {
       ...author,
-      gender: author.gender ?? "N/A",
-      nationality: author.nationality ?? "N/A",
-      dob: author.dob ? format(author.dob, "MMMM d, yyyy") : "N/A",
-      bio: author.bio ?? "No Biography.",
+      gender: author.gender ?? 'N/A',
+      nationality: author.nationality ?? 'N/A',
+      dob: author.dob ? format(author.dob, 'MMMM d, yyyy') : 'N/A',
+      bio: author.bio ?? 'No Biography.',
     };
 
-    res.render("author", {
+    res.render('author', {
       title: author.name,
       author: formatted,
     });
@@ -67,15 +69,15 @@ export const getAuthorById: RequestHandler = async (req, res, next) => {
 
 // 3. Get books by author
 export const getBooksByAuthorId: RequestHandler = async (req, res, next) => {
-  const authorId = Number(req.params["authorId"]);
+  const authorId = Number(req.params['authorId']);
 
   try {
-    const authorRes = await query("SELECT * FROM authors WHERE id = ($1)", [
+    const authorRes = await query('SELECT * FROM authors WHERE id = ($1)', [
       authorId,
     ]);
 
     if (authorRes.rowCount === 0) {
-      throw new CustomNotFoundError("Author Not Found");
+      throw new CustomNotFoundError('Author Not Found');
     }
 
     const author = authorRes.rows[0] as AuthorType;
@@ -105,7 +107,7 @@ export const getBooksByAuthorId: RequestHandler = async (req, res, next) => {
       stock: formatNumToCompactNotation(row.stock),
     }));
 
-    res.render("books", {
+    res.render('books', {
       title: author.name,
       books,
     });
@@ -116,31 +118,31 @@ export const getBooksByAuthorId: RequestHandler = async (req, res, next) => {
 
 // 4. Get author form
 export const getEditForm: RequestHandler = async (req, res, next) => {
-  const authorId = Number(req.params["authorId"]);
+  const authorId = Number(req.params['authorId']);
 
   try {
-    const authorRes = await query("SELECT * FROM authors WHERE id = $1", [
+    const authorRes = await query('SELECT * FROM authors WHERE id = $1', [
       authorId,
     ]);
 
     if (authorRes.rowCount === 0) {
-      throw new CustomNotFoundError("Author Not Found");
+      throw new CustomNotFoundError('Author Not Found');
     }
 
     const author: AuthorType = authorRes.rows[0];
     const formatted = {
       ...author,
-      gender: author.gender ?? "",
-      nationality: author.nationality ?? "",
-      bio: author.bio ?? "",
-      dob: author.dob ? new Date(author.dob).toISOString().slice(0, 10) : "",
+      gender: author.gender ?? '',
+      nationality: author.nationality ?? '',
+      bio: author.bio ?? '',
+      dob: author.dob ? new Date(author.dob).toISOString().slice(0, 10) : '',
     };
 
-    res.render("author-form", {
-      title: "Edit Author",
+    res.render('author-form', {
+      title: 'Edit Author',
       data: formatted,
       errors: null,
-      cancelPath: req.query.from || "/",
+      cancelPath: req.query.from || '/',
     });
   } catch (error) {
     next(error);
@@ -149,19 +151,19 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
 
 // 5. Update an author
 export const editAuthorById: RequestHandler = async (req, res, next) => {
-  const authorId = Number(req.params["authorId"]);
+  const authorId = Number(req.params['authorId']);
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.status(400).render("author-form", {
-      title: "Edit Author",
+    return res.status(400).render('author-form', {
+      title: 'Edit Author',
       errors: errors.mapped(),
       data: {
         ...req.body,
         id: authorId,
-        dob: req.body["dob"]
-          ? new Date(req.body["dob"]).toISOString().slice(0, 10)
-          : "",
+        dob: req.body['dob']
+          ? new Date(req.body['dob']).toISOString().slice(0, 10)
+          : '',
       },
     });
   }
@@ -197,7 +199,7 @@ export const editAuthorById: RequestHandler = async (req, res, next) => {
     );
 
     if (rowCount === 0) {
-      throw new CustomNotFoundError("Author Not Found");
+      throw new CustomNotFoundError('Author Not Found');
     }
 
     res.status(200).redirect(`/authors/${authorId}`);
@@ -208,25 +210,25 @@ export const editAuthorById: RequestHandler = async (req, res, next) => {
 
 // 6. Confirm deletion
 export const confirmDeletion: RequestHandler = async (req, res, next) => {
-  const authorId = Number(req.params["authorId"]);
+  const authorId = Number(req.params['authorId']);
 
   try {
     const authorRes = await query(
-      "SELECT id, name FROM authors WHERE id = $1",
+      'SELECT id, name FROM authors WHERE id = $1',
       [authorId],
     );
 
     if (authorRes.rowCount === 0) {
-      throw new CustomNotFoundError("Author Not Found");
+      throw new CustomNotFoundError('Author Not Found');
     }
 
     const author: { id: number; name: string } = authorRes.rows[0];
 
-    res.render("confirm-deletion", {
+    res.render('confirm-deletion', {
       title: null,
       data: author,
-      cancelPath: req.query.from ?? "/",
-      returnPath: req.query.returnTo ?? "/",
+      cancelPath: req.query.from ?? '/',
+      returnPath: req.query.returnTo ?? '/',
     });
   } catch (error) {
     next(error);
@@ -235,12 +237,12 @@ export const confirmDeletion: RequestHandler = async (req, res, next) => {
 
 // 7. Delete an author
 export const deleteAuthorById: RequestHandler = async (req, res, next) => {
-  const authorId = Number(req.params["authorId"]);
+  const authorId = Number(req.params['authorId']);
 
   try {
     // 1. Check if the author is linked to any books
     const findRes = await query(
-      "SELECT 1 FROM book_authors WHERE author_id = $1 LIMIT 1",
+      'SELECT 1 FROM book_authors WHERE author_id = $1 LIMIT 1',
       [authorId],
     );
 
@@ -251,13 +253,13 @@ export const deleteAuthorById: RequestHandler = async (req, res, next) => {
     }
 
     // 2. Proceed with deletion
-    const delRes = await query("DELETE FROM authors WHERE id = $1", [authorId]);
+    const delRes = await query('DELETE FROM authors WHERE id = $1', [authorId]);
 
     if (delRes.rowCount === 0) {
-      throw new CustomNotFoundError("Author Not Found");
+      throw new CustomNotFoundError('Author Not Found');
     }
 
-    res.status(200).redirect("/authors");
+    res.status(200).redirect('/authors');
   } catch (error) {
     next(error);
   }

@@ -1,16 +1,27 @@
-<!-- Books -->
-<div class="flex-1 w-full max-w-lg mx-auto flex flex-col">
+<div class="flex-1 w-full max-w-2xl mx-auto flex flex-col md:p-4">
   <!-- Search -->
   <%- include('partials/search') %>
 
   <!-- Content -->
-  <div class="flex-1 bg-white p-6 rounded-lg shadow-md">
-    <!-- Title -->
-    <%- include('partials/title') %>
+  <div class="flex-1 w-full bg-white rounded-lg shadow-md overflow-hidden">
+    <!-- Header -->
+    <div class="bg-zinc-50 border-b border-zinc-200 px-6 py-4">
+      <%- include('partials/title'); %>
 
-    <!-- Book data -->
-    <% if (locals.books.length > 0) { %>
-    <div class="overflow-x-auto" tabindex="0" role="region" aria-label="Books table"></div>
+      <div class="flex justify-between items-center mt-2">
+        <p class="text-sm text-zinc-600">
+          <% if (locals.books && locals.books.length> 0) { %> Showing
+          <%= books.length %>
+          book<%= books.length===1 ? '' : 's' %>
+          <% } else { %>
+          No books found
+          <% } %>
+        </p>
+      </div>
+    </div>
+
+    <!-- Book List -->
+    <% if (locals.books && books.length > 0) { %>
     <table
       class="table-auto w-full"
       role="table"
@@ -18,20 +29,19 @@
       aria-rowcount="<%= books.length + 1 %>"
     >
       <caption class="sr-only">
-        Books inventory showing <%= books.length %> <%= books.length === 1 ? 'book' : 'books'%>. Click on any row to
-        view book details.
+        Books inventory showing <%= books.length %> <%= books.length===1 ?
+        'book' : 'books' %>. Click on any row to view book details.
       </caption>
-
       <thead class="w-full" role="rowgroup">
         <tr class="border-b border-zinc-200 h-14" role="row" aria-rowindex="1">
-          <th class="text-start px-3" role="columnheader" scope="col" tabindex="0">Title</th>
-          <th class="text-end px-3" role="columnheader" scope="col" tabindex="0">Price</th>
-          <th class="text-end px-3" role="columnheader" scope="col" tabindex="0">Stock</th>
+          <th class="text-start pl-6" role="columnheader" scope="col">Title</th>
+          <th class="text-end" role="columnheader" scope="col">Price</th>
+          <th class="text-end pr-6" role="columnheader" scope="col">Stock</th>
         </tr>
       </thead>
 
       <tbody role="rowgroup">
-        <% books.map((book, index) => { %>
+        <% books.map((book, index)=> { %>
         <tr
           class="border-b border-zinc-200 h-14 last-of-type:border-none cursor-pointer hover:bg-zinc-100 focus:bg-zinc-100"
           data-href="/books/<%= book.id %>?from=<%= encodeURIComponent(currentPath) %>"
@@ -42,72 +52,86 @@
           data-book-row="true"
         >
           <td
-            class="text-start px-3"
+            class="text-start pl-6"
             role="gridcell"
             headers="title-header"
             aria-describedby="book-<%= book.id%>-title"
           >
             <%= book.title %>
           </td>
-          <td class="text-end px-3" role="gridcell" headers="price-header" aria-label="Price: <%= book.price %>">
+          <td
+            class="text-end"
+            role="gridcell"
+            headers="price-header"
+            aria-label="Price: <%= book.price %>"
+          >
             <%= book.price %>
           </td>
-          <td class="text-end px-3" role="gridcell" headers="stock-header" aria-label="Stock: <%= book.stock %>">
+          <td
+            class="text-end pr-6"
+            role="gridcell"
+            headers="stock-header"
+            aria-label="Stock: <%= book.stock %>"
+          >
             <%= book.stock %>
           </td>
         </tr>
         <%})%>
       </tbody>
     </table>
-
-    <!-- Table Navigation Instructions -->
-    <div class="mt-4 text-sm text-zinc-600" role="region" aria-label="Table navigation instructions">
-      <p class="sr-only">
-        Use Tab to navigate between table rows. Press Enter to view book details. Use arrow keys to navigate within the
-        table when focused.
-      </p>
-      <p class="text-center" aria-live="polite" id="table-status">
-        Showing <%= books.length %> <%= books.length === 1 ? 'book' : 'books' %>
-      </p>
-    </div>
-
     <% } else { %>
     <!-- Empty State -->
-
-    <div class="mt-8" role="region" aria-label="No books message">
-      <% if (currentPath !== '/') { %>
-      <div class="text-center">
-        <p class="mb-4" role="status" aria-live="polite">
-          No book related to
-          <span class="italic font-medium"><%= title %></span>
-          .
-        </p>
-
-        <p class="mb-2">
-          <a
-            href="<%= currentPath.split('/').slice(0, -1).join('/') %>/confirm-deletion?from=<%= currentPath %>&returnTo=<%= currentPath.split('/').slice(0,2).join('/') %>"
-            class="mt-2 inline-block underline text-blue-500 font-light cursor-pointer"
-            aria-label="Delete <%= title %> category"
+    <div class="flex flex-col items-center justify-center py-12">
+      <div class="text-center flex flex-col items-center gap-4">
+        <div class="size-12 text-zinc-300">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-book-open-icon lucide-book-open w-full h-full"
           >
-            Delete
-            <span class="italic"><%= title %></span>
-          </a>
+            <path d="M12 7v14" />
+            <path
+              d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"
+            />
+          </svg>
+        </div>
+        <h3 class="text-lg font-medium text-zinc-900 mb-1">No Books Found</h3>
+        <p class="text-zinc-600 mb-6 max-w-sm">
+          Get started by adding a new book.
         </p>
-      </div>
 
-      <% } else { %>
-      <div class="text-center">
-        <p class="mb-4" role="status" aria-live="polite">No books in your inventory yet.</p>
-        <p class="mb-4" role="status" aria-live="polite">
-          Click
-          <span class="text-blue-500 text-xl">+</span>
-          to add one.
-        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <a
+            href="/books/create?from=<%= encodeURIComponent(locals.currentPath) || '/'%>"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-300 transition-colors text-sm font-medium"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              ></path>
+            </svg>
+            Add New Book
+          </a>
+        </div>
       </div>
-      <% } %>
     </div>
+    <% } %>
   </div>
-  <% } %>
 </div>
 
 <script src="/scripts/book-table.js"></script>

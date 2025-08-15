@@ -1,12 +1,11 @@
 {
   "files.associations": {
-    "*.ejs": "ejs"
+    "*.ejs": "html"
+  },
+  "emmet.includeLanguages": {
+    "ejs": "html"
   },
   "[ejs]": {
-    "editor.defaultFormatter": "j69.ejs-beautify",
-    "editor.formatOnSave": true
-  },
-  "beautify.language": {
-    "html": ["ejs"]
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }
