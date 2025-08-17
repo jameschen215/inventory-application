@@ -18,6 +18,8 @@ import { router as languageRouter } from './routes/languageRouter.js';
 import { router as adminRouter } from './routes/adminRouter.js';
 import { router as searchRouter } from './routes/searchRouter.js';
 
+import { runSetup } from './db/setup.js';
+
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT || 9000;
@@ -79,7 +81,19 @@ app.use((req, res) => {
 
 app.use(globalErrorHandler);
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Start server with database setup
+async function startServer() {
+  try {
+    // Ensure database is set up before starting the server
+    await runSetup();
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Fail to start server: ', error);
+    process.exit(1);
+  }
+}
+
+startServer();

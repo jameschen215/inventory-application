@@ -1,7 +1,7 @@
 import { Client } from 'pg';
 import { dbConfig } from './pool.js';
 
-export async function seed() {
+export async function seedDatabase() {
   console.log('Seeding...');
 
   const client = new Client(dbConfig);
@@ -226,5 +226,3 @@ export async function seed() {
     console.log('Database connection closed.');
   }
 }
-
-await seed();
