@@ -16,6 +16,7 @@ import { router as genreRouter } from './routes/genreRouter.js';
 import { router as authorRouter } from './routes/authorRouter.js';
 import { router as languageRouter } from './routes/languageRouter.js';
 import { router as adminRouter } from './routes/adminRouter.js';
+import { router as searchRouter } from './routes/searchRouter.js';
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,18 +33,18 @@ app.set('layout', 'layout'); // will use views/layout.ejs
 // Middlewares
 app.use(cors());
 app.use(
-	helmet.contentSecurityPolicy({
-		directives: {
-			defaultSrc: ["'self'"],
-			imgSrc: [
-				"'self'",
-				'data',
-				'https://covers.openlibrary.org',
-				'https://archive.org',
-				'https://*.archive.org', // for redirects
-			],
-		},
-	})
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      imgSrc: [
+        "'self'",
+        'data',
+        'https://covers.openlibrary.org',
+        'https://archive.org',
+        'https://*.archive.org', // for redirects
+      ],
+    },
+  }),
 );
 app.use(morgan('dev'));
 app.use(methodOverride('_method')); // allows ?_method=DELETE
@@ -52,15 +53,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use((req, res, next) => {
-	res.locals.currentPath = req.path;
-	next();
+  res.locals.currentPath = req.originalUrl; // includes pathname + query
+  next();
 });
 
 // Get the login state
 app.use((req, res, next) => {
-	// res.locals.isLoggedIn = !!(req.cookies.admin); // convert to boolean
-	res.locals.isLoggedIn = Boolean(req.cookies.admin);
-	next();
+  // res.locals.isLoggedIn = !!(req.cookies.admin); // convert to boolean
+  res.locals.isLoggedIn = Boolean(req.cookies.admin);
+  next();
 });
 
 // Routes
@@ -69,15 +70,16 @@ app.use('/authors', authorRouter);
 app.use('/genres', genreRouter);
 app.use('/languages', languageRouter);
 app.use('/admin', adminRouter);
+app.use('/search', searchRouter);
 
 // Error handlers
 app.use((req, res) => {
-	throw new CustomNotFoundError('Page Not Found');
+  throw new CustomNotFoundError('Page Not Found');
 });
 
 app.use(globalErrorHandler);
 
 // Start server
 app.listen(PORT, () => {
-	console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

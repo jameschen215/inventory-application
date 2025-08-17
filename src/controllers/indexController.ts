@@ -45,7 +45,7 @@ export const getBooks: RequestHandler = async (req, res, next) => {
     }));
 
     res.render('books', {
-      title: 'Books',
+      title: 'All Books',
       books,
       currentPath: '/',
     });
@@ -87,7 +87,9 @@ export const getBookById: RequestHandler = async (req, res, next) => {
       stock: formatNumToCompactNotation(book.stock),
       price: formatCurrency(book.price),
       authors: book.authors.join(', '),
-      published_at: book.published_at ? format(book.published_at, 'MMMM d, yyyy') : 'Unknown',
+      published_at: book.published_at
+        ? format(book.published_at, 'MMMM d, yyyy')
+        : 'Unknown',
     };
 
     res.render('book', {
@@ -149,11 +151,20 @@ export const createNewBook: RequestHandler = async (req, res, next) => {
 
   try {
     // 1. Process related entities
-    const authorIds = (await processEntity('authors', formattedFormData.authors)) as number[];
+    const authorIds = (await processEntity(
+      'authors',
+      formattedFormData.authors,
+    )) as number[];
 
-    const genreIds = (await processEntity('genres', formattedFormData.genres)) as number[];
+    const genreIds = (await processEntity(
+      'genres',
+      formattedFormData.genres,
+    )) as number[];
 
-    const languageIds = (await processEntity('languages', formattedFormData.languages)) as number[];
+    const languageIds = (await processEntity(
+      'languages',
+      formattedFormData.languages,
+    )) as number[];
 
     // 2. Insert new book if not existing
     const insertBookRes = await query(
@@ -224,7 +235,9 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
       ...book,
       authors: book.authors.join(', '),
       languages: book.languages.join(', '),
-      published_at: book.published_at ? new Date(book.published_at).toISOString().slice(0, 10) : '',
+      published_at: book.published_at
+        ? new Date(book.published_at).toISOString().slice(0, 10)
+        : '',
     };
 
     res.render('book-form', {
@@ -268,7 +281,10 @@ export const editBookPartially: RequestHandler = async (req, res, next) => {
     let languageIds: number[] = [];
 
     if (formData.authors) {
-      authorIds = (await processEntity('authors', formData.authors)) as number[];
+      authorIds = (await processEntity(
+        'authors',
+        formData.authors,
+      )) as number[];
       delete formData.authors;
     }
 
@@ -278,7 +294,10 @@ export const editBookPartially: RequestHandler = async (req, res, next) => {
     }
 
     if (formData.languages) {
-      languageIds = (await processEntity('languages', formData.languages)) as number[];
+      languageIds = (await processEntity(
+        'languages',
+        formData.languages,
+      )) as number[];
       delete formData.languages;
     }
 
@@ -286,7 +305,9 @@ export const editBookPartially: RequestHandler = async (req, res, next) => {
     const keys = Object.keys(formData);
 
     if (keys.length > 0) {
-      const setClause = keys.map((key, index) => `${key} = $${index + 1}`).join(', ');
+      const setClause = keys
+        .map((key, index) => `${key} = $${index + 1}`)
+        .join(', ');
       const values = Object.values(formData);
 
       // Awesome!
@@ -322,7 +343,10 @@ export const confirmDeletion: RequestHandler = async (req, res, next) => {
   const bookId = Number(req.params['bookId']);
 
   try {
-    const bookRes = await query('SELECT id, title as name FROM books WHERE id = $1', [bookId]);
+    const bookRes = await query(
+      'SELECT id, title as name FROM books WHERE id = $1',
+      [bookId],
+    );
 
     if (bookRes.rowCount === 0) {
       throw new CustomNotFoundError('Book Not Found');
@@ -331,7 +355,8 @@ export const confirmDeletion: RequestHandler = async (req, res, next) => {
     const book: { id: number; title: string } = bookRes.rows[0];
 
     // Store returnTo in cookie if it exists
-    const returnTo = (req.query.returnTo as string) || req.cookies.returnTo || '/';
+    const returnTo =
+      (req.query.returnTo as string) || req.cookies.returnTo || '/';
 
     if (req.query.returnTo) {
       res.cookie('returnTo', req.query.returnTo, {

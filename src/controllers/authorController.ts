@@ -52,9 +52,9 @@ export const getAuthorById: RequestHandler = async (req, res, next) => {
     const author: AuthorType = authorRes.rows[0];
     const formatted = {
       ...author,
-      gender: author.gender ?? 'N/A',
-      nationality: author.nationality ?? 'N/A',
-      dob: author.dob ? format(author.dob, 'MMMM d, yyyy') : 'N/A',
+      gender: author.gender ?? 'Unknown',
+      nationality: author.nationality ?? 'Unknown',
+      dob: author.dob ? format(author.dob, 'MMMM d, yyyy') : 'Unknown',
       bio: author.bio ?? 'No Biography.',
     };
 

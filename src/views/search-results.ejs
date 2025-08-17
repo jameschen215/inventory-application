@@ -1,0 +1,22 @@
+<h1><%= title %></h1>
+
+<% if (locals.results && results.length > 0) { %>
+<ul>
+  <% results.forEach(item => { %>
+  <% 
+  const linkHref = item.type === 'book' || item.type === 'author' 
+    ? `/${item.type}s/${item.id}`
+    : `/${item.type}s/${item.id}/books` 
+  %>
+
+  <li>
+    <a href="<%= linkHref %>">
+      <%= item.name %> <small>(<%= item.type %>)</small>
+    </a>
+  </li>
+  <% }) %>
+</ul>
+<% } else {%>
+No item found related to
+<%= locals.query %>
+<% } %>
