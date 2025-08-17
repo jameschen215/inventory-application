@@ -27,3 +27,13 @@ if (bioTextarea && bioCounter) {
   updateCounter();
   bioTextarea.addEventListener('input', updateCounter);
 }
+
+// Handle Escape
+document.addEventListener('keydown', (event) => {
+  const cancelPathEl = document.querySelector('#cancel-path');
+  if (event.key === 'Escape' && cancelPathEl) {
+    event.preventDefault();
+
+    window.location.href = JSON.parse(cancelPathEl.textContent);
+  }
+});

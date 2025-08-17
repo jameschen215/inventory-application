@@ -178,19 +178,46 @@ const formAction=`/authors/${locals.data?.id}/edit?_method=PUT`
     <div class="flex items-center justify-between gap-3 mt-2">
       <a
         href="/admin?redirect=<%= encodeURIComponent(cancelPath) || '/authors' %>"
-        class="flex justify-center items-center px-6 py-2 border border-zinc-400 rounded-md text-zinc-600 hover:bg-zinc-50 focus:bg-zinc-50 focus:ring-2 focus:ring-zinc-300 transition-colors duration-200 text-sm font-medium"
+        class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
       >
+        <svg
+          class="w-4 h-4 mr-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
         Cancel
       </a>
 
       <button
         type="submit"
-        class="flex justify-center items-center px-6 py-2 bg-blue-500 border border-blue-500 rounded-md text-white hover:bg-blue-600 focus:bg-blue-600 focus:ring-2 focus:ring-blue-300 transition-colors duration-200 text-sm font-medium cursor-pointer"
+        class="inline-flex items-center px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
       >
+        <svg
+          class="w-4 h-4 mr-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 13l4 4L19 7"
+          ></path>
+        </svg>
         Update
       </button>
     </div>
   </form>
 </div>
+
 
 <script src="/scripts/author-form.js"></script>

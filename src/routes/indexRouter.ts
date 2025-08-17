@@ -20,7 +20,7 @@ export const router = Router();
 router.get('/', getBooks);
 
 // 2. Get create form
-router.get('/books/create', getCreateForm);
+router.get('/books/create', requireAdmin, getCreateForm);
 
 // 3. Get a book by id
 router.get('/books/:bookId', getBookById);
@@ -28,6 +28,7 @@ router.get('/books/:bookId', getBookById);
 // 4. Post a book
 router.post(
   '/books/create',
+  requireAdmin,
   normalizeBookInput,
   bookCreateSchema,
   createNewBook,

@@ -322,18 +322,46 @@
 		</fieldset>
 
 		<!-- Form Actions -->
-		<div class="flex flex-col sm:flex-row gap-4 pt-4">
+		<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pt-4">
 			<button
 				id="cancel-btn"
 				type="button"
-				class="flex-1 inline-flex items-center justify-center px-6 py-2 border border-zinc-300 text-zinc-700 bg-white rounded-md hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 transition-colors duration-200 cursor-pointer">
+        class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+			>
+				<svg
+					class="w-4 h-4 mr-2"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M6 18L18 6M6 6l12 12"
+					></path>
+				</svg>
 				Cancel
 			</button>
 
 			<button
 				type="submit"
-				class="flex-1 inline-flex items-center justify-center px-6 py-2 border border-blue-600 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 cursor-pointer">
-				<%= isEditMode ? 'Update Book' : 'Add Book' %>
+        class="inline-flex items-center px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+			>
+				<svg
+					class="w-4 h-4 mr-2"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M5 13l4 4L19 7"
+					></path>
+				</svg>
+				<%= isEditMode ? 'Update' : 'Create' %>
 			</button>
 		</div>
 	</form>

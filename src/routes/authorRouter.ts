@@ -3,13 +3,13 @@ import { Router } from 'express';
 import { authorSchema } from '../validators/authorSchema.js';
 import { requireAdmin } from '../middlewares/requireAdmin.js';
 import {
-	getAuthors,
-	getBooksByAuthorId,
-	editAuthorById,
-	deleteAuthorById,
-	getAuthorById,
-	getEditForm,
-	confirmDeletion,
+  getAuthors,
+  getBooksByAuthorId,
+  editAuthorById,
+  deleteAuthorById,
+  getAuthorById,
+  getEditForm,
+  confirmDeletion,
 } from '../controllers/authorController.js';
 
 export const router = Router();

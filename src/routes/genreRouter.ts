@@ -3,12 +3,12 @@ import { Router } from 'express';
 import { genreSchema } from '../validators/genreSchema.js';
 import { requireAdmin } from '../middlewares/requireAdmin.js';
 import {
-	editGenreById,
-	getBooksByGenreId,
-	getGenres,
-	deleteGenreById,
-	getConfirmDeletion,
-	getEditForm,
+  editGenreById,
+  getBooksByGenreId,
+  getGenres,
+  deleteGenreById,
+  getConfirmDeletion,
+  getEditForm,
 } from '../controllers/genreController.js';
 
 export const router = Router();
