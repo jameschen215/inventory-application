@@ -1,142 +1,196 @@
 <!-- define form action and method -->
-<% const formAction=`/authors/${locals.data?.id}/edit?_method=PUT` %>
+<% 
+const formAction=`/authors/${locals.data?.id}/edit?_method=PUT` 
+%>
 
-	<div class="w-full max-w-md mx-auto p-6 rounded-lg shadow-md bg-white">
-		<%- include('partials/title') %>
+<div class="w-full max-w-md mx-auto p-6 rounded-lg shadow-md bg-white">
+  <%- include('partials/title') %>
 
-			<form action="<%= formAction %>" method="post" class="flex flex-col gap-5" novalidate>
-				<!-- Name Field -->
-				<div class="flex flex-col">
-					<label for="name" class="uppercase text-sm text-zinc-600 font-light mb-1">
-						Name <span class="text-red-500">*</span>
-					</label>
-					<input type="text" id="name" name="name" value="<%= locals.data?.name || '' %>" required autofocus
-						maxlength="100" aria-describedby="<% locals.errors?.name ? 'name-error' : '' %>"
-						class="border border-zinc-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none px-3 py-2 rounded-sm transition-colors" />
+  <form
+    action="<%= formAction %>"
+    method="post"
+    class="flex flex-col gap-5"
+    novalidate
+  >
+    <!-- Name Field -->
+    <div class="flex flex-col">
+      <label for="name" class="uppercase text-sm text-zinc-600 font-light mb-1">
+        Name <span class="text-red-500">*</span>
+      </label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        value="<%= locals.data?.name || '' %>"
+        required
+        autofocus
+        maxlength="100"
+        aria-describedby="<% locals.errors?.name ? 'name-error' : '' %>"
+        class="border border-zinc-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none px-3 py-2 rounded-sm transition-colors"
+      />
 
-					<% if (locals.errors?.name) { %>
-						<p id="name-error" class="text-sm text-red-500 mt-1" role="alert">
-							<%= errors.name.msg %>
-						</p>
-						<% } %>
-				</div>
+      <% if (locals.errors?.name) { %>
+      <p id="name-error" class="text-sm text-red-500 mt-1" role="alert">
+        <%= errors.name.msg %>
+      </p>
+      <% } %>
+    </div>
 
-				<!-- Gender Field -->
-				<div class="flex flex-col">
-					<fieldset>
-						<legend class="uppercase text-sm text-zinc-600 font-light mb-1">
-							gender
-						</legend>
+    <!-- Gender Field -->
+    <div class="flex flex-col">
+      <fieldset>
+        <legend class="uppercase text-sm text-zinc-600 font-light mb-1">
+          gender
+        </legend>
+        <div class="border border-zinc-300 px-3 py-2 rounded-sm">
+          <div class="flex items-center gap-8">
+            <div class="flex items-center gap-2">
+              <input
+                id="male"
+                type="radio"
+                name="gender"
+                value="male"
+                aria-describedby="<% locals.errors?.gender ? 'gender-error' : '' %>"
+                class="text-blue-500 focus:ring-blue-200"
+								<%=locals.data?.gender==='male' ? 'checked' : '' %>
+								/>
+              <label
+                for="male"
+                class="capitalize text-sm font-light cursor-pointer"
+              >
+                male
+              </label>
+            </div>
 
-						<div class="border border-zinc-300 px-3 py-2 rounded-sm">
-							<div class="flex items-center gap-8">
-								<div class="flex items-center gap-2">
-									<input id='male' type="radio" name="gender" value="male"
-										aria-describedby="<% locals.errors?.gender ? 'gender-error' : '' %>"
-										class="text-blue-500 focus:ring-blue-200" <%=locals.data?.gender==='male' ? 'checked' : '' %>
-									/>
-									<label for="male" class="capitalize text-sm font-light cursor-pointer">
-										male
-									</label>
-								</div>
+            <div class="flex items-center gap-2">
+              <input
+                type="radio"
+                name="gender"
+                id="female"
+                value="female"
+                aria-describedby="<%= locals.errors?.gender ? 'gender-error' : '' %>"
+                class="text-blue-500 focus:ring-blue-200"
+								<%=locals.data?.gender==='female' ? 'checked' : '' %>
+								/>
+              <label
+                for="female"
+                class="capitalize text-sm font-light cursor-pointer"
+              >
+                Female
+              </label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
 
-								<div class="flex items-center gap-2">
-									<input type="radio" name="gender" id="female" value="female" <%=locals.data?.gender==='female'
-										? 'checked' : '' %>
-									aria-describedby="<%= locals.errors?.gender ? 'gender-error' : '' %>" class="text-blue-500
-										focus:ring-blue-200" />
-										<label for="female" class="capitalize text-sm font-light cursor-pointer">
-											Female
-										</label>
-								</div>
-							</div>
-						</div>
-					</fieldset>
+      <% if (locals.errors?.gender) { %>
+      <p id="gender-error" class="text-sm text-red-500 mt-1" role="alert">
+        <%= errors.gender.msg %>
+      </p>
+      <% } %>
+    </div>
 
-					<% if (locals.errors?.gender) { %>
-						<p id="gender-error" class="text-sm text-red-500 mt-1" role="alert">
-							<%= errors.gender.msg %>
-						</p>
-						<% } %>
-				</div>
+    <!-- Nationality Field -->
+    <div class="flex flex-col">
+      <label
+        for="nationality"
+        class="uppercase text-sm text-zinc-600 font-light mb-1"
+      >
+        nationality
+      </label>
+      <input
+        type="text"
+        id="nationality"
+        name="nationality"
+        value="<%= locals.data?.nationality || ''%>"
+        maxlength="50"
+        aria-describedby="<%= locals.errors?.nationality ? 'nationality-error' : 'nationality-help' %>"
+        class="border border-zinc-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none px-3 py-2 rounded-md transition-colors"
+      />
 
-				<!-- Nationality Field -->
-				<div class="flex flex-col">
-					<label for="nationality" class="uppercase text-sm text-zinc-600 font-light mb-1">
-						nationality
-					</label>
-					<input type="text" id="nationality" name="nationality" value="<%= locals.data?.nationality || ''%>"
-						maxlength="50"
-						aria-describedby="<%= locals.errors?.nationality ? 'nationality-error' : 'nationality-help' %>"
-						class="border border-zinc-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none px-3 py-2 rounded-md transition-colors" />
+      <% if (locals.errors?.nationality) { %>
+      <p id="nationality-error" class="text-sm text-red-500 mt-1" role="alert">
+        <%= errors.nationality.msg %>
+      </p>
+      <% } else { %>
+      <p id="nationality-help" class="text-sm text-zinc-500 mt-1">
+        Author's nationality or country of origin
+      </p>
+      <% } %>
+    </div>
 
-					<% if (locals.errors?.nationality) { %>
-						<p id="nationality-error" class="text-sm text-red-500 mt-1" role="alert">
-							<%= errors.nationality.msg %>
-						</p>
-						<% } else { %>
-							<p id="nationality-help" class="text-sm text-zinc-500 mt-1">
-								Author's nationality or country of origin
-							</p>
-							<% } %>
-				</div>
+    <!-- Date of Birth Field -->
+    <div class="flex flex-col">
+      <label for="dob" class="uppercase text-sm text-zinc-600 font-light mb-1">
+        Date of Birth
+      </label>
+      <input
+        type="date"
+        id="dob"
+        name="dob"
+        value="<%= locals.data?.dob ?? ''%>"
+        max="<%= new Date().toISOString().split('T')[0] %>"
+        aria-describedby="<%= locals.errors?.dob ? 'dob-error' : '' %>"
+        class="border border-zinc-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none px-3 py-2 rounded-md transition-colors"
+      />
 
-				<!-- Date of Birth Field -->
-				<div class="flex flex-col">
-					<label for="dob" class="uppercase text-sm text-zinc-600 font-light mb-1">
-						Date of Birth
-					</label>
-					<input type="date" id="dob" name="dob" value="<%= locals.data?.dob ?? ''%>"
-						max="<%= new Date().toISOString().split('T')[0] %>"
-						aria-describedby="<%= locals.errors?.dob ? 'dob-error' : '' %>"
-						class="border border-zinc-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none px-3 py-2 rounded-md transition-colors" />
+      <% if (locals.errors?.dob) { %>
+      <p id="dob-error" class="text-sm text-red-500 mt-1" role="alert">
+        <%= errors.dob.msg %>
+      </p>
+      <% } %>
+    </div>
 
-					<% if (locals.errors?.dob) { %>
-						<p id="dob-error" class="text-sm text-red-500 mt-1" role="alert">
-							<%= errors.dob.msg %>
-						</p>
-						<% } %>
-				</div>
+    <!-- Biography Field -->
+    <div class="flex flex-col">
+      <label for="bio" class="uppercase text-sm text-zinc-600 font-light mb-1">
+        Biography
+      </label>
+      <textarea
+        name="bio"
+        id="bio"
+        rows="6"
+        maxlength="1000"
+        placeholder="Brief biography of the author..."
+        aria-describedby="<%= locals.errors?.bio ? 'bio-error' : 'bio-help' %>"
+        class="border border-zinc-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none px-3 py-2 rounded-md resize-y transition-colors"
+      >
+<%= locals.data?.bio || '' %></textarea
+      >
 
-				<!-- Biography Field -->
-				<div class="flex flex-col">
-					<label for="bio" class="uppercase text-sm text-zinc-600 font-light mb-1">
-						Biography
-					</label>
-					<textarea name="bio" id="bio" rows="6" maxlength="1000" placeholder="Brief biography of the author..."
-						aria-describedby="<%= locals.errors?.bio ? 'bio-error' : 'bio-help' %>"
-						class="border border-zinc-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-200 outline-none px-3 py-2 rounded-md resize-y transition-colors">
-<%= locals.data?.bio || '' %></textarea>
+      <% if (locals.errors?.bio) { %>
+      <p id="bio-error" class="text-sm text-red-500 mt-1" role="alert">
+        <%= errors.bio.msg %>
+      </p>
+      <% } else { %>
+      <div class="flex justify-between items-center mt-1">
+        <p id="bio-help" class="text-sm text-zinc-500">
+          Brief description of the author
+        </p>
+        <span id="bio-counter" class="text-xs text-zinc-400">
+          <span id="bio-count">0</span>/1000
+        </span>
+      </div>
+      <% } %>
+    </div>
 
-					<% if (locals.errors?.bio) { %>
-						<p id="bio-error" class="text-sm text-red-500 mt-1" role="alert">
-							<%= errors.bio.msg %>
-						</p>
-						<% } else { %>
-							<div class="flex justify-between items-center mt-1">
-								<p id="bio-help" class="text-sm text-zinc-500">
-									Brief description of the author
-								</p>
-								<span id="bio-counter" class="text-xs text-zinc-400">
-									<span id="bio-count">0</span>/1000
-								</span>
-							</div>
-							<% } %>
-				</div>
+    <!-- Form Actions -->
+    <div class="flex items-center justify-between gap-3 mt-2">
+      <a
+        href="/admin?redirect=<%= encodeURIComponent(cancelPath) || '/authors' %>"
+        class="flex justify-center items-center px-6 py-2 border border-zinc-400 rounded-md text-zinc-600 hover:bg-zinc-50 focus:bg-zinc-50 focus:ring-2 focus:ring-zinc-300 transition-colors duration-200 text-sm font-medium"
+      >
+        Cancel
+      </a>
 
-				<!-- Form Actions -->
-				<div class="flex items-center justify-between gap-3 mt-2">
-					<a href="/admin?redirect=<%= encodeURIComponent(cancelPath) || '/authors' %>"
-						class="flex justify-center items-center px-6 py-2 border border-zinc-400 rounded-md text-zinc-600 hover:bg-zinc-50 focus:bg-zinc-50 focus:ring-2 focus:ring-zinc-300 transition-colors duration-200 text-sm font-medium">
-						Cancel
-					</a>
+      <button
+        type="submit"
+        class="flex justify-center items-center px-6 py-2 bg-blue-500 border border-blue-500 rounded-md text-white hover:bg-blue-600 focus:bg-blue-600 focus:ring-2 focus:ring-blue-300 transition-colors duration-200 text-sm font-medium cursor-pointer"
+      >
+        Update
+      </button>
+    </div>
+  </form>
+</div>
 
-					<button type="submit"
-						class="flex justify-center items-center px-6 py-2 bg-blue-500 border border-blue-500 rounded-md text-white hover:bg-blue-600 focus:bg-blue-600 focus:ring-2 focus:ring-blue-300 transition-colors duration-200 text-sm font-medium cursor-pointer">
-						Update
-					</button>
-				</div>
-			</form>
-	</div>
-
-	<script src="/scripts/author-form.js"></script>
+<script src="/scripts/author-form.js"></script>

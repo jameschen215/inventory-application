@@ -1,5 +1,9 @@
-<div class="flex-1 w-full max-w-md mx-auto flex justify-center items-center md:p4 min-h-[60vh]">
-  <div class="w-full bg-white rounded-lg shadow-lg border border-red-200 overflow-hidden">
+<div
+  class="flex-1 w-full max-w-md mx-auto flex justify-center items-center md:p4 min-h-[60vh]"
+>
+  <div
+    class="w-full bg-white rounded-lg shadow-lg border border-red-200 overflow-hidden"
+  >
     <!-- Header with warning icon -->
     <div class="bg-red-50 border-b border-red-200 px-6 py-4">
       <div class="flex flex-col items-center justify-center gap-1">
@@ -11,14 +15,18 @@
     <!-- Content -->
     <div class="px-6 py-6">
       <div class="text-center space-y-4">
-        <p class="text-base text-zinc-700">Are you sure you want to permanently delete</p>
+        <p class="text-base text-zinc-700">
+          Are you sure you want to permanently delete
+        </p>
 
         <div class="bg-zinc-50 border border-zinc-200 rounded-lg p-4">
           <p class="font-semibold text-lg text-zinc-900">
             "<%= locals.data?.name || locals.data?.title || 'this item' %>?"
           </p>
           <% if (locals.data?.subtitle) { %>
-          <p class="text-sm text-zinc-600 mt-1 italic"><%= locals.data.subtitle %></p>
+          <p class="text-sm text-zinc-600 mt-1 italic">
+            <%= locals.data.subtitle %>
+          </p>
           <% } %>
         </div>
 
@@ -40,7 +48,8 @@
             <div class="text-left">
               <p class="font-medium text-red-800 text-sm">Warning</p>
               <p class="text-red-700 text-sm mt-1">
-                This action is irreversible. The item will be permanently removed from the system.
+                This action is irreversible. The item will be permanently
+                removed from the system.
               </p>
             </div>
           </div>
@@ -53,7 +62,11 @@
         method="post"
         class="mt-8"
       >
-        <input type="hidden" name="returnTo" value="<%= locals.returnPath || locals.cancelPath || '/' %>" />
+        <input
+          type="hidden"
+          name="returnTo"
+          value="<%= locals.returnPath || locals.cancelPath || '/' %>"
+        />
 
         <div class="flex flex-col-reverse sm:flex-row gap-3">
           <!-- Cancel Button (Primary) -->
@@ -61,8 +74,18 @@
             href="<%= locals.cancelPath || '/' %>"
             class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-zinc-100 text-zinc-700 border border-zinc-300 rounded-md hover:bg-zinc-200 focus:bg-zinc-200 focus:ring-2 focus:ring-zinc-400 transition-colors font-medium text-sm"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
             </svg>
             Cancel
           </a>
@@ -72,7 +95,12 @@
             type="submit"
             class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white border border-red-600 rounded-md hover:bg-red-700 focus:bg-red-700 focus:ring-2 focus:ring-red-500 transition-colors font-medium text-sm"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"

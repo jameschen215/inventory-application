@@ -15,7 +15,6 @@
     />
 
     <!-- Scripts -->
-    <script src="/scripts/main.js" defer></script>
     <script src="/scripts/sidebar.js" defer></script>
     <script src="/scripts/modal.js" defer></script>
   </head>
@@ -287,6 +286,7 @@
 
     <%- include('partials/modal') %>
 
+    <!-- Data for JavaScript -->
     <!-- Form mode for JavaScript -->
     <script type="application/json" id="form-mode">
       <%- JSON.stringify(locals.isEditMode) %>
