@@ -66,7 +66,7 @@ export async function seed() {
         10,
         19.99,
         '2014-09-04',
-        '/images/01.jpg',
+        'https://covers.openlibrary.org/b/id/8284312-L.jpg',
       ],
       [
         "Charlotte's Web",
@@ -75,7 +75,7 @@ export async function seed() {
         5,
         9.99,
         '1952-10-15',
-        '/images/02.jpg',
+        'https://covers.openlibrary.org/b/id/8311463-L.jpg',
       ],
       [
         'Why Nations Fail',
@@ -84,7 +84,7 @@ export async function seed() {
         8,
         25.0,
         '2012-03-13',
-        '/images/03.jpg',
+        'https://covers.openlibrary.org/b/id/7150615-L.jpg',
       ],
       [
         'Oracle Bones',
@@ -93,11 +93,19 @@ export async function seed() {
         7,
         18.0,
         '2006-08-15',
-        '/images/04.jpg',
+        'https://covers.openlibrary.org/b/id/13995217-L.jpg',
       ],
     ];
 
-    for (const [title, subtitle, description, stock, price, published_at, cover_url] of books) {
+    for (const [
+      title,
+      subtitle,
+      description,
+      stock,
+      price,
+      published_at,
+      cover_url,
+    ] of books) {
       await client.query(
         `INSERT INTO books (title, subtitle, description, stock, price, published_at, cover_url)
          VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -107,28 +115,45 @@ export async function seed() {
     }
 
     // 3. Insert genres
-    const genres = ['History', 'Fantasy', 'Politics', 'Memoir', 'Children', 'Economics'];
+    const genres = [
+      'History',
+      'Fantasy',
+      'Politics',
+      'Memoir',
+      'Children',
+      'Economics',
+    ];
 
     for (const genre of genres) {
-      await client.query(`INSERT INTO genres (name) VALUES ($1) ON CONFLICT DO NOTHING`, [genre]);
+      await client.query(
+        `INSERT INTO genres (name) VALUES ($1) ON CONFLICT DO NOTHING`,
+        [genre],
+      );
     }
 
     // 4. Insert languages
     const languages = ['English', 'Chinese'];
 
     for (const lang of languages) {
-      await client.query(`INSERT INTO languages (name) VALUES ($1) ON CONFLICT DO NOTHING`, [lang]);
+      await client.query(
+        `INSERT INTO languages (name) VALUES ($1) ON CONFLICT DO NOTHING`,
+        [lang],
+      );
     }
 
     // 5. Insert into book_authors join table
-    const authorResult = await client.query(`SELECT id, name FROM authors WHERE name = ANY($1)`, [
-      authors.map((author) => author[0]),
-    ]);
-    const authorMap = new Map(authorResult.rows.map((row) => [row.name, row.id]));
+    const authorResult = await client.query(
+      `SELECT id, name FROM authors WHERE name = ANY($1)`,
+      [authors.map((author) => author[0])],
+    );
+    const authorMap = new Map(
+      authorResult.rows.map((row) => [row.name, row.id]),
+    );
 
-    const bookResult = await client.query(`SELECT id, title FROM books WHERE title = ANY($1)`, [
-      books.map((book) => book[0]),
-    ]);
+    const bookResult = await client.query(
+      `SELECT id, title FROM books WHERE title = ANY($1)`,
+      [books.map((book) => book[0])],
+    );
     const bookMap = new Map(bookResult.rows.map((row) => [row.title, row.id]));
 
     const bookAuthors = [
@@ -149,7 +174,9 @@ export async function seed() {
 
     // 6. Insert into book_languages join table
     const languageResult = await client.query('SELECT id, name FROM languages');
-    const langMap = new Map(languageResult.rows.map((row) => [row.name, row.id]));
+    const langMap = new Map(
+      languageResult.rows.map((row) => [row.name, row.id]),
+    );
 
     const bookLanguages = [
       ['Sapiens', ['English']],

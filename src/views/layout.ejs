@@ -7,6 +7,11 @@
     <title>Book Inventory</title>
 
     <link rel="stylesheet" href="/styles/build.css" />
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <!-- Lucid icons -->
     <link
@@ -31,7 +36,7 @@
     <!-- Sidebar navigation -->
     <aside
       id="sidebar"
-      class="fixed top-0 -left-72 md:left-0 h-screen w-72 md:w-auto lg:w-64 border-r border-zinc-200 bg-white text-zinc-950 z-20 transition-transform duration-300 flex flex-col"
+      class="fixed top-0 -left-72 md:left-0 h-screen w-72 md:w-auto lg:w-64 border-r border-zinc-200 bg-white text-zinc-950 z-30 transition-transform duration-300 flex flex-col"
       role="navigation"
       aria-label="Main navigation"
     >
@@ -42,32 +47,12 @@
           class="flex items-center gap-2"
           aria-label="Book Inventory App - Home"
         >
-          <div class="size-6 text-amber-500" aria-hidden="true">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="lucide lucide-book-open-text-icon lucide-book-open-text"
-            >
-              <path d="M12 7v14" />
-              <path d="M16 12h2" />
-              <path d="M16 8h2" />
-              <path
-                d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"
-              />
-              <path d="M6 12h2" />
-              <path d="M6 8h2" />
-            </svg>
+          <div class="size-8 border-amber-200 rounded-sm" aria-hidden="true">
+            <img src="/images/logo.png" alt="Logo" />
           </div>
-          <div class="md:sr-only lg:not-sr-only">
-            <span class="text-lg uppercase">Inv</span>
-            <span class="text-lg uppercase text-amber-600">App</span>
+          <div class="md:sr-only lg:not-sr-only lg:mt-2.5">
+            <span class="text-lg uppercase text-zinc-700">Inv</span
+            ><span class="text-lg uppercase text-amber-500">App</span>
           </div>
         </a>
       </div>
@@ -266,7 +251,7 @@
 
       <!-- Main content -->
       <div
-        class="w-full mt-16 mb-10 flex-1 flex flex-col p-6 bg-zinc-100"
+        class="w-full mt-16 flex-1 flex flex-col p-6 bg-zinc-100"
         id="main-content"
       >
         <!-- Page content -->
@@ -275,14 +260,6 @@
 
       <%- include('partials/footer') %>
     </main>
-
-    <!-- Screen reader live region for dynamic updates -->
-    <div
-      id="live-region"
-      class="sr-only"
-      aria-live="polite"
-      aria-atomic="true"
-    ></div>
 
     <%- include('partials/modal') %>
 
