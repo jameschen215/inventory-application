@@ -4,6 +4,7 @@ import { matchedData, validationResult } from 'express-validator';
 
 import {
   capitalize,
+  capitalizeAll,
   formatCurrency,
   formatNumToCompactNotation,
 } from '../lib/utils.js';
@@ -61,6 +62,7 @@ export const getAuthorById: RequestHandler = async (req, res, next) => {
     res.render('author', {
       title: author.name,
       author: formatted,
+      cancelPath: req.query.from || '/authors',
     });
   } catch (error) {
     next(error);
@@ -132,10 +134,7 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
     const author: AuthorType = authorRes.rows[0];
     const formatted = {
       ...author,
-      gender: author.gender ?? '',
-      nationality: author.nationality ?? '',
-      bio: author.bio ?? '',
-      dob: author.dob ? new Date(author.dob).toISOString().slice(0, 10) : '',
+      dob: author.dob ? format(author.dob, 'yyyy-MM-dd') : '',
     };
 
     res.render('author-form', {
@@ -171,7 +170,7 @@ export const editAuthorById: RequestHandler = async (req, res, next) => {
   const formData: AuthorType = matchedData(req);
   const formattedFormData = {
     ...formData,
-    name: capitalize(formData.name),
+    name: capitalizeAll(formData.name),
     gender: formData.gender ? capitalize(formData.gender) : null,
     nationality: formData.nationality
       ? formData.nationality.toUpperCase()

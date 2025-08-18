@@ -14,6 +14,7 @@ import { BookDisplayType } from '../types/BookDisplayType.js';
 import { CustomNotFoundError } from '../errors/CustomNotFoundError.js';
 import { CustomInternalError } from '../errors/CustomInternalError.js';
 import { insertJoins, processEntity } from '../services/bookHelpers.js';
+import { GENRES } from '../lib/constants.js';
 
 // 1. Get all books
 export const getBooks: RequestHandler = async (req, res, next) => {
@@ -92,10 +93,21 @@ export const getBookById: RequestHandler = async (req, res, next) => {
         : 'Unknown',
     };
 
+    // Store returnTo in cookie if it exists
+    const returnTo = (req.query.from as string) || req.cookies.returnTo || '/';
+
+    if (req.query.from) {
+      res.cookie('returnTo', req.query.from, {
+        maxAge: 10 * 60 * 1000, // 10 minutes
+        httpOnly: true,
+      });
+    }
+
     res.render('book', {
       title: null,
       book: formattedBook,
-      returnTo: req.query.from,
+      cancelPath: req.query.from || '/',
+      returnTo,
     });
   } catch (error) {
     next(error);
@@ -103,22 +115,16 @@ export const getBookById: RequestHandler = async (req, res, next) => {
 };
 
 // 3. Get create form
-export const getCreateForm: RequestHandler = async (req, res, next) => {
-  try {
-    const genresRes = await query(`SELECT * FROM genres`);
-    const genres: GenreType[] = genresRes.rows;
-
-    res.render('book-form', {
-      isEditMode: false,
-      title: 'Create New Book',
-      genres,
-      errors: null,
-      data: null,
-      cancelPath: req.query.from || '/',
-    });
-  } catch (error) {
-    next(error);
-  }
+export const getCreateForm: RequestHandler = async (req, res) => {
+  res.render('book-form', {
+    isEditMode: false,
+    title: 'Create New Book',
+    genres: GENRES,
+    errors: null,
+    data: null,
+    cancelPath: req.query.from || '/',
+    returnTo: null,
+  });
 };
 
 // 4. Post a new book
@@ -148,6 +154,8 @@ export const createNewBook: RequestHandler = async (req, res, next) => {
     genres: formData.genres.map((genre) => capitalize(genre)),
     languages: formData.languages.map((lang) => capitalize(lang)),
   };
+
+  console.log(formattedFormData);
 
   try {
     // 1. Process related entities
@@ -204,9 +212,6 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
   const bookId = Number(req.params['bookId']);
 
   try {
-    const genresRes = await query(`SELECT * FROM genres`);
-    const genres: GenreType[] = genresRes.rows;
-
     const bookRes = await query(
       `SELECT 
 				books.*,
@@ -243,10 +248,11 @@ export const getEditForm: RequestHandler = async (req, res, next) => {
     res.render('book-form', {
       isEditMode: true,
       title: 'Edit Book',
-      genres,
+      genres: GENRES,
       errors: null,
       data: formattedBook,
       cancelPath: req.query.from || '/',
+      returnTo: req.cookies.returnTo || '/',
     });
   } catch (error) {
     next(error);
@@ -268,11 +274,20 @@ export const editBookPartially: RequestHandler = async (req, res, next) => {
       genres,
       errors: errors.mapped(),
       data: req.body,
-      cancelPath: req.query.from ?? '/',
+      cancelPath: req.query.from || '/',
     });
   }
 
-  const formData = matchedData(req);
+  const formData = matchedData(req) as BookDisplayType;
+  const formattedFormData: BookDisplayType = {
+    ...formData,
+    title: capitalizeAll(formData.title),
+    subtitle: formData.subtitle ? capitalize(formData.subtitle) : '',
+    description: formData.description ? capitalize(formData.description) : '',
+    authors: formData.authors.map((author) => capitalizeAll(author)),
+    genres: formData.genres.map((genre) => capitalize(genre)),
+    languages: formData.languages.map((lang) => capitalize(lang)),
+  };
 
   try {
     // 1. Handle entity fields if they exist
@@ -280,35 +295,38 @@ export const editBookPartially: RequestHandler = async (req, res, next) => {
     let genreIds: number[] = [];
     let languageIds: number[] = [];
 
-    if (formData.authors) {
+    if (formattedFormData.authors) {
       authorIds = (await processEntity(
         'authors',
-        formData.authors,
+        formattedFormData.authors,
       )) as number[];
-      delete formData.authors;
+      delete (formattedFormData as any).authors;
     }
 
-    if (formData.genres) {
-      genreIds = (await processEntity('genres', formData.genres)) as number[];
-      delete formData.genres;
+    if (formattedFormData.genres) {
+      genreIds = (await processEntity(
+        'genres',
+        formattedFormData.genres,
+      )) as number[];
+      delete (formattedFormData as any).genres;
     }
 
-    if (formData.languages) {
+    if (formattedFormData.languages) {
       languageIds = (await processEntity(
         'languages',
-        formData.languages,
+        formattedFormData.languages,
       )) as number[];
-      delete formData.languages;
+      delete (formattedFormData as any).languages;
     }
 
     // 2. Dynamically build UPDATE query only with present fields
-    const keys = Object.keys(formData);
+    const keys = Object.keys(formattedFormData);
 
     if (keys.length > 0) {
       const setClause = keys
         .map((key, index) => `${key} = $${index + 1}`)
         .join(', ');
-      const values = Object.values(formData);
+      const values = Object.values(formattedFormData);
 
       // Awesome!
       const updateRes = await query(
@@ -355,15 +373,7 @@ export const confirmDeletion: RequestHandler = async (req, res, next) => {
     const book: { id: number; title: string } = bookRes.rows[0];
 
     // Store returnTo in cookie if it exists
-    const returnTo =
-      (req.query.returnTo as string) || req.cookies.returnTo || '/';
-
-    if (req.query.returnTo) {
-      res.cookie('returnTo', req.query.returnTo, {
-        maxAge: 10 * 60 * 1000, // 10 minutes
-        httpOnly: true,
-      });
-    }
+    const returnTo = req.cookies.returnTo || '/';
 
     res.render('confirm-deletion', {
       title: null,
@@ -387,12 +397,7 @@ export const deleteBookById: RequestHandler = async (req, res, next) => {
       throw new CustomNotFoundError('Book Not Found');
     }
 
-    const returnTo =
-      typeof req.query.returnTo === 'string'
-        ? req.query.returnTo
-        : typeof req.body.returnTo === 'string'
-          ? req.body.returnTo
-          : req.cookies.returnTo || '/';
+    const returnTo = req.cookies.returnTo || '/';
 
     res.clearCookie('returnTo');
 

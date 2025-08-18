@@ -58,16 +58,10 @@
 
       <!-- Form Actions -->
       <form
-        action="<%= (locals.currentPath || '').split('/').slice(0,-1).join('/') %>/?_method=DELETE"
+        action="<%= currentPath.split('/').slice(0,3).join('/') %>/?_method=DELETE"
         method="post"
         class="mt-8"
       >
-        <input
-          type="hidden"
-          name="returnTo"
-          value="<%= locals.returnPath || locals.cancelPath || '/' %>"
-        />
-
         <div class="flex flex-col-reverse sm:flex-row gap-3">
           <!-- Cancel Button (Primary) -->
           <a

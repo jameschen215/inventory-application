@@ -17,7 +17,7 @@
 
         <!-- Add book button -->
         <a
-          href="/books/create?from=<%= encodeURIComponent(locals.currentPath) || '/'%>"
+          href="/books/create?from=<%= (locals.currentPath) || '/' %>"
           class="inline-flex items-center gap-1 md:px-3 p-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-300 transition-colors text-sm font-medium"
         >
           <svg
@@ -62,7 +62,7 @@
         <% books.map((book, index)=> { %>
         <tr
           class="border-b border-zinc-200 h-14 last-of-type:border-none cursor-pointer hover:bg-zinc-100 focus:bg-zinc-100"
-          data-href="/books/<%= book.id %>?from=<%= encodeURIComponent(currentPath) %>"
+          data-href="/books/<%= book.id %>?from=<%= (currentPath) %>"
           role="row"
           aria-rowindex="<%= index + 2 %>"
           tabindex="0"
@@ -152,4 +152,4 @@
   </div>
 </div>
 
-<script src="/scripts/book-table.js"></script>
+<script src="/scripts/books.js"></script>
