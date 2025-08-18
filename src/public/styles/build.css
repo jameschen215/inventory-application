@@ -545,9 +545,6 @@
   .flex-shrink-0 {
     flex-shrink: 0;
   }
-  .shrink {
-    flex-shrink: 1;
-  }
   .table-auto {
     table-layout: auto;
   }
@@ -1392,20 +1389,6 @@
       }
     }
   }
-  .hover\:text-blue-800 {
-    &:hover {
-      @media (hover: hover) {
-        color: var(--color-blue-800);
-      }
-    }
-  }
-  .hover\:text-red-700 {
-    &:hover {
-      @media (hover: hover) {
-        color: var(--color-red-700);
-      }
-    }
-  }
   .hover\:text-zinc-50 {
     &:hover {
       @media (hover: hover) {
@@ -1491,11 +1474,6 @@
   .focus\:bg-blue-600 {
     &:focus {
       background-color: var(--color-blue-600);
-    }
-  }
-  .focus\:bg-red-50 {
-    &:focus {
-      background-color: var(--color-red-50);
     }
   }
   .focus\:bg-red-700 {

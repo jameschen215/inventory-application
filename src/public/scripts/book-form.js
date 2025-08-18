@@ -1,8 +1,6 @@
-import {
-  COVER_PREVIEW_TIMEOUT,
-  AUTO_SAVE_TIMEOUT,
-  SHOW_INDICATOR_TIMEOUT,
-} from '../../lib/constants.js';
+const COVER_PREVIEW_TIMEOUT = 1000; // Wait 1 second after user stops typing
+const AUTO_SAVE_TIMEOUT = 2000; // Save draft 2 seconds after user stops typing
+const SHOW_INDICATOR_TIMEOUT = 3000;
 
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.querySelector('#book-form');
