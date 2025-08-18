@@ -124,6 +124,8 @@ document.addEventListener('keydown', (ev) => {
   if (!bookForm) return;
 
   if (ev.key === 'Escape') {
+    ev.preventDefault();
+
     handleCancel();
   }
 });
