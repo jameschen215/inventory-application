@@ -8,6 +8,7 @@ import {
   formatCurrency,
   formatNumToCompactNotation,
 } from '../lib/utils.js';
+import { cache, invalidateBookCache } from '../lib/cache.js';
 import { query } from '../db/pool.js';
 import { BookType, GenreType } from '../types/db-types.js';
 import { BookDisplayType } from '../types/BookDisplayType.js';
@@ -18,6 +19,19 @@ import { GENRES } from '../lib/constants.js';
 
 // 1. Get all books
 export const getBooks: RequestHandler = async (req, res, next) => {
+  // Look for cached books first
+  const cacheKey = 'all_books';
+  const cachedBooks = cache.get(cacheKey);
+
+  if (cachedBooks) {
+    return res.render('books', {
+      title: 'All Books',
+      books: cachedBooks,
+      currentPath: '/',
+    });
+  }
+
+  // If no cached books, then get from database
   const { q = '' } = req.query || {};
 
   try {
@@ -44,6 +58,9 @@ export const getBooks: RequestHandler = async (req, res, next) => {
       price: formatCurrency(row.price),
       stock: formatNumToCompactNotation(row.stock),
     }));
+
+    // Cache books
+    cache.set(cacheKey, books);
 
     res.render('books', {
       title: 'All Books',
@@ -201,6 +218,9 @@ export const createNewBook: RequestHandler = async (req, res, next) => {
     await insertJoins('book_genres', 'genre_id', book.id, genreIds);
     await insertJoins('book_languages', 'language_id', book.id, languageIds);
 
+    // Invalidate book cache
+    invalidateBookCache(book.id, authorIds, genreIds, languageIds);
+
     res.status(201).redirect('/?submitted=true');
   } catch (error) {
     next(error);
@@ -350,6 +370,9 @@ export const editBookPartially: RequestHandler = async (req, res, next) => {
       await insertJoins('book_languages', 'language_id', bookId, languageIds);
     }
 
+    // Invalidate book cache
+    invalidateBookCache(bookId, authorIds, genreIds, languageIds);
+
     res.status(200).redirect(`/books/${bookId}`);
   } catch (error) {
     next(error);
@@ -391,6 +414,27 @@ export const deleteBookById: RequestHandler = async (req, res, next) => {
   const bookId = Number(req.params['bookId']);
 
   try {
+    const authorsRes = await query(`
+      SELECT a.id FROM authors a 
+      JOIN book_authors ba ON a.id = ba.author_id
+      JOIN books b ON b.id = ba.book_id
+      `);
+    const authorIds: number[] = authorsRes.rows;
+
+    const genresRes = await query(`
+      SELECT g.id FROM genres g 
+      JOIN book_genres bg ON g.id = bg.genre_id
+      JOIN books b ON b.id = bg.book_id
+      `);
+    const genreIds: number[] = genresRes.rows;
+
+    const languagesRes = await query(`
+      SELECT l.id FROM languages l
+      JOIN book_languages bl ON l.id = bl.language_id
+      JOIN books b ON b.id = bl.book_id
+      `);
+    const languageIds: number[] = languagesRes.rows;
+
     const delRes = await query('DELETE FROM books WHERE id = $1', [bookId]);
 
     if (delRes.rowCount === 0) {
@@ -399,7 +443,11 @@ export const deleteBookById: RequestHandler = async (req, res, next) => {
 
     const returnTo = req.cookies.returnTo || '/';
 
+    // Clear return path in cookie after deletion
     res.clearCookie('returnTo');
+
+    // invalidate book cache
+    invalidateBookCache(bookId, authorIds, genreIds, languageIds);
 
     res.status(200).redirect(returnTo);
   } catch (error) {
