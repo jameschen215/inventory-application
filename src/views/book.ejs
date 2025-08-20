@@ -225,27 +225,6 @@
           <!-- Action Buttons -->
           <div class="border-t border-zinc-200 pt-6">
             <div class="flex flex-col sm:flex-row justify-between gap-3">
-              <!-- Cancel Action -->
-              <a
-                href="<%= (locals.cancelPath) %>"
-                class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
-              >
-                <svg
-                  class="w-4 h-4 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  ></path>
-                </svg>
-                Cancel
-              </a>
-
               <!-- Edit button -->
               <a
                 href="/books/<%= book.id %>/edit?from=<%= locals.currentPath %>"

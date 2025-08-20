@@ -137,12 +137,12 @@ document.addEventListener('keydown', (ev) => {
 function handleCancel() {
   const hasChanges = checkForChanges();
 
-  if (hasChanges) {
-    const message =
-      'You have unsaved changes. Are you sure you want to leave without saving?';
+  // if (hasChanges) {
+  //   const message =
+  //     'You have unsaved changes. Are you sure you want to leave without saving?';
 
-    if (!confirm(message)) return;
-  }
+  //   if (!confirm(message)) return;
+  // }
 
   // Navigate to cancel path
   const cancelPathElement = document.querySelector('#cancel-path');
