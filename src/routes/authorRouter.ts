@@ -6,10 +6,8 @@ import {
   getAuthors,
   getBooksByAuthorId,
   editAuthorById,
-  deleteAuthorById,
   getAuthorById,
   getEditForm,
-  confirmDeletion,
 } from '../controllers/authorController.js';
 
 export const router = Router();
@@ -27,10 +25,10 @@ router.get('/:authorId/books', getBooksByAuthorId);
 router.get('/:authorId/edit', requireAdmin, getEditForm);
 
 // 5. Confirm deletion
-router.get('/:authorId/confirm-deletion', requireAdmin, confirmDeletion);
+// router.get('/:authorId/confirm-deletion', requireAdmin, confirmDeletion);
 
 // 6. Update a author
 router.put('/:authorId/edit', requireAdmin, authorSchema, editAuthorById);
 
 // 7. Delete a author
-router.delete('/:authorId', requireAdmin, deleteAuthorById);
+// router.delete('/:authorId', requireAdmin, deleteAuthorById);

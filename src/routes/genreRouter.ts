@@ -6,8 +6,8 @@ import {
   editGenreById,
   getBooksByGenreId,
   getGenres,
-  deleteGenreById,
-  getConfirmDeletion,
+  // deleteGenreById,
+  // getConfirmDeletion,
   getEditForm,
 } from '../controllers/genreController.js';
 
@@ -26,7 +26,7 @@ router.get('/:genreId/edit', requireAdmin, getEditForm);
 router.put('/:genreId/edit', requireAdmin, genreSchema, editGenreById);
 
 // 4. Get confirm deletion
-router.get('/:genreId/confirm-deletion', requireAdmin, getConfirmDeletion);
+// router.get('/:genreId/confirm-deletion', requireAdmin, getConfirmDeletion);
 
 // 5. Delete a genre
-router.delete('/:genreId', requireAdmin, deleteGenreById);
+// router.delete('/:genreId', requireAdmin, deleteGenreById);

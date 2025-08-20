@@ -3,12 +3,12 @@ import { Router } from 'express';
 import { requireAdmin } from '../middlewares/requireAdmin.js';
 import { languageSchema } from '../validators/languageSchema.js';
 import {
-	getEditForm,
-	getLanguages,
-	editLanguageById,
-	getBooksByLanguage,
-	deleteLanguageById,
-	getConfirmDeletion,
+  getEditForm,
+  getLanguages,
+  editLanguageById,
+  getBooksByLanguage,
+  // deleteLanguageById,
+  // getConfirmDeletion,
 } from '../controllers/languageController.js';
 
 export const router = Router();
@@ -26,7 +26,7 @@ router.get('/:languageId/edit', requireAdmin, getEditForm);
 router.put('/:languageId/edit', requireAdmin, languageSchema, editLanguageById);
 
 // 4. Get confirm deletion
-router.get('/:languageId/confirm-deletion', requireAdmin, getConfirmDeletion);
+// router.get('/:languageId/confirm-deletion', requireAdmin, getConfirmDeletion);
 
 // 5. Delete a language
-router.delete('/:languageId', requireAdmin, deleteLanguageById);
+// router.delete('/:languageId', requireAdmin, deleteLanguageById);
