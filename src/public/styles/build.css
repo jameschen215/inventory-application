@@ -1540,6 +1540,11 @@
       --tw-ring-color: var(--color-blue-500);
     }
   }
+  .focus\:ring-blue-600 {
+    &:focus {
+      --tw-ring-color: var(--color-blue-600);
+    }
+  }
   .focus\:ring-red-200 {
     &:focus {
       --tw-ring-color: var(--color-red-200);
