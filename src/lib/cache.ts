@@ -1,12 +1,5 @@
 import NodeCache from 'node-cache';
 
-import {
-  AuthorType,
-  BookType,
-  GenreType,
-  LanguageType,
-} from '../types/db-types.js';
-
 export const cache = new NodeCache({ stdTTL: 300 }); // 5 minutes DEFAULT TTL
 
 // Invalidate all caches affected by a book

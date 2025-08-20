@@ -5,9 +5,10 @@ import path from 'path';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import expressLayouts from 'express-ejs-layouts';
-import methodOverride from 'method-override';
+import compression from 'compression';
 import cookieParser from 'cookie-parser';
+import methodOverride from 'method-override';
+import expressLayouts from 'express-ejs-layouts';
 
 import { CustomNotFoundError } from './errors/CustomNotFoundError.js';
 import { globalErrorHandler } from './errors/globalErrorHandler.js';
@@ -37,6 +38,11 @@ if (process.env.NODE_ENV === 'production') {
   app.set('view cache', true);
 }
 
+// Only enable compression in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(compression());
+}
+
 // Middlewares
 app.use(cors());
 app.use(
@@ -60,11 +66,11 @@ app.use(methodOverride('_method')); // allows ?_method=DELETE
 app.use(cookieParser());
 // app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
 app.use((req, res, next) => {
   res.locals.currentPath = req.originalUrl; // includes pathname + query
   next();
 });
+app.use(express.static(path.join(__dirname, 'public'), { maxAge: '7d' }));
 
 // Get the login state
 app.use((req, res, next) => {
