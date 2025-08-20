@@ -34,14 +34,12 @@ export function invalidateAuthorCache(authorId: number) {
   cache.del(`author_${authorId}_books`);
 }
 
-export function invalidateGenreCache(genre: GenreType) {
+export function invalidateGenreCache(genreId: number) {
   cache.del('all_genres');
-  cache.del(`genres_${genre.id}`);
-  cache.del(`genres_${genre.id}_books`);
+  cache.del(`genres_${genreId}_books`);
 }
 
-export function invalidateLanguageCache(language: LanguageType) {
+export function invalidateLanguageCache(languageId: number) {
   cache.del('all_languages');
-  cache.del(`languages${language.id}`);
-  cache.del(`languages${language.id}_books`);
+  cache.del(`languages${languageId}_books`);
 }

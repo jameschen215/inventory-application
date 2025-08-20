@@ -87,9 +87,28 @@ export const getAuthorById: RequestHandler = async (req, res, next) => {
 export const getBooksByAuthorId: RequestHandler = async (req, res, next) => {
   const authorId = Number(req.params['authorId']);
   const cacheKey = `author_${authorId}_books`;
-  let books: BookDisplayType[] | undefined = cache.get(cacheKey);
+  const cachedBooks: BookDisplayType[] | undefined = cache.get(cacheKey);
 
-  if (!books) {
+  if (cachedBooks) {
+    try {
+      const authorRes = await query('SELECT * FROM authors WHERE id = ($1)', [
+        authorId,
+      ]);
+
+      if (authorRes.rowCount === 0) {
+        throw new CustomNotFoundError('Author Not Found');
+      }
+
+      const author = authorRes.rows[0] as AuthorType;
+
+      res.render('books', {
+        title: author.name,
+        books: cachedBooks,
+      });
+    } catch (error) {
+      next(error);
+    }
+  } else {
     try {
       const authorRes = await query('SELECT * FROM authors WHERE id = ($1)', [
         authorId,
@@ -120,7 +139,7 @@ export const getBooksByAuthorId: RequestHandler = async (req, res, next) => {
         [authorId],
       );
 
-      books = booksRes.rows.map((row) => ({
+      const books: BookDisplayType[] = booksRes.rows.map((row) => ({
         ...row,
         price: formatCurrency(row.price),
         stock: formatNumToCompactNotation(row.stock),
