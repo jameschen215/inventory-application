@@ -3,10 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (cancelBtn) {
     document.addEventListener('keydown', (ev) => {
-      ev.preventDefault();
-
       if (ev.key === 'Escape') {
-        window.location.href = new URL(cancelBtn.href);
+        ev.preventDefault();
+        window.location.href = cancelBtn.href;
       }
     });
   }
