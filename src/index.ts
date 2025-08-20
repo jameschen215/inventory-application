@@ -32,6 +32,11 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(expressLayouts);
 app.set('layout', 'layout'); // will use views/layout.ejs
 
+// Enable view caching in production to improve performance
+if (process.env.NODE_ENV === 'production') {
+  app.set('view cache', true);
+}
+
 // Middlewares
 app.use(cors());
 app.use(
@@ -48,10 +53,12 @@ app.use(
     },
   }),
 );
-app.use(morgan('dev'));
+if (process.env.NODE_ENV !== 'production') {
+  app.use(morgan('dev'));
+}
 app.use(methodOverride('_method')); // allows ?_method=DELETE
 app.use(cookieParser());
-app.use(express.json());
+// app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use((req, res, next) => {
