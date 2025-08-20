@@ -13,11 +13,22 @@ import { AuthorType } from '../types/db-types.js';
 import { BookDisplayType } from '../types/BookDisplayType.js';
 import { CustomNotFoundError } from '../errors/CustomNotFoundError.js';
 import { CustomBadRequestError } from '../errors/CustomBadRequestError.js';
+import { cache, invalidateAuthorCache } from '../lib/cache.js';
 
 // 1. Get all authors
 export const getAuthors: RequestHandler = async (req, res, next) => {
   const { q = '' } = req.query || {};
+  const cacheKey = 'all_authors';
+  const cachedAuthors = cache.get(cacheKey);
 
+  if (cachedAuthors) {
+    return res.render('authors', {
+      title: 'Authors',
+      authors: cachedAuthors,
+    });
+  }
+
+  // If no cached authors
   try {
     const authorsRes = await query(
       `SELECT DISTINCT a.* FROM authors a
@@ -27,6 +38,9 @@ export const getAuthors: RequestHandler = async (req, res, next) => {
     );
 
     const authors: AuthorType[] = authorsRes.rows;
+
+    // Cache authors
+    cache.set(cacheKey, authors);
 
     res.render('authors', {
       title: 'Authors',
@@ -72,20 +86,23 @@ export const getAuthorById: RequestHandler = async (req, res, next) => {
 // 3. Get books by author
 export const getBooksByAuthorId: RequestHandler = async (req, res, next) => {
   const authorId = Number(req.params['authorId']);
+  const cacheKey = `author_${authorId}_books`;
+  let books: BookDisplayType[] | undefined = cache.get(cacheKey);
 
-  try {
-    const authorRes = await query('SELECT * FROM authors WHERE id = ($1)', [
-      authorId,
-    ]);
+  if (!books) {
+    try {
+      const authorRes = await query('SELECT * FROM authors WHERE id = ($1)', [
+        authorId,
+      ]);
 
-    if (authorRes.rowCount === 0) {
-      throw new CustomNotFoundError('Author Not Found');
-    }
+      if (authorRes.rowCount === 0) {
+        throw new CustomNotFoundError('Author Not Found');
+      }
 
-    const author = authorRes.rows[0] as AuthorType;
+      const author = authorRes.rows[0] as AuthorType;
 
-    const booksRes = await query(
-      `SELECT 
+      const booksRes = await query(
+        `SELECT 
 				books.*,
 				json_agg(DISTINCT authors.name) AS authors,
 				json_agg(DISTINCT genres.name) AS genres,
@@ -100,21 +117,25 @@ export const getBooksByAuthorId: RequestHandler = async (req, res, next) => {
 			GROUP BY books.id
 			HAVING $1 = ANY(array_agg(authors.id))
 			ORDER BY books.id;`,
-      [authorId],
-    );
+        [authorId],
+      );
 
-    const books: BookDisplayType[] = booksRes.rows.map((row) => ({
-      ...row,
-      price: formatCurrency(row.price),
-      stock: formatNumToCompactNotation(row.stock),
-    }));
+      books = booksRes.rows.map((row) => ({
+        ...row,
+        price: formatCurrency(row.price),
+        stock: formatNumToCompactNotation(row.stock),
+      }));
 
-    res.render('books', {
-      title: author.name,
-      books,
-    });
-  } catch (error) {
-    next(error);
+      // Cache books by author
+      cache.set(cacheKey, books);
+
+      res.render('books', {
+        title: author.name,
+        books,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
 };
 
@@ -201,65 +222,68 @@ export const editAuthorById: RequestHandler = async (req, res, next) => {
       throw new CustomNotFoundError('Author Not Found');
     }
 
+    // invalidate author cache
+    invalidateAuthorCache(authorId);
+
     res.status(200).redirect(`/authors/${authorId}`);
   } catch (error) {
     next(error);
   }
 };
 
-// 6. Confirm deletion
-export const confirmDeletion: RequestHandler = async (req, res, next) => {
-  const authorId = Number(req.params['authorId']);
+// // 6. Confirm deletion
+// export const confirmDeletion: RequestHandler = async (req, res, next) => {
+//   const authorId = Number(req.params['authorId']);
 
-  try {
-    const authorRes = await query(
-      'SELECT id, name FROM authors WHERE id = $1',
-      [authorId],
-    );
+//   try {
+//     const authorRes = await query(
+//       'SELECT id, name FROM authors WHERE id = $1',
+//       [authorId],
+//     );
 
-    if (authorRes.rowCount === 0) {
-      throw new CustomNotFoundError('Author Not Found');
-    }
+//     if (authorRes.rowCount === 0) {
+//       throw new CustomNotFoundError('Author Not Found');
+//     }
 
-    const author: { id: number; name: string } = authorRes.rows[0];
+//     const author: { id: number; name: string } = authorRes.rows[0];
 
-    res.render('confirm-deletion', {
-      title: null,
-      data: author,
-      cancelPath: req.query.from ?? '/',
-      returnPath: req.query.returnTo ?? '/',
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+//     res.render('confirm-deletion', {
+//       title: null,
+//       data: author,
+//       cancelPath: req.query.from ?? '/',
+//       returnPath: req.query.returnTo ?? '/',
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
-// 7. Delete an author
-export const deleteAuthorById: RequestHandler = async (req, res, next) => {
-  const authorId = Number(req.params['authorId']);
+// // 7. Delete an author
+// export const deleteAuthorById: RequestHandler = async (req, res, next) => {
+//   const authorId = Number(req.params['authorId']);
 
-  try {
-    // 1. Check if the author is linked to any books
-    const findRes = await query(
-      'SELECT 1 FROM book_authors WHERE author_id = $1 LIMIT 1',
-      [authorId],
-    );
+//   try {
+//     // 1. Check if the author is linked to any books
+//     const findRes = await query(
+//       'SELECT 1 FROM book_authors WHERE author_id = $1 LIMIT 1',
+//       [authorId],
+//     );
 
-    if (findRes.rowCount && findRes.rowCount > 0) {
-      throw new CustomBadRequestError(
-        "Can't delete author: still associated with one or more books",
-      );
-    }
+//     if (findRes.rowCount && findRes.rowCount > 0) {
+//       throw new CustomBadRequestError(
+//         "Can't delete author: still associated with one or more books",
+//       );
+//     }
 
-    // 2. Proceed with deletion
-    const delRes = await query('DELETE FROM authors WHERE id = $1', [authorId]);
+//     // 2. Proceed with deletion
+//     const delRes = await query('DELETE FROM authors WHERE id = $1', [authorId]);
 
-    if (delRes.rowCount === 0) {
-      throw new CustomNotFoundError('Author Not Found');
-    }
+//     if (delRes.rowCount === 0) {
+//       throw new CustomNotFoundError('Author Not Found');
+//     }
 
-    res.status(200).redirect('/authors');
-  } catch (error) {
-    next(error);
-  }
-};
+//     res.status(200).redirect('/authors');
+//   } catch (error) {
+//     next(error);
+//   }
+// };

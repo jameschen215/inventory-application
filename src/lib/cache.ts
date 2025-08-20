@@ -21,12 +21,17 @@ export function invalidateBookCache(
   authorIds.forEach((authorId) => cache.del(`author_${authorId}_books`));
   genreIds.forEach((genreId) => cache.del(`genre_${genreId}_books`));
   languageIds.forEach((langId) => cache.del(`language_${langId}_books`));
+
+  // authors, genres, and languages may be created along with book,
+  // so invalidate all authors as well
+  cache.del('all_authors');
+  cache.del('all_genres');
+  cache.del('all_languages');
 }
 
-export function invalidateAuthorCache(author: AuthorType) {
+export function invalidateAuthorCache(authorId: number) {
   cache.del('all_authors');
-  cache.del(`author_${author.id}`);
-  cache.del(`author_${author.id}_books`);
+  cache.del(`author_${authorId}_books`);
 }
 
 export function invalidateGenreCache(genre: GenreType) {
