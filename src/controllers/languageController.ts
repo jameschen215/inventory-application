@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { matchedData, validationResult } from 'express-validator';
 
 import { query } from '../db/pool.js';
-import { LanguageType } from '../types/db-types.js';
+import { BookType, LanguageType } from '../types/db-types.js';
 import { BookDisplayType } from '../types/BookDisplayType.js';
 import { CustomNotFoundError } from '../errors/CustomNotFoundError.js';
 import {
@@ -11,9 +11,20 @@ import {
   formatNumToCompactNotation,
 } from '../lib/utils.js';
 import { CustomBadRequestError } from '../errors/CustomBadRequestError.js';
+import { cache, invalidateLanguageCache } from '../lib/cache.js';
 
 // 1. Get all languages
 export const getLanguages: RequestHandler = async (_req, res, next) => {
+  const cacheKey = 'all_languages';
+  const cachedLanguages: LanguageType[] | undefined = cache.get(cacheKey);
+
+  if (cachedLanguages) {
+    return res.render('languages', {
+      title: 'Languages',
+      languages: cachedLanguages,
+    });
+  }
+
   try {
     const languagesRes = await query(`
 			SELECT DISTINCT l.* 
@@ -22,6 +33,9 @@ export const getLanguages: RequestHandler = async (_req, res, next) => {
 			ORDER BY l.name;
 			`);
     const languages: LanguageType[] = languagesRes.rows;
+
+    // Cache all languages
+    cache.set(cacheKey, languages);
 
     res.render('languages', {
       title: 'Languages',
@@ -35,20 +49,42 @@ export const getLanguages: RequestHandler = async (_req, res, next) => {
 // 2. Get books in a specific language
 export const getBooksByLanguage: RequestHandler = async (req, res, next) => {
   const languageId = Number(req.params['languageId']);
+  const cacheKey = `languages${languageId}_books`;
+  const cachedBooks: BookDisplayType[] | undefined = cache.get(cacheKey);
 
-  try {
-    const langRes = await query('SELECT * FROM languages WHERE id = $1', [
-      languageId,
-    ]);
+  if (cachedBooks) {
+    try {
+      const langRes = await query('SELECT * FROM languages WHERE id = $1', [
+        languageId,
+      ]);
 
-    if (langRes.rowCount === 0) {
-      throw new CustomNotFoundError('Language Not Found');
+      if (langRes.rowCount === 0) {
+        throw new CustomNotFoundError('Language Not Found');
+      }
+
+      const language = langRes.rows[0] as LanguageType;
+
+      res.render('books', {
+        title: language.name,
+        books: cachedBooks,
+      });
+    } catch (error) {
+      next(error);
     }
+  } else {
+    try {
+      const langRes = await query('SELECT * FROM languages WHERE id = $1', [
+        languageId,
+      ]);
 
-    const language = langRes.rows[0] as LanguageType;
+      if (langRes.rowCount === 0) {
+        throw new CustomNotFoundError('Language Not Found');
+      }
 
-    const booksRes = await query(
-      `SELECT 
+      const language = langRes.rows[0] as LanguageType;
+
+      const booksRes = await query(
+        `SELECT 
 						books.*,
 						json_agg(DISTINCT authors.name) AS authors,
 						json_agg(DISTINCT languages.name) AS languages,
@@ -63,21 +99,25 @@ export const getBooksByLanguage: RequestHandler = async (req, res, next) => {
 					GROUP BY books.id
 					HAVING $1 = ANY(array_agg(languages.id))
 					ORDER BY books.title;`,
-      [languageId],
-    );
+        [languageId],
+      );
 
-    const books: BookDisplayType[] = booksRes.rows.map((row) => ({
-      ...row,
-      price: formatCurrency(row.price),
-      stock: formatNumToCompactNotation(row.stock),
-    }));
+      const books: BookDisplayType[] = booksRes.rows.map((row) => ({
+        ...row,
+        price: formatCurrency(row.price),
+        stock: formatNumToCompactNotation(row.stock),
+      }));
 
-    res.render('books', {
-      title: language.name,
-      books,
-    });
-  } catch (error) {
-    next(error);
+      // Cache books in the language
+      cache.set(cacheKey, books);
+
+      res.render('books', {
+        title: language.name,
+        books,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
 };
 
@@ -147,64 +187,67 @@ export const editLanguageById: RequestHandler = async (req, res, next) => {
       throw new CustomNotFoundError('Language Not Found');
     }
 
+    // invalidate cache of languages
+    invalidateLanguageCache(languageId);
+
     res.status(200).redirect(`/languages`);
   } catch (error) {
     next(error);
   }
 };
 
-// 5. Get confirm deletion
-export const getConfirmDeletion: RequestHandler = async (req, res, next) => {
-  const languageId = Number(req.params['languageId']);
+// // 5. Get confirm deletion
+// export const getConfirmDeletion: RequestHandler = async (req, res, next) => {
+//   const languageId = Number(req.params['languageId']);
 
-  try {
-    const langRes = await query('SELECT * FROM languages WHERE id = $1', [
-      languageId,
-    ]);
+//   try {
+//     const langRes = await query('SELECT * FROM languages WHERE id = $1', [
+//       languageId,
+//     ]);
 
-    if (langRes.rowCount === 0) {
-      throw new CustomNotFoundError('Language Not Found');
-    }
+//     if (langRes.rowCount === 0) {
+//       throw new CustomNotFoundError('Language Not Found');
+//     }
 
-    const language: LanguageType = langRes.rows[0];
+//     const language: LanguageType = langRes.rows[0];
 
-    res.render('confirm-deletion', {
-      title: null,
-      data: language,
-      cancelPath: req.query.from || '/',
-      returnPath: req.query.returnTo || '/',
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+//     res.render('confirm-deletion', {
+//       title: null,
+//       data: language,
+//       cancelPath: req.query.from || '/',
+//       returnPath: req.query.returnTo || '/',
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
-// 6. Delete a language
-export const deleteLanguageById: RequestHandler = async (req, res, next) => {
-  const languageId = Number(req.params['languageId']);
+// // 6. Delete a language
+// export const deleteLanguageById: RequestHandler = async (req, res, next) => {
+//   const languageId = Number(req.params['languageId']);
 
-  try {
-    // 1. Check if language is linked to any books
-    const bookRes = await query(
-      'SELECT 1 FROM book_languages WHERE language_id = $1 LIMIT 1',
-      [languageId],
-    );
-    if (bookRes.rowCount && bookRes.rowCount > 0) {
-      throw new CustomBadRequestError(
-        "Can't delete language: still associated with one or more books",
-      );
-    }
+//   try {
+//     // 1. Check if language is linked to any books
+//     const bookRes = await query(
+//       'SELECT 1 FROM book_languages WHERE language_id = $1 LIMIT 1',
+//       [languageId],
+//     );
+//     if (bookRes.rowCount && bookRes.rowCount > 0) {
+//       throw new CustomBadRequestError(
+//         "Can't delete language: still associated with one or more books",
+//       );
+//     }
 
-    // 2. Proceed with deletion
-    const languageRes = await query('DELETE FROM languages WHERE id = $1', [
-      languageId,
-    ]);
-    if (languageRes.rowCount === 0) {
-      throw new CustomNotFoundError('Language Not Found');
-    }
+//     // 2. Proceed with deletion
+//     const languageRes = await query('DELETE FROM languages WHERE id = $1', [
+//       languageId,
+//     ]);
+//     if (languageRes.rowCount === 0) {
+//       throw new CustomNotFoundError('Language Not Found');
+//     }
 
-    res.status(200).redirect('/languages');
-  } catch (error) {
-    next(error);
-  }
-};
+//     res.status(200).redirect('/languages');
+//   } catch (error) {
+//     next(error);
+//   }
+// };
